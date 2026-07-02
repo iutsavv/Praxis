@@ -1,0 +1,18 @@
+{
+  "last_run": "2026-07-02T15:40:00+05:30",
+  "next_run": "2026-07-02T15:45:00+05:30",
+  "cycle_number": 38,
+  "status": "running",
+  "last_cycle_duration_seconds": 0.001,
+  "cycle_interval_minutes": 5,
+  "consecutive_failures": {
+    "fetcher": 0,
+    "indicator_engine": 0,
+    "signal_engine": 0,
+    "trade_execution": 0,
+    "trade_monitoring": 0
+  },
+  "trades_opened_today": 1,
+  "trades_closed_today": 7,
+  "current_balance": 1003566.78
+}

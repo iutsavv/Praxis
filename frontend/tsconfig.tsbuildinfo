@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/api/client.ts","./src/hooks/usedatahooks.ts","./src/hooks/usepollingresource.ts","./src/hooks/usewebsocket.ts","./src/pages/backtest.tsx","./src/pages/pipelinecontrol.tsx","./src/store/store.tsx"],"version":"5.9.3"}

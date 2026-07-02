@@ -1,0 +1,369 @@
+[2026-07-02 10:09:19 IST] INFO | CYCLE #1 started at 2026-07-02T10:09:19.075437+05:30
+[2026-07-02 10:09:19 IST] INFO | Stage market_check duration: 0 ms
+$ADANIPORTS.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:19+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967159")
+
+1 Failed download:
+['ADANIPORTS.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:19+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967159")
+$AXISBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:23+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967163")
+
+1 Failed download:
+['AXISBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:23+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967163")
+$BAJFINANCE.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:26+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967166")
+
+1 Failed download:
+['BAJFINANCE.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:26+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967166")
+$HDFCBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:28+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967168")
+
+1 Failed download:
+['HDFCBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:28+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967168")
+$HINDUNILVR.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:32+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967172")
+
+1 Failed download:
+['HINDUNILVR.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:32+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967172")
+$ICICIBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:34+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967174")
+
+1 Failed download:
+['ICICIBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:34+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967174")
+$INDIGO.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:38+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967178")
+
+1 Failed download:
+['INDIGO.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:38+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967178")
+$INFY.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:41+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967181")
+
+1 Failed download:
+['INFY.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:41+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967181")
+$MARUTI.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:44+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967184")
+
+1 Failed download:
+['MARUTI.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:44+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967184")
+$RELIANCE.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:47+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967187")
+
+1 Failed download:
+['RELIANCE.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:47+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967187")
+$SBIN.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:49+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967189")
+
+1 Failed download:
+['SBIN.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:49+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967189")
+$SUNPHARMA.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:52+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967192")
+
+1 Failed download:
+['SUNPHARMA.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:52+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967192")
+$TCS.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:55+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967195")
+
+1 Failed download:
+['TCS.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:55+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967195")
+$TMCV.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:57+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967197")
+
+1 Failed download:
+['TMCV.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:09:57+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967197")
+$WIPRO.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:10:01+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967201")
+
+1 Failed download:
+['WIPRO.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:10:01+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967201")
+$^NSEI: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:10:02+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967202")
+
+1 Failed download:
+['^NSEI']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:10:02+05:30) (Yahoo error = "Invalid input - start date cannot be after end date. startDate = 1782967500, endDate = 1782967202")
+[2026-07-02 10:10:06 IST] INFO | Stage fetcher duration: 47211 ms
+[2026-07-02 10:11:52 IST] INFO | Stage indicator_engine duration: 106596 ms
+[2026-07-02 10:11:53 IST] INFO | Stage signal_engine duration: 247 ms
+[2026-07-02 10:11:53 IST] INFO | INFY rejected: Duplicate position
+[2026-07-02 10:11:53 IST] INFO | MARUTI rejected: Insufficient capital
+[2026-07-02 10:11:53 IST] INFO | TCS rejected: Insufficient capital
+[2026-07-02 10:11:53 IST] INFO | Stage trade_execution duration: 42 ms
+[2026-07-02 10:11:53 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-02 10:11:53 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 10:11:53 IST] INFO | CYCLE #1 | Duration: 154.2s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: \u20b9637
+[2026-07-02 10:11:53 IST] INFO | Scheduler started
+[2026-07-02 10:15:00 IST] INFO | CYCLE #2 started at 2026-07-02T10:15:00.001823+05:30
+[2026-07-02 10:15:00 IST] INFO | Stage market_check duration: 0 ms
+$ADANIPORTS.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:00+05:30)
+
+1 Failed download:
+['ADANIPORTS.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:00+05:30)
+$AXISBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:01+05:30)
+
+1 Failed download:
+['AXISBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:01+05:30)
+$BAJFINANCE.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:03+05:30)
+
+1 Failed download:
+['BAJFINANCE.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:03+05:30)
+$HDFCBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:04+05:30)
+
+1 Failed download:
+['HDFCBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:04+05:30)
+$HINDUNILVR.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:05+05:30)
+
+1 Failed download:
+['HINDUNILVR.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:05+05:30)
+$ICICIBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:06+05:30)
+
+1 Failed download:
+['ICICIBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:06+05:30)
+$INDIGO.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:07+05:30)
+
+1 Failed download:
+['INDIGO.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:07+05:30)
+$INFY.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:08+05:30)
+
+1 Failed download:
+['INFY.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:08+05:30)
+$MARUTI.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:08+05:30)
+
+1 Failed download:
+['MARUTI.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:08+05:30)
+$RELIANCE.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:09+05:30)
+
+1 Failed download:
+['RELIANCE.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:09+05:30)
+$SBIN.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:10+05:30)
+
+1 Failed download:
+['SBIN.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:10+05:30)
+$SUNPHARMA.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:11+05:30)
+
+1 Failed download:
+['SUNPHARMA.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:11+05:30)
+$TCS.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:12+05:30)
+
+1 Failed download:
+['TCS.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:12+05:30)
+$TMCV.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:13+05:30)
+
+1 Failed download:
+['TMCV.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:13+05:30)
+$WIPRO.NS: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:13+05:30)
+
+1 Failed download:
+['WIPRO.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:13+05:30)
+$^NSEI: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:14+05:30)
+
+1 Failed download:
+['^NSEI']: possibly delisted; no price data found  (15m 2026-07-02 10:15:00 -> 2026-07-02 10:15:14+05:30)
+[2026-07-02 10:15:15 IST] INFO | Stage fetcher duration: 15563 ms
+[2026-07-02 10:17:01 IST] INFO | Stage indicator_engine duration: 106249 ms
+[2026-07-02 10:17:02 IST] INFO | Stage signal_engine duration: 240 ms
+[2026-07-02 10:17:02 IST] INFO | INFY rejected: Duplicate position
+[2026-07-02 10:17:02 IST] INFO | MARUTI rejected: Insufficient capital
+[2026-07-02 10:17:02 IST] INFO | TCS rejected: Insufficient capital
+[2026-07-02 10:17:02 IST] INFO | Stage trade_execution duration: 40 ms
+[2026-07-02 10:17:02 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-02 10:17:02 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 10:17:02 IST] INFO | CYCLE #2 | Duration: 122.1s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: \u20b9637
+[2026-07-02 10:30:00 IST] INFO | CYCLE #3 started at 2026-07-02T10:30:00.002763+05:30
+[2026-07-02 10:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-02 10:30:15 IST] INFO | Stage fetcher duration: 15732 ms
+[2026-07-02 10:32:02 IST] INFO | Stage indicator_engine duration: 106690 ms
+[2026-07-02 10:32:02 IST] INFO | Stage signal_engine duration: 243 ms
+[2026-07-02 10:32:02 IST] INFO | HINDUNILVR rejected: Insufficient capital
+[2026-07-02 10:32:02 IST] INFO | INFY rejected: Duplicate position
+[2026-07-02 10:32:02 IST] INFO | TCS rejected: Insufficient capital
+[2026-07-02 10:32:02 IST] INFO | Stage trade_execution duration: 38 ms
+[2026-07-02 10:32:02 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-02 10:32:02 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 10:32:02 IST] INFO | CYCLE #3 | Duration: 122.8s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: \u20b9637
+[2026-07-02 10:45:00 IST] INFO | CYCLE #4 started at 2026-07-02T10:45:00.011078+05:30
+[2026-07-02 10:45:00 IST] INFO | Stage market_check duration: 0 ms
+$AXISBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 10:45:00 -> 2026-07-02 10:45:01+05:30)
+
+1 Failed download:
+['AXISBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:45:00 -> 2026-07-02 10:45:01+05:30)
+$INDIGO.NS: possibly delisted; no price data found  (15m 2026-07-02 10:45:00 -> 2026-07-02 10:45:07+05:30)
+
+1 Failed download:
+['INDIGO.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:45:00 -> 2026-07-02 10:45:07+05:30)
+$TMCV.NS: possibly delisted; no price data found  (15m 2026-07-02 10:45:00 -> 2026-07-02 10:45:15+05:30)
+
+1 Failed download:
+['TMCV.NS']: possibly delisted; no price data found  (15m 2026-07-02 10:45:00 -> 2026-07-02 10:45:15+05:30)
+[2026-07-02 10:45:19 IST] INFO | Stage fetcher duration: 19263 ms
+[2026-07-02 10:47:02 IST] INFO | Stage indicator_engine duration: 102952 ms
+[2026-07-02 10:47:02 IST] INFO | Stage signal_engine duration: 235 ms
+[2026-07-02 10:47:02 IST] INFO | BAJFINANCE rejected: Insufficient capital
+[2026-07-02 10:47:02 IST] INFO | HINDUNILVR rejected: Insufficient capital
+[2026-07-02 10:47:02 IST] INFO | ADANIPORTS rejected: Insufficient capital
+[2026-07-02 10:47:02 IST] INFO | Stage trade_execution duration: 44 ms
+[2026-07-02 10:47:02 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-02 10:47:02 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 10:47:02 IST] INFO | CYCLE #4 | Duration: 122.5s | Scanned: 15 | Signals: 3 | Opened: 0 | Closed: 0 | Balance: \u20b9637
+[2026-07-02 11:00:00 IST] INFO | CYCLE #5 started at 2026-07-02T11:00:00.016814+05:30
+[2026-07-02 11:00:00 IST] INFO | Stage market_check duration: 0 ms
+$MARUTI.NS: possibly delisted; no price data found  (15m 2026-07-02 11:00:00 -> 2026-07-02 11:00:05+05:30)
+
+1 Failed download:
+['MARUTI.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:00:00 -> 2026-07-02 11:00:05+05:30)
+$TCS.NS: possibly delisted; no price data found  (15m 2026-07-02 11:00:00 -> 2026-07-02 11:00:07+05:30)
+
+1 Failed download:
+['TCS.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:00:00 -> 2026-07-02 11:00:07+05:30)
+[2026-07-02 11:00:08 IST] INFO | Stage fetcher duration: 8892 ms
+[2026-07-02 11:02:00 IST] INFO | Stage indicator_engine duration: 112064 ms
+[2026-07-02 11:02:01 IST] INFO | Stage signal_engine duration: 255 ms
+[2026-07-02 11:02:01 IST] INFO | ADANIPORTS rejected: Insufficient capital
+[2026-07-02 11:02:01 IST] INFO | WIPRO rejected: Insufficient capital
+[2026-07-02 11:02:01 IST] INFO | BAJFINANCE rejected: Insufficient capital
+[2026-07-02 11:02:01 IST] INFO | Stage trade_execution duration: 40 ms
+[2026-07-02 11:02:01 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-02 11:02:01 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 11:02:01 IST] INFO | CYCLE #5 | Duration: 121.3s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 0 | Balance: \u20b9637
+[2026-07-02 11:15:00 IST] INFO | CYCLE #6 started at 2026-07-02T11:15:00.055802+05:30
+[2026-07-02 11:15:00 IST] INFO | Stage market_check duration: 0 ms
+$HINDUNILVR.NS: possibly delisted; no price data found  (15m 2026-07-02 11:15:00 -> 2026-07-02 11:15:04+05:30)
+
+1 Failed download:
+['HINDUNILVR.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:15:00 -> 2026-07-02 11:15:04+05:30)
+[2026-07-02 11:15:16 IST] INFO | Stage fetcher duration: 16918 ms
+[2026-07-02 11:17:08 IST] INFO | Stage indicator_engine duration: 111357 ms
+[2026-07-02 11:17:08 IST] INFO | Stage signal_engine duration: 229 ms
+[2026-07-02 11:17:08 IST] INFO | INDIGO rejected: Insufficient capital
+[2026-07-02 11:17:08 IST] INFO | ADANIPORTS rejected: Insufficient capital
+[2026-07-02 11:17:08 IST] INFO | MARUTI rejected: Insufficient capital
+[2026-07-02 11:17:08 IST] INFO | Stage trade_execution duration: 43 ms
+[2026-07-02 11:17:08 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-02 11:17:08 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 11:17:08 IST] INFO | CYCLE #6 | Duration: 128.6s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: \u20b9637
+[2026-07-02 11:30:00 IST] INFO | CYCLE #7 started at 2026-07-02T11:30:00.077192+05:30
+[2026-07-02 11:30:00 IST] INFO | Stage market_check duration: 0 ms
+$ADANIPORTS.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:00+05:30)
+
+1 Failed download:
+['ADANIPORTS.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:00+05:30)
+$AXISBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:01+05:30)
+
+1 Failed download:
+['AXISBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:01+05:30)
+$BAJFINANCE.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:02+05:30)
+
+1 Failed download:
+['BAJFINANCE.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:02+05:30)
+$HDFCBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:03+05:30)
+
+1 Failed download:
+['HDFCBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:03+05:30)
+$HINDUNILVR.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:04+05:30)
+
+1 Failed download:
+['HINDUNILVR.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:04+05:30)
+$ICICIBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:05+05:30)
+
+1 Failed download:
+['ICICIBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:05+05:30)
+$INDIGO.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:06+05:30)
+
+1 Failed download:
+['INDIGO.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:06+05:30)
+$INFY.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:07+05:30)
+
+1 Failed download:
+['INFY.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:07+05:30)
+$MARUTI.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:08+05:30)
+
+1 Failed download:
+['MARUTI.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:08+05:30)
+$RELIANCE.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:09+05:30)
+
+1 Failed download:
+['RELIANCE.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:09+05:30)
+$SBIN.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:10+05:30)
+
+1 Failed download:
+['SBIN.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:10+05:30)
+$SUNPHARMA.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:11+05:30)
+
+1 Failed download:
+['SUNPHARMA.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:11+05:30)
+$TCS.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:11+05:30)
+
+1 Failed download:
+['TCS.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:11+05:30)
+$TMCV.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:12+05:30)
+
+1 Failed download:
+['TMCV.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:12+05:30)
+$WIPRO.NS: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:13+05:30)
+
+1 Failed download:
+['WIPRO.NS']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:13+05:30)
+$^NSEI: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:14+05:30)
+
+1 Failed download:
+['^NSEI']: possibly delisted; no price data found  (15m 2026-07-02 11:30:00 -> 2026-07-02 11:30:14+05:30)
+[2026-07-02 11:30:15 IST] INFO | Stage fetcher duration: 15034 ms
+[2026-07-02 11:32:24 IST] INFO | Stage indicator_engine duration: 129824 ms
+[2026-07-02 11:32:25 IST] INFO | Stage signal_engine duration: 299 ms
+[2026-07-02 11:32:25 IST] INFO | INDIGO rejected: Duplicate position
+[2026-07-02 11:32:25 IST] INFO | HINDUNILVR rejected: Duplicate position
+[2026-07-02 11:32:25 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-02 11:32:25 IST] INFO | Stage trade_execution duration: 50 ms
+[2026-07-02 11:32:25 IST] INFO | Stage trade_monitoring duration: 20 ms
+[2026-07-02 11:32:25 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 11:32:25 IST] INFO | CYCLE #7 | Duration: 145.3s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 0 | Balance: \u20b9410,843
+[2026-07-02 11:45:00 IST] INFO | CYCLE #8 started at 2026-07-02T11:45:00.010986+05:30
+[2026-07-02 11:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-02 11:45:14 IST] INFO | Stage fetcher duration: 14274 ms
+[2026-07-02 11:47:05 IST] INFO | Stage indicator_engine duration: 111673 ms
+[2026-07-02 11:47:06 IST] INFO | Stage signal_engine duration: 282 ms
+[2026-07-02 11:47:06 IST] INFO | TMCV rejected: Max open trades reached
+[2026-07-02 11:47:06 IST] INFO | SBIN rejected: Max open trades reached
+[2026-07-02 11:47:06 IST] INFO | ADANIPORTS rejected: Max open trades reached
+[2026-07-02 11:47:06 IST] INFO | Stage trade_execution duration: 41 ms
+[2026-07-02 11:47:06 IST] INFO | Stage trade_monitoring duration: 12 ms
+[2026-07-02 11:47:06 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 11:47:06 IST] INFO | CYCLE #8 | Duration: 126.3s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: \u20b9410,843
+[2026-07-02 12:00:00 IST] INFO | CYCLE #9 started at 2026-07-02T12:00:00.014813+05:30
+[2026-07-02 12:00:00 IST] INFO | Stage market_check duration: 0 ms
+$HINDUNILVR.NS: possibly delisted; no price data found  (15m 2026-07-02 12:00:00 -> 2026-07-02 12:00:04+05:30)
+
+1 Failed download:
+['HINDUNILVR.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:00:00 -> 2026-07-02 12:00:04+05:30)
+$INDIGO.NS: possibly delisted; no price data found  (15m 2026-07-02 12:00:00 -> 2026-07-02 12:00:06+05:30)
+
+1 Failed download:
+['INDIGO.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:00:00 -> 2026-07-02 12:00:06+05:30)
+[2026-07-02 12:00:15 IST] INFO | Stage fetcher duration: 15617 ms
+[2026-07-02 12:01:57 IST] INFO | Stage indicator_engine duration: 102059 ms
+[2026-07-02 12:01:57 IST] INFO | Stage signal_engine duration: 232 ms
+[2026-07-02 12:01:57 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-02 12:01:57 IST] INFO | ADANIPORTS rejected: Max open trades reached
+[2026-07-02 12:01:57 IST] INFO | BAJFINANCE rejected: Max open trades reached
+[2026-07-02 12:01:57 IST] INFO | Stage trade_execution duration: 38 ms
+[2026-07-02 12:01:58 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-02 12:01:58 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 12:01:58 IST] INFO | CYCLE #9 | Duration: 118.0s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: \u20b9410,843
+[2026-07-02 12:15:00 IST] INFO | CYCLE #10 started at 2026-07-02T12:15:00.009135+05:30
+[2026-07-02 12:15:00 IST] INFO | Stage market_check duration: 0 ms
+$HDFCBANK.NS: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:02+05:30)
+
+1 Failed download:
+['HDFCBANK.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:02+05:30)
+$MARUTI.NS: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:07+05:30)
+
+1 Failed download:
+['MARUTI.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:07+05:30)
+$SUNPHARMA.NS: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:09+05:30)
+
+1 Failed download:
+['SUNPHARMA.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:09+05:30)
+$TCS.NS: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:10+05:30)
+
+1 Failed download:
+['TCS.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:10+05:30)
+$TMCV.NS: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:11+05:30)
+
+1 Failed download:
+['TMCV.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:11+05:30)
+$WIPRO.NS: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:12+05:30)
+
+1 Failed download:
+['WIPRO.NS']: possibly delisted; no price data found  (15m 2026-07-02 12:15:00 -> 2026-07-02 12:15:12+05:30)
+[2026-07-02 12:15:13 IST] INFO | Stage fetcher duration: 13747 ms
+[2026-07-02 12:17:03 IST] INFO | Stage indicator_engine duration: 109561 ms
+[2026-07-02 12:17:03 IST] INFO | Stage signal_engine duration: 265 ms
+[2026-07-02 12:17:03 IST] INFO | SBIN rejected: Max open trades reached
+[2026-07-02 12:17:03 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-02 12:17:03 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-02 12:17:03 IST] INFO | Stage trade_execution duration: 39 ms
+[2026-07-02 12:17:03 IST] INFO | Stage trade_monitoring duration: 13 ms
+[2026-07-02 12:17:03 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-02 12:17:03 IST] INFO | CYCLE #10 | Duration: 123.7s | Scanned: 15 | Signals: 3 | Opened: 0 | Closed: 0 | Balance: \u20b9410,843

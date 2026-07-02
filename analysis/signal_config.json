@@ -1,0 +1,70 @@
+{
+  "rsi": {
+    "buy_thresholds": [
+      {
+        "max": 30,
+        "score": 25
+      },
+      {
+        "max": 40,
+        "score": 20
+      },
+      {
+        "max": 50,
+        "score": 10
+      }
+    ],
+    "sell_thresholds": [
+      {
+        "min": 70,
+        "score": 25
+      },
+      {
+        "min": 60,
+        "score": 20
+      },
+      {
+        "min": 50,
+        "score": 10
+      }
+    ]
+  },
+  "macd": {
+    "crossover_lookback": 3,
+    "crossover_score": 25,
+    "histogram_growing_score": 15
+  },
+  "volume": {
+    "thresholds": [
+      {
+        "min": 2.5,
+        "score": 25
+      },
+      {
+        "min": 2.0,
+        "score": 20
+      },
+      {
+        "min": 1.5,
+        "score": 15
+      },
+      {
+        "min": 1.0,
+        "score": 5
+      }
+    ]
+  },
+  "vwap": {
+    "strong_band_pct": 0.5,
+    "neutral_band_pct": 0.1,
+    "strong_score": 25,
+    "mild_score": 15,
+    "neutral_score": 10
+  },
+  "hold_threshold": 40,
+  "market_condition": {
+    "ema_slope_flat_pct": 0.1,
+    "lookback_candles": 10,
+    "slope_window": 5
+  }
+}

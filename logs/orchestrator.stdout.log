@@ -1,0 +1,1036 @@
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | no new data
+  [ 2/16] AXISBANK     | mode: incremental          | no new data
+  [ 3/16] BAJFINANCE   | mode: incremental          | no new data
+  [ 4/16] HDFCBANK     | mode: incremental          | no new data
+  [ 5/16] HINDUNILVR   | mode: incremental          | no new data
+  [ 6/16] ICICIBANK    | mode: incremental          | no new data
+  [ 7/16] INDIGO       | mode: incremental          | no new data
+  [ 8/16] INFY         | mode: incremental          | no new data
+  [ 9/16] MARUTI       | mode: incremental          | no new data
+  [10/16] RELIANCE     | mode: incremental          | no new data
+  [11/16] SBIN         | mode: incremental          | no new data
+  [12/16] SUNPHARMA    | mode: incremental          | no new data
+  [13/16] TCS          | mode: incremental          | no new data
+  [14/16] TMCV         | mode: incremental          | no new data
+  [15/16] WIPRO        | mode: incremental          | no new data
+  [16/16] NSEI         | mode: incremental          | no new data
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              0          0   incremental
+  AXISBANK                0          0   incremental
+  BAJFINANCE              0          0   incremental
+  HDFCBANK                0          0   incremental
+  HINDUNILVR              0          0   incremental
+  ICICIBANK               0          0   incremental
+  INDIGO                  0          0   incremental
+  INFY                    0          0   incremental
+  MARUTI                  0          0   incremental
+  RELIANCE                0          0   incremental
+  SBIN                    0          0   incremental
+  SUNPHARMA               0          0   incremental
+  TCS                     0          0   incremental
+  TMCV                    0          0   incremental
+  WIPRO                   0          0   incremental
+  NSEI                    0          0   incremental
+  -------------- ---------- ----------
+  TOTAL                   0          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 10:10:06
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,079 candles →      0 indicators computed
+AXISBANK      1,079 candles →      0 indicators computed
+BAJFINANCE    1,079 candles →      0 indicators computed
+HDFCBANK      1,079 candles →      0 indicators computed
+HINDUNILVR    1,079 candles →      0 indicators computed
+ICICIBANK     1,079 candles →      0 indicators computed
+INDIGO        1,079 candles →      0 indicators computed
+INFY          1,079 candles →      0 indicators computed
+MARUTI        1,079 candles →      0 indicators computed
+RELIANCE      1,079 candles →      0 indicators computed
+SBIN          1,079 candles →      0 indicators computed
+SUNPHARMA     1,079 candles →      0 indicators computed
+TCS           1,079 candles →      0 indicators computed
+TMCV          1,079 candles →      0 indicators computed
+WIPRO         1,079 candles →      0 indicators computed
+NSEI          1,029 candles →      0 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: TRENDING
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- HOLD   25.0
+  [OK]   AXISBANK     -- HOLD   30.0
+  [OK]   BAJFINANCE   -- HOLD   10.0
+  [OK]   HDFCBANK     -- HOLD   25.0
+  [OK]   HINDUNILVR   -- HOLD   20.0
+  [OK]   ICICIBANK    -- HOLD   30.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- BUY    40.0
+  [OK]   MARUTI       -- SELL   40.0
+  [OK]   RELIANCE     -- HOLD   30.0
+  [OK]   SBIN         -- HOLD   30.0
+  [OK]   SUNPHARMA    -- HOLD   20.0
+  [OK]   TCS          -- BUY    40.0
+  [OK]   TMCV         -- HOLD   20.0
+  [OK]   WIPRO        -- BUY    40.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 10:11 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     INFY          BUY           40.0  TRENDING
+  2     MARUTI        SELL          40.0  TRENDING
+  3     TCS           BUY           40.0  TRENDING
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | no new data
+  [ 2/16] AXISBANK     | mode: incremental          | no new data
+  [ 3/16] BAJFINANCE   | mode: incremental          | no new data
+  [ 4/16] HDFCBANK     | mode: incremental          | no new data
+  [ 5/16] HINDUNILVR   | mode: incremental          | no new data
+  [ 6/16] ICICIBANK    | mode: incremental          | no new data
+  [ 7/16] INDIGO       | mode: incremental          | no new data
+  [ 8/16] INFY         | mode: incremental          | no new data
+  [ 9/16] MARUTI       | mode: incremental          | no new data
+  [10/16] RELIANCE     | mode: incremental          | no new data
+  [11/16] SBIN         | mode: incremental          | no new data
+  [12/16] SUNPHARMA    | mode: incremental          | no new data
+  [13/16] TCS          | mode: incremental          | no new data
+  [14/16] TMCV         | mode: incremental          | no new data
+  [15/16] WIPRO        | mode: incremental          | no new data
+  [16/16] NSEI         | mode: incremental          | no new data
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              0          0   incremental
+  AXISBANK                0          0   incremental
+  BAJFINANCE              0          0   incremental
+  HDFCBANK                0          0   incremental
+  HINDUNILVR              0          0   incremental
+  ICICIBANK               0          0   incremental
+  INDIGO                  0          0   incremental
+  INFY                    0          0   incremental
+  MARUTI                  0          0   incremental
+  RELIANCE                0          0   incremental
+  SBIN                    0          0   incremental
+  SUNPHARMA               0          0   incremental
+  TCS                     0          0   incremental
+  TMCV                    0          0   incremental
+  WIPRO                   0          0   incremental
+  NSEI                    0          0   incremental
+  -------------- ---------- ----------
+  TOTAL                   0          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 10:15:15
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,079 candles →      0 indicators computed
+AXISBANK      1,079 candles →      0 indicators computed
+BAJFINANCE    1,079 candles →      0 indicators computed
+HDFCBANK      1,079 candles →      0 indicators computed
+HINDUNILVR    1,079 candles →      0 indicators computed
+ICICIBANK     1,079 candles →      0 indicators computed
+INDIGO        1,079 candles →      0 indicators computed
+INFY          1,079 candles →      0 indicators computed
+MARUTI        1,079 candles →      0 indicators computed
+RELIANCE      1,079 candles →      0 indicators computed
+SBIN          1,079 candles →      0 indicators computed
+SUNPHARMA     1,079 candles →      0 indicators computed
+TCS           1,079 candles →      0 indicators computed
+TMCV          1,079 candles →      0 indicators computed
+WIPRO         1,079 candles →      0 indicators computed
+NSEI          1,029 candles →      0 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: TRENDING
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- HOLD   25.0
+  [OK]   AXISBANK     -- HOLD   30.0
+  [OK]   BAJFINANCE   -- HOLD   10.0
+  [OK]   HDFCBANK     -- HOLD   25.0
+  [OK]   HINDUNILVR   -- HOLD   20.0
+  [OK]   ICICIBANK    -- HOLD   30.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- BUY    40.0
+  [OK]   MARUTI       -- SELL   40.0
+  [OK]   RELIANCE     -- HOLD   30.0
+  [OK]   SBIN         -- HOLD   30.0
+  [OK]   SUNPHARMA    -- HOLD   20.0
+  [OK]   TCS          -- BUY    40.0
+  [OK]   TMCV         -- HOLD   20.0
+  [OK]   WIPRO        -- BUY    40.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 10:17 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     INFY          BUY           40.0  TRENDING
+  2     MARUTI        SELL          40.0  TRENDING
+  3     TCS           BUY           40.0  TRENDING
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | +2 new, ~0 skipped
+  [ 3/16] BAJFINANCE   | mode: incremental          | +1 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 5/16] HINDUNILVR   | mode: incremental          | +1 new, ~0 skipped
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | +2 new, ~0 skipped
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | +1 new, ~0 skipped
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | +1 new, ~0 skipped
+  [13/16] TCS          | mode: incremental          | +1 new, ~0 skipped
+  [14/16] TMCV         | mode: incremental          | +2 new, ~0 skipped
+  [15/16] WIPRO        | mode: incremental          | +1 new, ~0 skipped
+  [16/16] NSEI         | mode: incremental          | +1 new, ~0 skipped
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              1          0   incremental
+  AXISBANK                2          0   incremental
+  BAJFINANCE              1          0   incremental
+  HDFCBANK                1          0   incremental
+  HINDUNILVR              1          0   incremental
+  ICICIBANK               1          0   incremental
+  INDIGO                  2          0   incremental
+  INFY                    1          0   incremental
+  MARUTI                  1          0   incremental
+  RELIANCE                1          0   incremental
+  SBIN                    1          0   incremental
+  SUNPHARMA               1          0   incremental
+  TCS                     1          0   incremental
+  TMCV                    2          0   incremental
+  WIPRO                   1          0   incremental
+  NSEI                    1          0   incremental
+  -------------- ---------- ----------
+  TOTAL                  19          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 10:30:15
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,080 candles →      1 indicators computed
+AXISBANK      1,081 candles →      2 indicators computed
+BAJFINANCE    1,080 candles →      1 indicators computed
+HDFCBANK      1,080 candles →      1 indicators computed
+HINDUNILVR    1,080 candles →      1 indicators computed
+ICICIBANK     1,080 candles →      1 indicators computed
+INDIGO        1,081 candles →      2 indicators computed
+INFY          1,080 candles →      1 indicators computed
+MARUTI        1,080 candles →      1 indicators computed
+RELIANCE      1,080 candles →      1 indicators computed
+SBIN          1,080 candles →      1 indicators computed
+SUNPHARMA     1,080 candles →      1 indicators computed
+TCS           1,080 candles →      1 indicators computed
+TMCV          1,081 candles →      2 indicators computed
+WIPRO         1,080 candles →      1 indicators computed
+NSEI          1,030 candles →      1 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: TRENDING
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- HOLD   25.0
+  [OK]   AXISBANK     -- HOLD   10.0
+  [OK]   BAJFINANCE   -- HOLD   20.0
+  [OK]   HDFCBANK     -- HOLD   25.0
+  [OK]   HINDUNILVR   -- SELL   70.0
+  [OK]   ICICIBANK    -- HOLD   20.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- BUY    55.0
+  [OK]   MARUTI       -- HOLD   30.0
+  [OK]   RELIANCE     -- HOLD   35.0
+  [OK]   SBIN         -- HOLD   20.0
+  [OK]   SUNPHARMA    -- HOLD   30.0
+  [OK]   TCS          -- BUY    45.0
+  [OK]   TMCV         -- HOLD   20.0
+  [OK]   WIPRO        -- BUY    45.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 10:32 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     HINDUNILVR    SELL          70.0  TRENDING
+  2     INFY          BUY           55.0  TRENDING
+  3     TCS           BUY           45.0  TRENDING
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | no new data
+  [ 3/16] BAJFINANCE   | mode: incremental          | +1 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 5/16] HINDUNILVR   | mode: incremental          | +1 new, ~0 skipped
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | no new data
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | +2 new, ~0 skipped
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | +1 new, ~0 skipped
+  [13/16] TCS          | mode: incremental          | +2 new, ~0 skipped
+  [14/16] TMCV         | mode: incremental          | no new data
+  [15/16] WIPRO        | mode: incremental          | +1 new, ~0 skipped
+  [16/16] NSEI         | mode: incremental          | +1 new, ~0 skipped
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              1          0   incremental
+  AXISBANK                0          0   incremental
+  BAJFINANCE              1          0   incremental
+  HDFCBANK                1          0   incremental
+  HINDUNILVR              1          0   incremental
+  ICICIBANK               1          0   incremental
+  INDIGO                  0          0   incremental
+  INFY                    1          0   incremental
+  MARUTI                  2          0   incremental
+  RELIANCE                1          0   incremental
+  SBIN                    1          0   incremental
+  SUNPHARMA               1          0   incremental
+  TCS                     2          0   incremental
+  TMCV                    0          0   incremental
+  WIPRO                   1          0   incremental
+  NSEI                    1          0   incremental
+  -------------- ---------- ----------
+  TOTAL                  15          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 10:45:19
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,081 candles →      1 indicators computed
+AXISBANK      1,081 candles →      0 indicators computed
+BAJFINANCE    1,081 candles →      1 indicators computed
+HDFCBANK      1,081 candles →      1 indicators computed
+HINDUNILVR    1,081 candles →      1 indicators computed
+ICICIBANK     1,081 candles →      1 indicators computed
+INDIGO        1,081 candles →      0 indicators computed
+INFY          1,081 candles →      1 indicators computed
+MARUTI        1,082 candles →      2 indicators computed
+RELIANCE      1,081 candles →      1 indicators computed
+SBIN          1,081 candles →      1 indicators computed
+SUNPHARMA     1,081 candles →      1 indicators computed
+TCS           1,082 candles →      2 indicators computed
+TMCV          1,081 candles →      0 indicators computed
+WIPRO         1,081 candles →      1 indicators computed
+NSEI          1,031 candles →      1 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: TRENDING
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- SELL   45.0
+  [OK]   AXISBANK     -- HOLD   10.0
+  [OK]   BAJFINANCE   -- BUY    50.0
+  [OK]   HDFCBANK     -- HOLD   25.0
+  [OK]   HINDUNILVR   -- SELL   50.0
+  [OK]   ICICIBANK    -- HOLD   20.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- HOLD   30.0
+  [OK]   MARUTI       -- HOLD   30.0
+  [OK]   RELIANCE     -- HOLD   30.0
+  [OK]   SBIN         -- HOLD   25.0
+  [OK]   SUNPHARMA    -- HOLD   25.0
+  [OK]   TCS          -- HOLD   20.0
+  [OK]   TMCV         -- HOLD   20.0
+  [OK]   WIPRO        -- HOLD   20.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 10:47 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     BAJFINANCE    BUY           50.0  TRENDING
+  2     HINDUNILVR    SELL          50.0  TRENDING
+  3     ADANIPORTS    SELL          45.0  TRENDING
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 3/16] BAJFINANCE   | mode: incremental          | +1 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 5/16] HINDUNILVR   | mode: incremental          | +2 new, ~0 skipped
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | +1 new, ~0 skipped
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | no new data
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | +1 new, ~0 skipped
+  [13/16] TCS          | mode: incremental          | no new data
+  [14/16] TMCV         | mode: incremental          | +1 new, ~0 skipped
+  [15/16] WIPRO        | mode: incremental          | +1 new, ~0 skipped
+  [16/16] NSEI         | mode: incremental          | +1 new, ~0 skipped
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              1          0   incremental
+  AXISBANK                1          0   incremental
+  BAJFINANCE              1          0   incremental
+  HDFCBANK                1          0   incremental
+  HINDUNILVR              2          0   incremental
+  ICICIBANK               1          0   incremental
+  INDIGO                  1          0   incremental
+  INFY                    1          0   incremental
+  MARUTI                  0          0   incremental
+  RELIANCE                1          0   incremental
+  SBIN                    1          0   incremental
+  SUNPHARMA               1          0   incremental
+  TCS                     0          0   incremental
+  TMCV                    1          0   incremental
+  WIPRO                   1          0   incremental
+  NSEI                    1          0   incremental
+  -------------- ---------- ----------
+  TOTAL                  15          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 11:00:08
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,082 candles →      1 indicators computed
+AXISBANK      1,082 candles →      1 indicators computed
+BAJFINANCE    1,082 candles →      1 indicators computed
+HDFCBANK      1,082 candles →      1 indicators computed
+HINDUNILVR    1,083 candles →      2 indicators computed
+ICICIBANK     1,082 candles →      1 indicators computed
+INDIGO        1,082 candles →      1 indicators computed
+INFY          1,082 candles →      1 indicators computed
+MARUTI        1,082 candles →      0 indicators computed
+RELIANCE      1,082 candles →      1 indicators computed
+SBIN          1,082 candles →      1 indicators computed
+SUNPHARMA     1,082 candles →      1 indicators computed
+TCS           1,082 candles →      0 indicators computed
+TMCV          1,082 candles →      1 indicators computed
+WIPRO         1,082 candles →      1 indicators computed
+NSEI          1,032 candles →      1 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: SIDEWAYS
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- BUY    65.0
+  [OK]   AXISBANK     -- HOLD   30.0
+  [OK]   BAJFINANCE   -- BUY    55.0
+  [OK]   HDFCBANK     -- HOLD   25.0
+  [OK]   HINDUNILVR   -- SELL   50.0
+  [OK]   ICICIBANK    -- HOLD   20.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- HOLD   25.0
+  [OK]   MARUTI       -- HOLD   30.0
+  [OK]   RELIANCE     -- SELL   55.0
+  [OK]   SBIN         -- HOLD   35.0
+  [OK]   SUNPHARMA    -- HOLD   10.0
+  [OK]   TCS          -- HOLD   20.0
+  [OK]   TMCV         -- SELL   40.0
+  [OK]   WIPRO        -- BUY    65.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 11:02 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     ADANIPORTS    BUY           65.0  SIDEWAYS
+  2     WIPRO         BUY           65.0  SIDEWAYS
+  3     BAJFINANCE    BUY           55.0  SIDEWAYS
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 3/16] BAJFINANCE   | mode: incremental          | +1 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 5/16] HINDUNILVR   | mode: incremental          | no new data
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | +2 new, ~0 skipped
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | +1 new, ~0 skipped
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | +1 new, ~0 skipped
+  [13/16] TCS          | mode: incremental          | +1 new, ~0 skipped
+  [14/16] TMCV         | mode: incremental          | +2 new, ~0 skipped
+  [15/16] WIPRO        | mode: incremental          | +1 new, ~0 skipped
+  [16/16] NSEI         | mode: incremental          | +1 new, ~0 skipped
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              1          0   incremental
+  AXISBANK                1          0   incremental
+  BAJFINANCE              1          0   incremental
+  HDFCBANK                1          0   incremental
+  HINDUNILVR              0          0   incremental
+  ICICIBANK               1          0   incremental
+  INDIGO                  2          0   incremental
+  INFY                    1          0   incremental
+  MARUTI                  1          0   incremental
+  RELIANCE                1          0   incremental
+  SBIN                    1          0   incremental
+  SUNPHARMA               1          0   incremental
+  TCS                     1          0   incremental
+  TMCV                    2          0   incremental
+  WIPRO                   1          0   incremental
+  NSEI                    1          0   incremental
+  -------------- ---------- ----------
+  TOTAL                  17          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 11:15:16
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,083 candles →      1 indicators computed
+AXISBANK      1,083 candles →      1 indicators computed
+BAJFINANCE    1,083 candles →      1 indicators computed
+HDFCBANK      1,083 candles →      1 indicators computed
+HINDUNILVR    1,083 candles →      0 indicators computed
+ICICIBANK     1,083 candles →      1 indicators computed
+INDIGO        1,084 candles →      2 indicators computed
+INFY          1,083 candles →      1 indicators computed
+MARUTI        1,083 candles →      1 indicators computed
+RELIANCE      1,083 candles →      1 indicators computed
+SBIN          1,083 candles →      1 indicators computed
+SUNPHARMA     1,083 candles →      1 indicators computed
+TCS           1,083 candles →      1 indicators computed
+TMCV          1,084 candles →      2 indicators computed
+WIPRO         1,083 candles →      1 indicators computed
+NSEI          1,033 candles →      1 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: SIDEWAYS
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- BUY    55.0
+  [OK]   AXISBANK     -- HOLD   10.0
+  [OK]   BAJFINANCE   -- BUY    45.0
+  [OK]   HDFCBANK     -- HOLD   10.0
+  [OK]   HINDUNILVR   -- SELL   50.0
+  [OK]   ICICIBANK    -- HOLD   20.0
+  [OK]   INDIGO       -- SELL   60.0
+  [OK]   INFY         -- HOLD   25.0
+  [OK]   MARUTI       -- SELL   55.0
+  [OK]   RELIANCE     -- HOLD   35.0
+  [OK]   SBIN         -- HOLD   35.0
+  [OK]   SUNPHARMA    -- HOLD   30.0
+  [OK]   TCS          -- HOLD   20.0
+  [OK]   TMCV         -- HOLD   20.0
+  [OK]   WIPRO        -- HOLD   35.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 11:17 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     INDIGO        SELL          60.0  SIDEWAYS
+  2     ADANIPORTS    BUY           55.0  SIDEWAYS
+  3     MARUTI        SELL          55.0  SIDEWAYS
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | no new data
+  [ 2/16] AXISBANK     | mode: incremental          | no new data
+  [ 3/16] BAJFINANCE   | mode: incremental          | no new data
+  [ 4/16] HDFCBANK     | mode: incremental          | no new data
+  [ 5/16] HINDUNILVR   | mode: incremental          | no new data
+  [ 6/16] ICICIBANK    | mode: incremental          | no new data
+  [ 7/16] INDIGO       | mode: incremental          | no new data
+  [ 8/16] INFY         | mode: incremental          | no new data
+  [ 9/16] MARUTI       | mode: incremental          | no new data
+  [10/16] RELIANCE     | mode: incremental          | no new data
+  [11/16] SBIN         | mode: incremental          | no new data
+  [12/16] SUNPHARMA    | mode: incremental          | no new data
+  [13/16] TCS          | mode: incremental          | no new data
+  [14/16] TMCV         | mode: incremental          | no new data
+  [15/16] WIPRO        | mode: incremental          | no new data
+  [16/16] NSEI         | mode: incremental          | no new data
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              0          0   incremental
+  AXISBANK                0          0   incremental
+  BAJFINANCE              0          0   incremental
+  HDFCBANK                0          0   incremental
+  HINDUNILVR              0          0   incremental
+  ICICIBANK               0          0   incremental
+  INDIGO                  0          0   incremental
+  INFY                    0          0   incremental
+  MARUTI                  0          0   incremental
+  RELIANCE                0          0   incremental
+  SBIN                    0          0   incremental
+  SUNPHARMA               0          0   incremental
+  TCS                     0          0   incremental
+  TMCV                    0          0   incremental
+  WIPRO                   0          0   incremental
+  NSEI                    0          0   incremental
+  -------------- ---------- ----------
+  TOTAL                   0          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 11:30:15
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,084 candles →      0 indicators computed
+AXISBANK      1,084 candles →      0 indicators computed
+BAJFINANCE    1,084 candles →      0 indicators computed
+HDFCBANK      1,084 candles →      0 indicators computed
+HINDUNILVR    1,084 candles →      0 indicators computed
+ICICIBANK     1,084 candles →      0 indicators computed
+INDIGO        1,084 candles →      0 indicators computed
+INFY          1,084 candles →      0 indicators computed
+MARUTI        1,084 candles →      0 indicators computed
+RELIANCE      1,084 candles →      0 indicators computed
+SBIN          1,084 candles →      0 indicators computed
+SUNPHARMA     1,084 candles →      0 indicators computed
+TCS           1,084 candles →      0 indicators computed
+TMCV          1,084 candles →      0 indicators computed
+WIPRO         1,084 candles →      0 indicators computed
+NSEI          1,034 candles →      0 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: SIDEWAYS
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- HOLD   25.0
+  [OK]   AXISBANK     -- HOLD   30.0
+  [OK]   BAJFINANCE   -- HOLD   10.0
+  [OK]   HDFCBANK     -- SELL   45.0
+  [OK]   HINDUNILVR   -- SELL   55.0
+  [OK]   ICICIBANK    -- SELL   40.0
+  [OK]   INDIGO       -- SELL   60.0
+  [OK]   INFY         -- HOLD   30.0
+  [OK]   MARUTI       -- SELL   40.0
+  [OK]   RELIANCE     -- SELL   55.0
+  [OK]   SBIN         -- HOLD   25.0
+  [OK]   SUNPHARMA    -- HOLD   30.0
+  [OK]   TCS          -- HOLD   25.0
+  [OK]   TMCV         -- HOLD   20.0
+  [OK]   WIPRO        -- HOLD   35.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 11:32 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     INDIGO        SELL          60.0  SIDEWAYS
+  2     HINDUNILVR    SELL          55.0  SIDEWAYS
+  3     RELIANCE      SELL          55.0  SIDEWAYS
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 3/16] BAJFINANCE   | mode: incremental          | +1 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 5/16] HINDUNILVR   | mode: incremental          | +2 new, ~0 skipped
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | +2 new, ~0 skipped
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | +1 new, ~0 skipped
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | +1 new, ~0 skipped
+  [13/16] TCS          | mode: incremental          | +1 new, ~0 skipped
+  [14/16] TMCV         | mode: incremental          | +1 new, ~0 skipped
+  [15/16] WIPRO        | mode: incremental          | +1 new, ~0 skipped
+  [16/16] NSEI         | mode: incremental          | +1 new, ~0 skipped
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              1          0   incremental
+  AXISBANK                1          0   incremental
+  BAJFINANCE              1          0   incremental
+  HDFCBANK                1          0   incremental
+  HINDUNILVR              2          0   incremental
+  ICICIBANK               1          0   incremental
+  INDIGO                  2          0   incremental
+  INFY                    1          0   incremental
+  MARUTI                  1          0   incremental
+  RELIANCE                1          0   incremental
+  SBIN                    1          0   incremental
+  SUNPHARMA               1          0   incremental
+  TCS                     1          0   incremental
+  TMCV                    1          0   incremental
+  WIPRO                   1          0   incremental
+  NSEI                    1          0   incremental
+  -------------- ---------- ----------
+  TOTAL                  18          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 11:45:14
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,085 candles →      1 indicators computed
+AXISBANK      1,085 candles →      1 indicators computed
+BAJFINANCE    1,085 candles →      1 indicators computed
+HDFCBANK      1,085 candles →      1 indicators computed
+HINDUNILVR    1,086 candles →      2 indicators computed
+ICICIBANK     1,085 candles →      1 indicators computed
+INDIGO        1,086 candles →      2 indicators computed
+INFY          1,085 candles →      1 indicators computed
+MARUTI        1,085 candles →      1 indicators computed
+RELIANCE      1,085 candles →      1 indicators computed
+SBIN          1,085 candles →      1 indicators computed
+SUNPHARMA     1,085 candles →      1 indicators computed
+TCS           1,085 candles →      1 indicators computed
+TMCV          1,085 candles →      1 indicators computed
+WIPRO         1,085 candles →      1 indicators computed
+NSEI          1,035 candles →      1 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: SIDEWAYS
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- BUY    45.0
+  [OK]   AXISBANK     -- HOLD   30.0
+  [OK]   BAJFINANCE   -- HOLD   10.0
+  [OK]   HDFCBANK     -- SELL   40.0
+  [OK]   HINDUNILVR   -- SELL   40.0
+  [OK]   ICICIBANK    -- HOLD   25.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- HOLD   25.0
+  [OK]   MARUTI       -- HOLD   30.0
+  [OK]   RELIANCE     -- HOLD   35.0
+  [OK]   SBIN         -- SELL   55.0
+  [OK]   SUNPHARMA    -- HOLD   25.0
+  [OK]   TCS          -- HOLD   20.0
+  [OK]   TMCV         -- BUY    60.0
+  [OK]   WIPRO        -- HOLD   35.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 11:47 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     TMCV          BUY           60.0  SIDEWAYS
+  2     SBIN          SELL          55.0  SIDEWAYS
+  3     ADANIPORTS    BUY           45.0  SIDEWAYS
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 3/16] BAJFINANCE   | mode: incremental          | +1 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | +2 new, ~0 skipped
+  [ 5/16] HINDUNILVR   | mode: incremental          | no new data
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | no new data
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | +2 new, ~0 skipped
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | +2 new, ~0 skipped
+  [13/16] TCS          | mode: incremental          | +2 new, ~0 skipped
+  [14/16] TMCV         | mode: incremental          | +2 new, ~0 skipped
+  [15/16] WIPRO        | mode: incremental          | +2 new, ~0 skipped
+  [16/16] NSEI         | mode: incremental          | +1 new, ~0 skipped
+
+----------------------------------------------------------------
+  FETCH SUMMARY
+----------------------------------------------------------------
+  Symbol           Inserted    Skipped   Mode
+  ------           --------    -------   ----
+  ADANIPORTS              1          0   incremental
+  AXISBANK                1          0   incremental
+  BAJFINANCE              1          0   incremental
+  HDFCBANK                2          0   incremental
+  HINDUNILVR              0          0   incremental
+  ICICIBANK               1          0   incremental
+  INDIGO                  0          0   incremental
+  INFY                    1          0   incremental
+  MARUTI                  2          0   incremental
+  RELIANCE                1          0   incremental
+  SBIN                    1          0   incremental
+  SUNPHARMA               2          0   incremental
+  TCS                     2          0   incremental
+  TMCV                    2          0   incremental
+  WIPRO                   2          0   incremental
+  NSEI                    1          0   incremental
+  -------------- ---------- ----------
+  TOTAL                  20          0
+----------------------------------------------------------------
+  Finished at 2026-07-02 12:00:15
+----------------------------------------------------------------
+
+── INDICATOR ENGINE RUN ──────────────────────
+ADANIPORTS    1,086 candles →      1 indicators computed
+AXISBANK      1,086 candles →      1 indicators computed
+BAJFINANCE    1,086 candles →      1 indicators computed
+HDFCBANK      1,087 candles →      2 indicators computed
+HINDUNILVR    1,086 candles →      0 indicators computed
+ICICIBANK     1,086 candles →      1 indicators computed
+INDIGO        1,086 candles →      0 indicators computed
+INFY          1,086 candles →      1 indicators computed
+MARUTI        1,087 candles →      2 indicators computed
+RELIANCE      1,086 candles →      1 indicators computed
+SBIN          1,086 candles →      1 indicators computed
+SUNPHARMA     1,087 candles →      2 indicators computed
+TCS           1,087 candles →      2 indicators computed
+TMCV          1,087 candles →      2 indicators computed
+WIPRO         1,087 candles →      2 indicators computed
+NSEI          1,036 candles →      1 indicators computed
+──────────────────────────────────────────────
+Total: 16 symbols processed, 0 validation failures
+
+========================================================
+  AI Paper Trading Agent -- Signal Scoring Engine
+========================================================
+  Active symbols  : 15
+  Market condition: SIDEWAYS
+  Min score       : 40.0
+  Weights         : RSI=0.25  MACD=0.25  VOL=0.25  VWAP=0.25
+========================================================
+
+  [OK]   ADANIPORTS   -- BUY    50.0
+  [OK]   AXISBANK     -- BUY    40.0
+  [OK]   BAJFINANCE   -- SELL   50.0
+  [OK]   HDFCBANK     -- HOLD   30.0
+  [OK]   HINDUNILVR   -- SELL   40.0
+  [OK]   ICICIBANK    -- SELL   55.0
+  [OK]   INDIGO       -- HOLD   25.0
+  [OK]   INFY         -- HOLD   30.0
+  [OK]   MARUTI       -- HOLD   20.0
+  [OK]   RELIANCE     -- BUY    50.0
+  [OK]   SBIN         -- SELL   50.0
+  [OK]   SUNPHARMA    -- HOLD   25.0
+  [OK]   TCS          -- HOLD   20.0
+  [OK]   TMCV         -- HOLD   25.0
+  [OK]   WIPRO        -- HOLD   20.0
+
+  [DB] 15 signal scores written to database.
+
+-- SCAN RESULTS 12:01 IST ------------------------------
+  Rank  Symbol        Direction    Score  Market
+  1     ICICIBANK     SELL          55.0  SIDEWAYS
+  2     ADANIPORTS    BUY           50.0  SIDEWAYS
+  3     BAJFINANCE    SELL          50.0  SIDEWAYS
+----------------------------------------------------
+  15 stocks scanned. 3 above threshold. 0 errors.
+----------------------------------------------------
+
+
+================================================================
+  AI Paper Trading Agent — OHLCV Candle Fetcher
+================================================================
+  Database : E:\Ai trading agent\database\trading.db
+  Interval : 15m
+  Backfill : 59 days (for new symbols)
+================================================================
+
+  Active symbols: 16
+  Symbols: ADANIPORTS, AXISBANK, BAJFINANCE, HDFCBANK, HINDUNILVR, ICICIBANK, INDIGO, INFY, MARUTI, RELIANCE, SBIN, SUNPHARMA, TCS, TMCV, WIPRO, NSEI
+
+  [ 1/16] ADANIPORTS   | mode: incremental          | +1 new, ~0 skipped
+  [ 2/16] AXISBANK     | mode: incremental          | +1 new, ~0 skipped
+  [ 3/16] BAJFINANCE   | mode: incremental          | +2 new, ~0 skipped
+  [ 4/16] HDFCBANK     | mode: incremental          | no new data
+  [ 5/16] HINDUNILVR   | mode: incremental          | +1 new, ~0 skipped
+  [ 6/16] ICICIBANK    | mode: incremental          | +1 new, ~0 skipped
+  [ 7/16] INDIGO       | mode: incremental          | +1 new, ~0 skipped
+  [ 8/16] INFY         | mode: incremental          | +1 new, ~0 skipped
+  [ 9/16] MARUTI       | mode: incremental          | no new data
+  [10/16] RELIANCE     | mode: incremental          | +1 new, ~0 skipped
+  [11/16] SBIN         | mode: incremental          | +1 new, ~0 skipped
+  [12/16] SUNPHARMA    | mode: incremental          | no new data
+  [13/16] TCS          | mode: incremental          | no new data
+  [14/16] TMCV         | mode: incremental          | no new data
+  [15/16] WIPRO        | mode: incremental          | no new data
+  [16/16] NSEI         | mode: incremental         
