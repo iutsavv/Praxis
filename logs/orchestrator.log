@@ -669,3 +669,1004 @@
 [2026-07-02 15:40:00 IST] INFO | Stage market_check duration: 0 ms
 [2026-07-02 15:40:00 IST] INFO | Market closed, skipping
 [2026-07-02 15:40:00 IST] INFO | CYCLE #38 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹1,003,567
+[2026-07-03 09:38:03 IST] INFO | CYCLE #1 started at 2026-07-03T09:38:03.768797+05:30
+[2026-07-03 09:38:03 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 09:38:23 IST] INFO | Stage fetcher duration: 19787 ms
+[2026-07-03 09:40:05 IST] INFO | Stage indicator_engine duration: 101515 ms
+[2026-07-03 09:40:05 IST] INFO | Stage signal_engine duration: 281 ms
+[2026-07-03 09:40:05 IST] INFO | POSITION SIZE | SELL INFY | entry=1049.10 stop=1056.97 target=1033.36 risk/share=7.87 max_loss=10035.67 qty_from_risk=1275 max_capital=200713.36 max_qty_cap=191 final_qty=191 capital=200378.10
+[2026-07-03 09:40:05 IST] INFO | DRY RUN | Would open SELL INFY x191 at 1049.10
+[2026-07-03 09:40:05 IST] INFO | POSITION SIZE | SELL ADANIPORTS | entry=1882.00 stop=1896.12 target=1853.77 risk/share=14.12 max_loss=10035.67 qty_from_risk=710 max_capital=200713.36 max_qty_cap=106 final_qty=106 capital=199492.00
+[2026-07-03 09:40:05 IST] INFO | DRY RUN | Would open SELL ADANIPORTS x106 at 1882.00
+[2026-07-03 09:40:05 IST] INFO | POSITION SIZE | BUY AXISBANK | entry=1366.70 stop=1356.45 target=1387.20 risk/share=10.25 max_loss=10035.67 qty_from_risk=979 max_capital=200713.36 max_qty_cap=146 final_qty=146 capital=199538.19
+[2026-07-03 09:40:05 IST] INFO | DRY RUN | Would open BUY AXISBANK x146 at 1366.70
+[2026-07-03 09:40:05 IST] INFO | POSITION SIZE | BUY SUNPHARMA | entry=1890.00 stop=1875.83 target=1918.35 risk/share=14.17 max_loss=10035.67 qty_from_risk=707 max_capital=200713.36 max_qty_cap=106 final_qty=106 capital=200340.00
+[2026-07-03 09:40:05 IST] INFO | DRY RUN | Would open BUY SUNPHARMA x106 at 1890.00
+[2026-07-03 09:40:05 IST] INFO | POSITION SIZE | BUY BAJFINANCE | entry=1030.60 stop=1022.87 target=1046.06 risk/share=7.73 max_loss=10035.67 qty_from_risk=1298 max_capital=200713.36 max_qty_cap=194 final_qty=194 capital=199936.40
+[2026-07-03 09:40:05 IST] INFO | DRY RUN | Would open BUY BAJFINANCE x194 at 1030.60
+[2026-07-03 09:40:05 IST] INFO | Stage trade_execution duration: 123 ms
+[2026-07-03 09:40:05 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-03 09:40:05 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-03 09:40:05 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 09:40:05 IST] INFO | CYCLE #1 | Duration: 121.7s | Scanned: 15 | Signals: 9 | Opened: 0 | Closed: 0 | Balance: ₹1,003,567
+[2026-07-03 09:40:05 IST] INFO | Scheduler started in DRY RUN mode
+[2026-07-03 09:41:57 IST] INFO | CYCLE #1 started at 2026-07-03T09:41:57.680506+05:30
+[2026-07-03 09:41:57 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 09:42:34 IST] INFO | Stage fetcher duration: 37128 ms
+[2026-07-03 09:44:53 IST] INFO | Stage indicator_engine duration: 138443 ms
+[2026-07-03 09:44:53 IST] INFO | Stage signal_engine duration: 238 ms
+[2026-07-03 09:44:53 IST] INFO | POSITION SIZE | SELL INFY | entry=1049.10 stop=1056.97 target=1033.36 risk/share=7.87 max_loss=10035.67 qty_from_risk=1275 max_capital=200713.36 max_qty_cap=191 final_qty=191 capital=200378.10
+[2026-07-03 09:44:53 IST] INFO | Opened INFY trade_id=11
+[2026-07-03 09:44:53 IST] INFO | POSITION SIZE | SELL ADANIPORTS | entry=1882.00 stop=1896.12 target=1853.77 risk/share=14.12 max_loss=8031.89 qty_from_risk=569 max_capital=160637.74 max_qty_cap=85 final_qty=85 capital=159970.00
+[2026-07-03 09:44:53 IST] INFO | Opened ADANIPORTS trade_id=12
+[2026-07-03 09:44:53 IST] INFO | POSITION SIZE | BUY AXISBANK | entry=1366.70 stop=1356.45 target=1387.20 risk/share=10.25 max_loss=6432.19 qty_from_risk=627 max_capital=128643.74 max_qty_cap=94 final_qty=94 capital=128469.80
+[2026-07-03 09:44:53 IST] INFO | Opened AXISBANK trade_id=13
+[2026-07-03 09:44:53 IST] INFO | POSITION SIZE | BUY SUNPHARMA | entry=1890.00 stop=1875.83 target=1918.35 risk/share=14.17 max_loss=5147.49 qty_from_risk=363 max_capital=102949.78 max_qty_cap=54 final_qty=54 capital=102060.00
+[2026-07-03 09:44:53 IST] INFO | Opened SUNPHARMA trade_id=14
+[2026-07-03 09:44:53 IST] INFO | POSITION SIZE | BUY BAJFINANCE | entry=1030.60 stop=1022.87 target=1046.06 risk/share=7.73 max_loss=4126.89 qty_from_risk=533 max_capital=82537.78 max_qty_cap=80 final_qty=80 capital=82448.00
+[2026-07-03 09:44:53 IST] INFO | Opened BAJFINANCE trade_id=15
+[2026-07-03 09:44:53 IST] INFO | Stage trade_execution duration: 377 ms
+[2026-07-03 09:44:53 IST] INFO | Stage trade_monitoring duration: 21 ms
+[2026-07-03 09:44:53 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 09:44:53 IST] INFO | CYCLE #1 | Duration: 176.2s | Scanned: 15 | Signals: 9 | Opened: 5 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 09:44:53 IST] INFO | Scheduler started
+[2026-07-03 09:45:00 IST] INFO | CYCLE #2 started at 2026-07-03T09:45:00.018825+05:30
+[2026-07-03 09:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 09:45:13 IST] INFO | Stage fetcher duration: 13578 ms
+[2026-07-03 09:46:48 IST] INFO | Stage indicator_engine duration: 94786 ms
+[2026-07-03 09:46:48 IST] INFO | Stage signal_engine duration: 206 ms
+[2026-07-03 09:46:48 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 09:46:48 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 09:46:48 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 09:46:48 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 09:46:48 IST] INFO | BAJFINANCE rejected: Duplicate position
+[2026-07-03 09:46:48 IST] INFO | Stage trade_execution duration: 87 ms
+[2026-07-03 09:46:48 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 09:46:48 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 09:46:48 IST] INFO | CYCLE #2 | Duration: 108.7s | Scanned: 15 | Signals: 9 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 09:50:00 IST] INFO | CYCLE #3 started at 2026-07-03T09:50:00.006262+05:30
+[2026-07-03 09:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 09:50:16 IST] INFO | Stage fetcher duration: 16704 ms
+[2026-07-03 09:51:53 IST] INFO | Stage indicator_engine duration: 96907 ms
+[2026-07-03 09:51:53 IST] INFO | Stage signal_engine duration: 217 ms
+[2026-07-03 09:51:53 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 09:51:53 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 09:51:53 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 09:51:53 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 09:51:53 IST] INFO | SBIN rejected: Max open trades reached
+[2026-07-03 09:51:53 IST] INFO | Stage trade_execution duration: 83 ms
+[2026-07-03 09:51:53 IST] INFO | Stage trade_monitoring duration: 20 ms
+[2026-07-03 09:51:53 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 09:51:53 IST] INFO | CYCLE #3 | Duration: 114.0s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 09:55:00 IST] INFO | CYCLE #4 started at 2026-07-03T09:55:00.015957+05:30
+[2026-07-03 09:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 09:55:36 IST] INFO | Stage fetcher duration: 36794 ms
+[2026-07-03 09:57:03 IST] INFO | Stage indicator_engine duration: 86240 ms
+[2026-07-03 09:57:03 IST] INFO | Stage signal_engine duration: 183 ms
+[2026-07-03 09:57:03 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 09:57:03 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 09:57:03 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 09:57:03 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 09:57:03 IST] INFO | SBIN rejected: Max open trades reached
+[2026-07-03 09:57:03 IST] INFO | Stage trade_execution duration: 86 ms
+[2026-07-03 09:57:03 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 09:57:03 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 09:57:03 IST] INFO | CYCLE #4 | Duration: 123.3s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:00:00 IST] INFO | CYCLE #5 started at 2026-07-03T10:00:00.007554+05:30
+[2026-07-03 10:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:00:14 IST] INFO | Stage fetcher duration: 14173 ms
+[2026-07-03 10:01:42 IST] INFO | Stage indicator_engine duration: 88051 ms
+[2026-07-03 10:01:42 IST] INFO | Stage signal_engine duration: 217 ms
+[2026-07-03 10:01:42 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:01:42 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 10:01:42 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 10:01:42 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 10:01:42 IST] INFO | SBIN rejected: Max open trades reached
+[2026-07-03 10:01:42 IST] INFO | Stage trade_execution duration: 84 ms
+[2026-07-03 10:01:42 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 10:01:42 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:01:42 IST] INFO | CYCLE #5 | Duration: 102.6s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:05:00 IST] INFO | CYCLE #6 started at 2026-07-03T10:05:00.001653+05:30
+[2026-07-03 10:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:05:13 IST] INFO | Stage fetcher duration: 13277 ms
+[2026-07-03 10:06:41 IST] INFO | Stage indicator_engine duration: 88047 ms
+[2026-07-03 10:06:41 IST] INFO | Stage signal_engine duration: 198 ms
+[2026-07-03 10:06:41 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:06:41 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:06:41 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 10:06:41 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:06:41 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 10:06:41 IST] INFO | Stage trade_execution duration: 84 ms
+[2026-07-03 10:06:41 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 10:06:41 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:06:41 IST] INFO | CYCLE #6 | Duration: 101.6s | Scanned: 15 | Signals: 8 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:10:00 IST] INFO | CYCLE #7 started at 2026-07-03T10:10:00.011510+05:30
+[2026-07-03 10:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:10:34 IST] INFO | Stage fetcher duration: 34703 ms
+[2026-07-03 10:11:59 IST] INFO | Stage indicator_engine duration: 85031 ms
+[2026-07-03 10:11:59 IST] INFO | Stage signal_engine duration: 186 ms
+[2026-07-03 10:11:59 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:11:59 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:11:59 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 10:12:00 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:12:00 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 10:12:00 IST] INFO | Stage trade_execution duration: 82 ms
+[2026-07-03 10:12:00 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 10:12:00 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:12:00 IST] INFO | CYCLE #7 | Duration: 120.0s | Scanned: 15 | Signals: 8 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:15:00 IST] INFO | CYCLE #8 started at 2026-07-03T10:15:00.010177+05:30
+[2026-07-03 10:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:15:15 IST] INFO | Stage fetcher duration: 15906 ms
+[2026-07-03 10:16:40 IST] INFO | Stage indicator_engine duration: 85065 ms
+[2026-07-03 10:16:41 IST] INFO | Stage signal_engine duration: 185 ms
+[2026-07-03 10:16:41 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:16:41 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:16:41 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 10:16:41 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:16:41 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 10:16:41 IST] INFO | Stage trade_execution duration: 84 ms
+[2026-07-03 10:16:41 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 10:16:41 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:16:41 IST] INFO | CYCLE #8 | Duration: 101.3s | Scanned: 15 | Signals: 8 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:20:00 IST] INFO | CYCLE #9 started at 2026-07-03T10:20:00.014817+05:30
+[2026-07-03 10:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:20:09 IST] INFO | Stage fetcher duration: 9044 ms
+[2026-07-03 10:21:37 IST] INFO | Stage indicator_engine duration: 88496 ms
+[2026-07-03 10:21:37 IST] INFO | Stage signal_engine duration: 201 ms
+[2026-07-03 10:21:37 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:21:37 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:21:37 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 10:21:37 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 10:21:37 IST] INFO | Stage trade_execution duration: 66 ms
+[2026-07-03 10:21:37 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 10:21:37 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:21:37 IST] INFO | CYCLE #9 | Duration: 97.8s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:25:00 IST] INFO | CYCLE #10 started at 2026-07-03T10:25:00.011666+05:30
+[2026-07-03 10:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:25:31 IST] INFO | Stage fetcher duration: 31595 ms
+[2026-07-03 10:26:57 IST] INFO | Stage indicator_engine duration: 85731 ms
+[2026-07-03 10:26:57 IST] INFO | Stage signal_engine duration: 188 ms
+[2026-07-03 10:26:57 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:26:57 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:26:57 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 10:26:57 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 10:26:57 IST] INFO | Stage trade_execution duration: 60 ms
+[2026-07-03 10:26:57 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 10:26:57 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:26:57 IST] INFO | CYCLE #10 | Duration: 117.6s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:30:00 IST] INFO | CYCLE #11 started at 2026-07-03T10:30:00.008401+05:30
+[2026-07-03 10:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:30:17 IST] INFO | Stage fetcher duration: 17373 ms
+[2026-07-03 10:31:46 IST] INFO | Stage indicator_engine duration: 88980 ms
+[2026-07-03 10:31:46 IST] INFO | Stage signal_engine duration: 197 ms
+[2026-07-03 10:31:46 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:31:46 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 10:31:46 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 10:31:46 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 10:31:46 IST] INFO | Stage trade_execution duration: 66 ms
+[2026-07-03 10:31:46 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 10:31:46 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:31:46 IST] INFO | CYCLE #11 | Duration: 106.7s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:35:00 IST] INFO | CYCLE #12 started at 2026-07-03T10:35:00.002317+05:30
+[2026-07-03 10:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:35:16 IST] INFO | Stage fetcher duration: 16983 ms
+[2026-07-03 10:36:42 IST] INFO | Stage indicator_engine duration: 85568 ms
+[2026-07-03 10:36:42 IST] INFO | Stage signal_engine duration: 189 ms
+[2026-07-03 10:36:42 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 10:36:42 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:36:42 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:36:42 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 10:36:42 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 10:36:42 IST] INFO | Stage trade_execution duration: 80 ms
+[2026-07-03 10:36:42 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 10:36:42 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:36:42 IST] INFO | CYCLE #12 | Duration: 102.9s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:40:00 IST] INFO | CYCLE #13 started at 2026-07-03T10:40:00.002522+05:30
+[2026-07-03 10:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:40:40 IST] INFO | Stage fetcher duration: 40422 ms
+[2026-07-03 10:42:02 IST] INFO | Stage indicator_engine duration: 81752 ms
+[2026-07-03 10:42:02 IST] INFO | Stage signal_engine duration: 179 ms
+[2026-07-03 10:42:02 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 10:42:02 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:42:02 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:42:02 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 10:42:02 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 10:42:02 IST] INFO | Stage trade_execution duration: 81 ms
+[2026-07-03 10:42:02 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 10:42:02 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:42:02 IST] INFO | CYCLE #13 | Duration: 122.5s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:45:00 IST] INFO | CYCLE #14 started at 2026-07-03T10:45:00.010654+05:30
+[2026-07-03 10:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:45:10 IST] INFO | Stage fetcher duration: 10841 ms
+[2026-07-03 10:46:33 IST] INFO | Stage indicator_engine duration: 82416 ms
+[2026-07-03 10:46:33 IST] INFO | Stage signal_engine duration: 178 ms
+[2026-07-03 10:46:33 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 10:46:33 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:46:33 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 10:46:33 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 10:46:33 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 10:46:33 IST] INFO | Stage trade_execution duration: 78 ms
+[2026-07-03 10:46:33 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 10:46:33 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:46:33 IST] INFO | CYCLE #14 | Duration: 93.5s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹330,241
+[2026-07-03 10:50:00 IST] INFO | CYCLE #15 started at 2026-07-03T10:50:00.006126+05:30
+[2026-07-03 10:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:50:14 IST] INFO | Stage fetcher duration: 14503 ms
+[2026-07-03 10:51:39 IST] INFO | Stage indicator_engine duration: 85255 ms
+[2026-07-03 10:51:39 IST] INFO | Stage signal_engine duration: 196 ms
+[2026-07-03 10:51:39 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 10:51:39 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 10:51:40 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:51:40 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 10:51:40 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 10:51:40 IST] INFO | Stage trade_execution duration: 75 ms
+[2026-07-03 10:51:40 IST] INFO | Stage trade_monitoring duration: 34 ms
+[2026-07-03 10:51:40 IST] INFO | Stage performance_stats duration: 17 ms
+[2026-07-03 10:51:40 IST] INFO | CYCLE #15 | Duration: 100.1s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 1 | Balance: ₹1,005,098
+[2026-07-03 10:55:00 IST] INFO | CYCLE #16 started at 2026-07-03T10:55:00.007243+05:30
+[2026-07-03 10:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 10:55:33 IST] INFO | Stage fetcher duration: 33017 ms
+[2026-07-03 10:56:55 IST] INFO | Stage indicator_engine duration: 82944 ms
+[2026-07-03 10:56:56 IST] INFO | Stage signal_engine duration: 185 ms
+[2026-07-03 10:56:56 IST] INFO | POSITION SIZE | BUY SUNPHARMA | entry=1916.00 stop=1901.63 target=1944.74 risk/share=14.37 max_loss=10050.98 qty_from_risk=699 max_capital=201019.54 max_qty_cap=104 final_qty=104 capital=199264.00
+[2026-07-03 10:56:56 IST] INFO | Opened SUNPHARMA trade_id=16
+[2026-07-03 10:56:56 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 10:56:56 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 10:56:56 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 10:56:56 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 10:56:56 IST] INFO | Stage trade_execution duration: 122 ms
+[2026-07-03 10:56:56 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 10:56:56 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 10:56:56 IST] INFO | CYCLE #16 | Duration: 116.3s | Scanned: 15 | Signals: 6 | Opened: 1 | Closed: 0 | Balance: ₹805,834
+[2026-07-03 11:00:00 IST] INFO | CYCLE #17 started at 2026-07-03T11:00:00.004117+05:30
+[2026-07-03 11:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:00:16 IST] INFO | Stage fetcher duration: 16977 ms
+[2026-07-03 11:01:39 IST] INFO | Stage indicator_engine duration: 82761 ms
+[2026-07-03 11:01:39 IST] INFO | Stage signal_engine duration: 177 ms
+[2026-07-03 11:01:39 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 11:01:39 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:01:39 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 11:01:39 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 11:01:40 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 11:01:40 IST] INFO | Stage trade_execution duration: 72 ms
+[2026-07-03 11:01:40 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 11:01:40 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:01:40 IST] INFO | CYCLE #17 | Duration: 100.0s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 0 | Balance: ₹805,834
+[2026-07-03 11:05:00 IST] INFO | CYCLE #18 started at 2026-07-03T11:05:00.008819+05:30
+[2026-07-03 11:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:05:17 IST] INFO | Stage fetcher duration: 17711 ms
+[2026-07-03 11:06:43 IST] INFO | Stage indicator_engine duration: 85358 ms
+[2026-07-03 11:06:43 IST] INFO | Stage signal_engine duration: 194 ms
+[2026-07-03 11:06:43 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:06:43 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 11:06:43 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:06:43 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 11:06:43 IST] INFO | Stage trade_execution duration: 59 ms
+[2026-07-03 11:06:43 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 11:06:43 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:06:43 IST] INFO | CYCLE #18 | Duration: 103.4s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹805,834
+[2026-07-03 11:10:00 IST] INFO | CYCLE #19 started at 2026-07-03T11:10:00.011634+05:30
+[2026-07-03 11:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:10:35 IST] INFO | Stage fetcher duration: 35337 ms
+[2026-07-03 11:11:57 IST] INFO | Stage indicator_engine duration: 82490 ms
+[2026-07-03 11:11:58 IST] INFO | Stage signal_engine duration: 173 ms
+[2026-07-03 11:11:58 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:11:58 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 11:11:58 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:11:58 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 11:11:58 IST] INFO | Stage trade_execution duration: 58 ms
+[2026-07-03 11:11:58 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 11:11:58 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:11:58 IST] INFO | CYCLE #19 | Duration: 118.1s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹805,834
+[2026-07-03 11:15:00 IST] INFO | CYCLE #20 started at 2026-07-03T11:15:00.006489+05:30
+[2026-07-03 11:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:15:13 IST] INFO | Stage fetcher duration: 13144 ms
+[2026-07-03 11:16:37 IST] INFO | Stage indicator_engine duration: 84493 ms
+[2026-07-03 11:16:37 IST] INFO | Stage signal_engine duration: 185 ms
+[2026-07-03 11:16:37 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:16:37 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 11:16:37 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:16:37 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 11:16:37 IST] INFO | Stage trade_execution duration: 56 ms
+[2026-07-03 11:16:37 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 11:16:37 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:16:37 IST] INFO | CYCLE #20 | Duration: 97.9s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹805,834
+[2026-07-03 11:20:00 IST] INFO | CYCLE #21 started at 2026-07-03T11:20:00.012824+05:30
+[2026-07-03 11:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:20:14 IST] INFO | Stage fetcher duration: 14335 ms
+[2026-07-03 11:21:49 IST] INFO | Stage indicator_engine duration: 95341 ms
+[2026-07-03 11:21:49 IST] INFO | Stage signal_engine duration: 193 ms
+[2026-07-03 11:21:49 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 11:21:49 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:21:49 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 11:21:49 IST] INFO | TMCV rejected: Max open trades reached
+[2026-07-03 11:21:49 IST] INFO | Stage trade_execution duration: 60 ms
+[2026-07-03 11:21:49 IST] INFO | Stage trade_monitoring duration: 39 ms
+[2026-07-03 11:21:50 IST] INFO | Stage performance_stats duration: 19 ms
+[2026-07-03 11:21:50 IST] INFO | CYCLE #21 | Duration: 110.0s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 1 | Balance: ₹1,004,134
+[2026-07-03 11:25:00 IST] INFO | CYCLE #22 started at 2026-07-03T11:25:00.006982+05:30
+[2026-07-03 11:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:25:33 IST] INFO | Stage fetcher duration: 33201 ms
+[2026-07-03 11:27:12 IST] INFO | Stage indicator_engine duration: 99661 ms
+[2026-07-03 11:27:13 IST] INFO | Stage signal_engine duration: 218 ms
+[2026-07-03 11:27:13 IST] INFO | POSITION SIZE | SELL AXISBANK | entry=1354.10 stop=1364.26 target=1333.79 risk/share=10.16 max_loss=10041.34 qty_from_risk=988 max_capital=200826.83 max_qty_cap=148 final_qty=148 capital=200406.80
+[2026-07-03 11:27:13 IST] INFO | Opened AXISBANK trade_id=17
+[2026-07-03 11:27:13 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:27:13 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 11:27:13 IST] INFO | TMCV rejected: Max open trades reached
+[2026-07-03 11:27:13 IST] INFO | Stage trade_execution duration: 105 ms
+[2026-07-03 11:27:13 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 11:27:13 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:27:13 IST] INFO | CYCLE #22 | Duration: 133.2s | Scanned: 15 | Signals: 4 | Opened: 1 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 11:30:00 IST] INFO | CYCLE #23 started at 2026-07-03T11:30:00.007421+05:30
+[2026-07-03 11:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:30:13 IST] INFO | Stage fetcher duration: 13982 ms
+[2026-07-03 11:31:44 IST] INFO | Stage indicator_engine duration: 90883 ms
+[2026-07-03 11:31:45 IST] INFO | Stage signal_engine duration: 198 ms
+[2026-07-03 11:31:45 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 11:31:45 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:31:45 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 11:31:45 IST] INFO | TMCV rejected: Max open trades reached
+[2026-07-03 11:31:45 IST] INFO | Stage trade_execution duration: 59 ms
+[2026-07-03 11:31:45 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 11:31:45 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:31:45 IST] INFO | CYCLE #23 | Duration: 105.2s | Scanned: 15 | Signals: 4 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 11:35:00 IST] INFO | CYCLE #24 started at 2026-07-03T11:35:00.002323+05:30
+[2026-07-03 11:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:35:17 IST] INFO | Stage fetcher duration: 17799 ms
+[2026-07-03 11:36:48 IST] INFO | Stage indicator_engine duration: 90769 ms
+[2026-07-03 11:36:48 IST] INFO | Stage signal_engine duration: 200 ms
+[2026-07-03 11:36:48 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 11:36:48 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 11:36:48 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 11:36:48 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:36:48 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:36:48 IST] INFO | Stage trade_execution duration: 79 ms
+[2026-07-03 11:36:48 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 11:36:48 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:36:48 IST] INFO | CYCLE #24 | Duration: 108.9s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 11:40:00 IST] INFO | CYCLE #25 started at 2026-07-03T11:40:00.006094+05:30
+[2026-07-03 11:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:40:42 IST] INFO | Stage fetcher duration: 42882 ms
+[2026-07-03 11:42:09 IST] INFO | Stage indicator_engine duration: 86289 ms
+[2026-07-03 11:42:09 IST] INFO | Stage signal_engine duration: 187 ms
+[2026-07-03 11:42:09 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 11:42:09 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 11:42:09 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 11:42:09 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:42:09 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:42:09 IST] INFO | Stage trade_execution duration: 82 ms
+[2026-07-03 11:42:09 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 11:42:09 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:42:09 IST] INFO | CYCLE #25 | Duration: 129.5s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 11:45:00 IST] INFO | CYCLE #26 started at 2026-07-03T11:45:00.023413+05:30
+[2026-07-03 11:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:45:17 IST] INFO | Stage fetcher duration: 17094 ms
+[2026-07-03 11:47:05 IST] INFO | Stage indicator_engine duration: 108726 ms
+[2026-07-03 11:47:06 IST] INFO | Stage signal_engine duration: 252 ms
+[2026-07-03 11:47:06 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 11:47:06 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 11:47:06 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 11:47:06 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:47:06 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:47:06 IST] INFO | Stage trade_execution duration: 88 ms
+[2026-07-03 11:47:06 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 11:47:06 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:47:06 IST] INFO | CYCLE #26 | Duration: 126.2s | Scanned: 15 | Signals: 7 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 11:50:00 IST] INFO | CYCLE #27 started at 2026-07-03T11:50:00.016483+05:30
+[2026-07-03 11:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:50:18 IST] INFO | Stage fetcher duration: 18778 ms
+[2026-07-03 11:52:08 IST] INFO | Stage indicator_engine duration: 110167 ms
+[2026-07-03 11:52:09 IST] INFO | Stage signal_engine duration: 223 ms
+[2026-07-03 11:52:09 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 11:52:09 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:52:09 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 11:52:09 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:52:09 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 11:52:09 IST] INFO | Stage trade_execution duration: 83 ms
+[2026-07-03 11:52:09 IST] INFO | Stage trade_monitoring duration: 20 ms
+[2026-07-03 11:52:09 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:52:09 IST] INFO | CYCLE #27 | Duration: 129.3s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 11:55:00 IST] INFO | CYCLE #28 started at 2026-07-03T11:55:00.016057+05:30
+[2026-07-03 11:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 11:55:36 IST] INFO | Stage fetcher duration: 36125 ms
+[2026-07-03 11:57:25 IST] INFO | Stage indicator_engine duration: 108862 ms
+[2026-07-03 11:57:25 IST] INFO | Stage signal_engine duration: 422 ms
+[2026-07-03 11:57:25 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 11:57:25 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 11:57:25 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 11:57:25 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 11:57:25 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 11:57:25 IST] INFO | Stage trade_execution duration: 112 ms
+[2026-07-03 11:57:25 IST] INFO | Stage trade_monitoring duration: 27 ms
+[2026-07-03 11:57:25 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 11:57:25 IST] INFO | CYCLE #28 | Duration: 145.6s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:00:00 IST] INFO | CYCLE #29 started at 2026-07-03T12:00:00.009904+05:30
+[2026-07-03 12:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:00:14 IST] INFO | Stage fetcher duration: 14231 ms
+[2026-07-03 12:02:03 IST] INFO | Stage indicator_engine duration: 108950 ms
+[2026-07-03 12:02:03 IST] INFO | Stage signal_engine duration: 161 ms
+[2026-07-03 12:02:03 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:02:03 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 12:02:03 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 12:02:03 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 12:02:03 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 12:02:03 IST] INFO | Stage trade_execution duration: 62 ms
+[2026-07-03 12:02:03 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-03 12:02:03 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:02:03 IST] INFO | CYCLE #29 | Duration: 123.4s | Scanned: 15 | Signals: 6 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:05:00 IST] INFO | CYCLE #30 started at 2026-07-03T12:05:00.016155+05:30
+[2026-07-03 12:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:05:14 IST] INFO | Stage fetcher duration: 14712 ms
+[2026-07-03 12:07:05 IST] INFO | Stage indicator_engine duration: 110915 ms
+[2026-07-03 12:07:05 IST] INFO | Stage signal_engine duration: 248 ms
+[2026-07-03 12:07:05 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:07:05 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:07:05 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 12:07:05 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 12:07:06 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 12:07:06 IST] INFO | Stage trade_execution duration: 91 ms
+[2026-07-03 12:07:06 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 12:07:06 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:07:06 IST] INFO | CYCLE #30 | Duration: 126.0s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:10:00 IST] INFO | CYCLE #31 started at 2026-07-03T12:10:00.006341+05:30
+[2026-07-03 12:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:10:43 IST] INFO | Stage fetcher duration: 43736 ms
+[2026-07-03 12:12:33 IST] INFO | Stage indicator_engine duration: 109393 ms
+[2026-07-03 12:12:33 IST] INFO | Stage signal_engine duration: 249 ms
+[2026-07-03 12:12:33 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:12:33 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:12:33 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 12:12:33 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 12:12:33 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 12:12:33 IST] INFO | Stage trade_execution duration: 95 ms
+[2026-07-03 12:12:33 IST] INFO | Stage trade_monitoring duration: 20 ms
+[2026-07-03 12:12:33 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:12:33 IST] INFO | CYCLE #31 | Duration: 153.5s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:15:00 IST] INFO | CYCLE #32 started at 2026-07-03T12:15:00.005027+05:30
+[2026-07-03 12:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:15:14 IST] INFO | Stage fetcher duration: 14294 ms
+[2026-07-03 12:17:05 IST] INFO | Stage indicator_engine duration: 111497 ms
+[2026-07-03 12:17:06 IST] INFO | Stage signal_engine duration: 264 ms
+[2026-07-03 12:17:06 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:17:06 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:17:06 IST] INFO | INFY rejected: Duplicate position
+[2026-07-03 12:17:06 IST] INFO | INDIGO rejected: Max open trades reached
+[2026-07-03 12:17:06 IST] INFO | RELIANCE rejected: Max open trades reached
+[2026-07-03 12:17:06 IST] INFO | Stage trade_execution duration: 84 ms
+[2026-07-03 12:17:06 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 12:17:06 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:17:06 IST] INFO | CYCLE #32 | Duration: 126.2s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:20:00 IST] INFO | CYCLE #33 started at 2026-07-03T12:20:00.012366+05:30
+[2026-07-03 12:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:20:17 IST] INFO | Stage fetcher duration: 17710 ms
+[2026-07-03 12:22:02 IST] INFO | Stage indicator_engine duration: 105062 ms
+[2026-07-03 12:22:03 IST] INFO | Stage signal_engine duration: 240 ms
+[2026-07-03 12:22:03 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:22:03 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:22:03 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 12:22:03 IST] INFO | Stage trade_execution duration: 50 ms
+[2026-07-03 12:22:03 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 12:22:03 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:22:03 IST] INFO | CYCLE #33 | Duration: 123.1s | Scanned: 15 | Signals: 3 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:25:00 IST] INFO | CYCLE #34 started at 2026-07-03T12:25:00.004687+05:30
+[2026-07-03 12:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:25:37 IST] INFO | Stage fetcher duration: 37310 ms
+[2026-07-03 12:27:25 IST] INFO | Stage indicator_engine duration: 108337 ms
+[2026-07-03 12:27:25 IST] INFO | Stage signal_engine duration: 224 ms
+[2026-07-03 12:27:25 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:27:25 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:27:25 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 12:27:25 IST] INFO | Stage trade_execution duration: 48 ms
+[2026-07-03 12:27:25 IST] INFO | Stage trade_monitoring duration: 20 ms
+[2026-07-03 12:27:25 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:27:25 IST] INFO | CYCLE #34 | Duration: 146.0s | Scanned: 15 | Signals: 3 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:30:00 IST] INFO | CYCLE #35 started at 2026-07-03T12:30:00.011637+05:30
+[2026-07-03 12:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:30:14 IST] INFO | Stage fetcher duration: 14220 ms
+[2026-07-03 12:31:55 IST] INFO | Stage indicator_engine duration: 101740 ms
+[2026-07-03 12:31:56 IST] INFO | Stage signal_engine duration: 222 ms
+[2026-07-03 12:31:56 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:31:56 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:31:56 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 12:31:56 IST] INFO | Stage trade_execution duration: 47 ms
+[2026-07-03 12:31:56 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 12:31:56 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:31:56 IST] INFO | CYCLE #35 | Duration: 116.3s | Scanned: 15 | Signals: 3 | Opened: 0 | Closed: 0 | Balance: ₹803,727
+[2026-07-03 12:35:00 IST] INFO | CYCLE #36 started at 2026-07-03T12:35:00.007215+05:30
+[2026-07-03 12:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:35:16 IST] INFO | Stage fetcher duration: 16390 ms
+[2026-07-03 12:37:02 IST] INFO | Stage indicator_engine duration: 105716 ms
+[2026-07-03 12:37:02 IST] INFO | Stage signal_engine duration: 231 ms
+[2026-07-03 12:37:02 IST] INFO | HDFCBANK rejected: Max open trades reached
+[2026-07-03 12:37:02 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:37:02 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:37:02 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 12:37:02 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 12:37:02 IST] INFO | Stage trade_execution duration: 90 ms
+[2026-07-03 12:37:02 IST] INFO | Stage trade_monitoring duration: 43 ms
+[2026-07-03 12:37:02 IST] INFO | Stage performance_stats duration: 20 ms
+[2026-07-03 12:37:02 IST] INFO | CYCLE #36 | Duration: 122.5s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 1 | Balance: ₹1,002,631
+[2026-07-03 12:40:00 IST] INFO | CYCLE #37 started at 2026-07-03T12:40:00.023990+05:30
+[2026-07-03 12:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:40:31 IST] INFO | Stage fetcher duration: 31177 ms
+[2026-07-03 12:42:10 IST] INFO | Stage indicator_engine duration: 98932 ms
+[2026-07-03 12:42:10 IST] INFO | Stage signal_engine duration: 214 ms
+[2026-07-03 12:42:10 IST] INFO | POSITION SIZE | SELL HDFCBANK | entry=802.50 stop=808.52 target=790.46 risk/share=6.02 max_loss=10026.31 qty_from_risk=1665 max_capital=200526.26 max_qty_cap=249 final_qty=249 capital=199822.50
+[2026-07-03 12:42:10 IST] INFO | Opened HDFCBANK trade_id=18
+[2026-07-03 12:42:10 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:42:10 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:42:10 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 12:42:10 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 12:42:10 IST] INFO | Stage trade_execution duration: 147 ms
+[2026-07-03 12:42:10 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 12:42:10 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:42:10 IST] INFO | CYCLE #37 | Duration: 130.5s | Scanned: 15 | Signals: 5 | Opened: 1 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 12:45:00 IST] INFO | CYCLE #38 started at 2026-07-03T12:45:00.006229+05:30
+[2026-07-03 12:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:45:17 IST] INFO | Stage fetcher duration: 17923 ms
+[2026-07-03 12:46:55 IST] INFO | Stage indicator_engine duration: 97162 ms
+[2026-07-03 12:46:55 IST] INFO | Stage signal_engine duration: 215 ms
+[2026-07-03 12:46:55 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 12:46:55 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:46:55 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:46:55 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 12:46:55 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 12:46:55 IST] INFO | Stage trade_execution duration: 86 ms
+[2026-07-03 12:46:55 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 12:46:55 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:46:55 IST] INFO | CYCLE #38 | Duration: 115.4s | Scanned: 15 | Signals: 5 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 12:50:00 IST] INFO | CYCLE #39 started at 2026-07-03T12:50:00.016496+05:30
+[2026-07-03 12:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:50:18 IST] INFO | Stage fetcher duration: 18122 ms
+[2026-07-03 12:52:07 IST] INFO | Stage indicator_engine duration: 109419 ms
+[2026-07-03 12:52:07 IST] INFO | Stage signal_engine duration: 231 ms
+[2026-07-03 12:52:07 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:52:07 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:52:07 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 12:52:07 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 12:52:07 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 12:52:07 IST] INFO | Stage trade_execution duration: 84 ms
+[2026-07-03 12:52:07 IST] INFO | Stage trade_monitoring duration: 20 ms
+[2026-07-03 12:52:07 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:52:07 IST] INFO | CYCLE #39 | Duration: 127.9s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 12:55:00 IST] INFO | CYCLE #40 started at 2026-07-03T12:55:00.008877+05:30
+[2026-07-03 12:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 12:55:41 IST] INFO | Stage fetcher duration: 41455 ms
+[2026-07-03 12:57:19 IST] INFO | Stage indicator_engine duration: 98268 ms
+[2026-07-03 12:57:19 IST] INFO | Stage signal_engine duration: 226 ms
+[2026-07-03 12:57:19 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 12:57:20 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 12:57:20 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 12:57:20 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 12:57:20 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 12:57:20 IST] INFO | Stage trade_execution duration: 87 ms
+[2026-07-03 12:57:20 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 12:57:20 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 12:57:20 IST] INFO | CYCLE #40 | Duration: 140.1s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:00:00 IST] INFO | CYCLE #41 started at 2026-07-03T13:00:00.011226+05:30
+[2026-07-03 13:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:00:16 IST] INFO | Stage fetcher duration: 16720 ms
+[2026-07-03 13:02:01 IST] INFO | Stage indicator_engine duration: 104640 ms
+[2026-07-03 13:02:01 IST] INFO | Stage signal_engine duration: 236 ms
+[2026-07-03 13:02:01 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:02:01 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 13:02:01 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:02:01 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:02:01 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:02:01 IST] INFO | Stage trade_execution duration: 86 ms
+[2026-07-03 13:02:01 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 13:02:01 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:02:01 IST] INFO | CYCLE #41 | Duration: 121.7s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:05:00 IST] INFO | CYCLE #42 started at 2026-07-03T13:05:00.017439+05:30
+[2026-07-03 13:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:05:16 IST] INFO | Stage fetcher duration: 16778 ms
+[2026-07-03 13:07:05 IST] INFO | Stage indicator_engine duration: 108219 ms
+[2026-07-03 13:07:05 IST] INFO | Stage signal_engine duration: 226 ms
+[2026-07-03 13:07:05 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:07:05 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 13:07:05 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:07:05 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 13:07:05 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:07:05 IST] INFO | Stage trade_execution duration: 103 ms
+[2026-07-03 13:07:05 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 13:07:05 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:07:05 IST] INFO | CYCLE #42 | Duration: 125.4s | Scanned: 15 | Signals: 11 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:10:00 IST] INFO | CYCLE #43 started at 2026-07-03T13:10:00.003544+05:30
+[2026-07-03 13:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:10:44 IST] INFO | Stage fetcher duration: 44158 ms
+[2026-07-03 13:12:25 IST] INFO | Stage indicator_engine duration: 101016 ms
+[2026-07-03 13:12:25 IST] INFO | Stage signal_engine duration: 217 ms
+[2026-07-03 13:12:25 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:12:25 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 13:12:25 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:12:25 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 13:12:25 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:12:25 IST] INFO | Stage trade_execution duration: 92 ms
+[2026-07-03 13:12:25 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 13:12:25 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:12:25 IST] INFO | CYCLE #43 | Duration: 145.5s | Scanned: 15 | Signals: 11 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:15:00 IST] INFO | CYCLE #44 started at 2026-07-03T13:15:00.007837+05:30
+[2026-07-03 13:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:15:20 IST] INFO | Stage fetcher duration: 20751 ms
+[2026-07-03 13:16:58 IST] INFO | Stage indicator_engine duration: 97504 ms
+[2026-07-03 13:16:58 IST] INFO | Stage signal_engine duration: 242 ms
+[2026-07-03 13:16:58 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:16:58 IST] INFO | WIPRO rejected: Max open trades reached
+[2026-07-03 13:16:58 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:16:58 IST] INFO | SUNPHARMA rejected: Duplicate position
+[2026-07-03 13:16:58 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:16:58 IST] INFO | Stage trade_execution duration: 83 ms
+[2026-07-03 13:16:58 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 13:16:58 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:16:58 IST] INFO | CYCLE #44 | Duration: 118.6s | Scanned: 15 | Signals: 11 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:20:00 IST] INFO | CYCLE #45 started at 2026-07-03T13:20:00.015385+05:30
+[2026-07-03 13:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:20:17 IST] INFO | Stage fetcher duration: 17448 ms
+[2026-07-03 13:21:59 IST] INFO | Stage indicator_engine duration: 102137 ms
+[2026-07-03 13:21:59 IST] INFO | Stage signal_engine duration: 226 ms
+[2026-07-03 13:21:59 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:21:59 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:21:59 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 13:21:59 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:21:59 IST] INFO | BAJFINANCE rejected: Duplicate position
+[2026-07-03 13:21:59 IST] INFO | Stage trade_execution duration: 86 ms
+[2026-07-03 13:21:59 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 13:21:59 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:21:59 IST] INFO | CYCLE #45 | Duration: 119.9s | Scanned: 15 | Signals: 11 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:25:00 IST] INFO | CYCLE #46 started at 2026-07-03T13:25:00.003326+05:30
+[2026-07-03 13:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:25:39 IST] INFO | Stage fetcher duration: 39794 ms
+[2026-07-03 13:27:20 IST] INFO | Stage indicator_engine duration: 100435 ms
+[2026-07-03 13:27:20 IST] INFO | Stage signal_engine duration: 236 ms
+[2026-07-03 13:27:20 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:27:20 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:27:20 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 13:27:20 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:27:20 IST] INFO | BAJFINANCE rejected: Duplicate position
+[2026-07-03 13:27:20 IST] INFO | Stage trade_execution duration: 90 ms
+[2026-07-03 13:27:20 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 13:27:20 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:27:20 IST] INFO | CYCLE #46 | Duration: 140.6s | Scanned: 15 | Signals: 11 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:30:00 IST] INFO | CYCLE #47 started at 2026-07-03T13:30:00.035840+05:30
+[2026-07-03 13:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:30:15 IST] INFO | Stage fetcher duration: 15384 ms
+[2026-07-03 13:32:05 IST] INFO | Stage indicator_engine duration: 109723 ms
+[2026-07-03 13:32:05 IST] INFO | Stage signal_engine duration: 230 ms
+[2026-07-03 13:32:05 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:32:05 IST] INFO | ICICIBANK rejected: Max open trades reached
+[2026-07-03 13:32:05 IST] INFO | MARUTI rejected: Max open trades reached
+[2026-07-03 13:32:05 IST] INFO | TCS rejected: Max open trades reached
+[2026-07-03 13:32:05 IST] INFO | BAJFINANCE rejected: Duplicate position
+[2026-07-03 13:32:05 IST] INFO | Stage trade_execution duration: 85 ms
+[2026-07-03 13:32:05 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 13:32:05 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:32:05 IST] INFO | CYCLE #47 | Duration: 125.5s | Scanned: 15 | Signals: 11 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:35:00 IST] INFO | CYCLE #48 started at 2026-07-03T13:35:00.009086+05:30
+[2026-07-03 13:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:35:14 IST] INFO | Stage fetcher duration: 14848 ms
+[2026-07-03 13:36:55 IST] INFO | Stage indicator_engine duration: 100420 ms
+[2026-07-03 13:36:55 IST] INFO | Stage signal_engine duration: 224 ms
+[2026-07-03 13:36:55 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 13:36:55 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:36:55 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 13:36:55 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:36:55 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 13:36:55 IST] INFO | Stage trade_execution duration: 81 ms
+[2026-07-03 13:36:55 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 13:36:55 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:36:55 IST] INFO | CYCLE #48 | Duration: 115.6s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:40:00 IST] INFO | CYCLE #49 started at 2026-07-03T13:40:00.006302+05:30
+[2026-07-03 13:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:40:36 IST] INFO | Stage fetcher duration: 36900 ms
+[2026-07-03 13:42:10 IST] INFO | Stage indicator_engine duration: 93892 ms
+[2026-07-03 13:42:11 IST] INFO | Stage signal_engine duration: 222 ms
+[2026-07-03 13:42:11 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 13:42:11 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:42:11 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 13:42:11 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:42:11 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 13:42:11 IST] INFO | Stage trade_execution duration: 82 ms
+[2026-07-03 13:42:11 IST] INFO | Stage trade_monitoring duration: 19 ms
+[2026-07-03 13:42:11 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:42:11 IST] INFO | CYCLE #49 | Duration: 131.1s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:45:00 IST] INFO | CYCLE #50 started at 2026-07-03T13:45:00.005263+05:30
+[2026-07-03 13:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:45:13 IST] INFO | Stage fetcher duration: 13014 ms
+[2026-07-03 13:46:38 IST] INFO | Stage indicator_engine duration: 85573 ms
+[2026-07-03 13:46:38 IST] INFO | Stage signal_engine duration: 190 ms
+[2026-07-03 13:46:38 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 13:46:38 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:46:38 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 13:46:38 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:46:38 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 13:46:38 IST] INFO | Stage trade_execution duration: 74 ms
+[2026-07-03 13:46:38 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 13:46:38 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:46:38 IST] INFO | CYCLE #50 | Duration: 98.9s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:50:00 IST] INFO | CYCLE #51 started at 2026-07-03T13:50:00.003734+05:30
+[2026-07-03 13:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:50:00 IST] INFO | Stage fetcher duration: 340 ms
+[2026-07-03 13:51:26 IST] INFO | Stage indicator_engine duration: 86600 ms
+[2026-07-03 13:51:27 IST] INFO | Stage signal_engine duration: 215 ms
+[2026-07-03 13:51:27 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 13:51:27 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:51:27 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 13:51:27 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:51:27 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 13:51:27 IST] INFO | Stage trade_execution duration: 75 ms
+[2026-07-03 13:51:27 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 13:51:27 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:51:27 IST] INFO | CYCLE #51 | Duration: 87.3s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 13:55:00 IST] INFO | CYCLE #52 started at 2026-07-03T13:55:00.003976+05:30
+[2026-07-03 13:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 13:55:00 IST] INFO | Stage fetcher duration: 322 ms
+[2026-07-03 13:56:26 IST] INFO | Stage indicator_engine duration: 85857 ms
+[2026-07-03 13:56:26 IST] INFO | Stage signal_engine duration: 188 ms
+[2026-07-03 13:56:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 13:56:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 13:56:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 13:56:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 13:56:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 13:56:26 IST] INFO | Stage trade_execution duration: 75 ms
+[2026-07-03 13:56:26 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-03 13:56:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 13:56:26 IST] INFO | CYCLE #52 | Duration: 86.5s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:00:00 IST] INFO | CYCLE #53 started at 2026-07-03T14:00:00.017163+05:30
+[2026-07-03 14:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:00:00 IST] INFO | Stage fetcher duration: 327 ms
+[2026-07-03 14:01:26 IST] INFO | Stage indicator_engine duration: 86518 ms
+[2026-07-03 14:01:27 IST] INFO | Stage signal_engine duration: 184 ms
+[2026-07-03 14:01:27 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:01:27 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:01:27 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:01:27 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:01:27 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:01:27 IST] INFO | Stage trade_execution duration: 75 ms
+[2026-07-03 14:01:27 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-03 14:01:27 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:01:27 IST] INFO | CYCLE #53 | Duration: 87.1s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:05:00 IST] INFO | CYCLE #54 started at 2026-07-03T14:05:00.003826+05:30
+[2026-07-03 14:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:05:00 IST] INFO | Stage fetcher duration: 323 ms
+[2026-07-03 14:06:26 IST] INFO | Stage indicator_engine duration: 86159 ms
+[2026-07-03 14:06:26 IST] INFO | Stage signal_engine duration: 187 ms
+[2026-07-03 14:06:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:06:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:06:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:06:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:06:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:06:26 IST] INFO | Stage trade_execution duration: 77 ms
+[2026-07-03 14:06:26 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 14:06:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:06:26 IST] INFO | CYCLE #54 | Duration: 86.8s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:10:00 IST] INFO | CYCLE #55 started at 2026-07-03T14:10:00.012255+05:30
+[2026-07-03 14:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:10:00 IST] INFO | Stage fetcher duration: 325 ms
+[2026-07-03 14:11:27 IST] INFO | Stage indicator_engine duration: 86728 ms
+[2026-07-03 14:11:27 IST] INFO | Stage signal_engine duration: 192 ms
+[2026-07-03 14:11:27 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:11:27 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:11:27 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:11:27 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:11:27 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:11:27 IST] INFO | Stage trade_execution duration: 83 ms
+[2026-07-03 14:11:27 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 14:11:27 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:11:27 IST] INFO | CYCLE #55 | Duration: 87.4s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:15:00 IST] INFO | CYCLE #56 started at 2026-07-03T14:15:00.003785+05:30
+[2026-07-03 14:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:15:00 IST] INFO | Stage fetcher duration: 324 ms
+[2026-07-03 14:16:26 IST] INFO | Stage indicator_engine duration: 85944 ms
+[2026-07-03 14:16:26 IST] INFO | Stage signal_engine duration: 188 ms
+[2026-07-03 14:16:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:16:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:16:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:16:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:16:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:16:26 IST] INFO | Stage trade_execution duration: 75 ms
+[2026-07-03 14:16:26 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 14:16:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:16:26 IST] INFO | CYCLE #56 | Duration: 86.6s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:20:00 IST] INFO | CYCLE #57 started at 2026-07-03T14:20:00.004064+05:30
+[2026-07-03 14:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:20:00 IST] INFO | Stage fetcher duration: 309 ms
+[2026-07-03 14:21:26 IST] INFO | Stage indicator_engine duration: 86050 ms
+[2026-07-03 14:21:26 IST] INFO | Stage signal_engine duration: 182 ms
+[2026-07-03 14:21:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:21:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:21:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:21:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:21:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:21:26 IST] INFO | Stage trade_execution duration: 73 ms
+[2026-07-03 14:21:26 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-03 14:21:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:21:26 IST] INFO | CYCLE #57 | Duration: 86.6s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:25:00 IST] INFO | CYCLE #58 started at 2026-07-03T14:25:00.005717+05:30
+[2026-07-03 14:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:25:00 IST] INFO | Stage fetcher duration: 314 ms
+[2026-07-03 14:26:26 IST] INFO | Stage indicator_engine duration: 86267 ms
+[2026-07-03 14:26:26 IST] INFO | Stage signal_engine duration: 184 ms
+[2026-07-03 14:26:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:26:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:26:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:26:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:26:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:26:26 IST] INFO | Stage trade_execution duration: 77 ms
+[2026-07-03 14:26:26 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 14:26:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:26:26 IST] INFO | CYCLE #58 | Duration: 86.9s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:30:00 IST] INFO | CYCLE #59 started at 2026-07-03T14:30:00.005113+05:30
+[2026-07-03 14:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:30:00 IST] INFO | Stage fetcher duration: 323 ms
+[2026-07-03 14:31:28 IST] INFO | Stage indicator_engine duration: 88076 ms
+[2026-07-03 14:31:28 IST] INFO | Stage signal_engine duration: 187 ms
+[2026-07-03 14:31:28 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:31:28 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:31:28 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:31:28 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:31:28 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:31:28 IST] INFO | Stage trade_execution duration: 77 ms
+[2026-07-03 14:31:28 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 14:31:28 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:31:28 IST] INFO | CYCLE #59 | Duration: 88.7s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:35:00 IST] INFO | CYCLE #60 started at 2026-07-03T14:35:00.009886+05:30
+[2026-07-03 14:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:35:00 IST] INFO | Stage fetcher duration: 313 ms
+[2026-07-03 14:36:28 IST] INFO | Stage indicator_engine duration: 87777 ms
+[2026-07-03 14:36:28 IST] INFO | Stage signal_engine duration: 192 ms
+[2026-07-03 14:36:28 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:36:28 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:36:28 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:36:28 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:36:28 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:36:28 IST] INFO | Stage trade_execution duration: 77 ms
+[2026-07-03 14:36:28 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 14:36:28 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:36:28 IST] INFO | CYCLE #60 | Duration: 88.4s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:40:00 IST] INFO | CYCLE #61 started at 2026-07-03T14:40:00.019907+05:30
+[2026-07-03 14:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:40:00 IST] INFO | Stage fetcher duration: 322 ms
+[2026-07-03 14:41:26 IST] INFO | Stage indicator_engine duration: 85729 ms
+[2026-07-03 14:41:26 IST] INFO | Stage signal_engine duration: 188 ms
+[2026-07-03 14:41:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:41:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:41:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:41:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:41:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:41:26 IST] INFO | Stage trade_execution duration: 69 ms
+[2026-07-03 14:41:26 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-03 14:41:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:41:26 IST] INFO | CYCLE #61 | Duration: 86.3s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:45:00 IST] INFO | CYCLE #62 started at 2026-07-03T14:45:00.003815+05:30
+[2026-07-03 14:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:45:00 IST] INFO | Stage fetcher duration: 309 ms
+[2026-07-03 14:46:26 IST] INFO | Stage indicator_engine duration: 85701 ms
+[2026-07-03 14:46:26 IST] INFO | Stage signal_engine duration: 189 ms
+[2026-07-03 14:46:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:46:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:46:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:46:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:46:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:46:26 IST] INFO | Stage trade_execution duration: 82 ms
+[2026-07-03 14:46:26 IST] INFO | Stage trade_monitoring duration: 18 ms
+[2026-07-03 14:46:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:46:26 IST] INFO | CYCLE #62 | Duration: 86.3s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:50:00 IST] INFO | CYCLE #63 started at 2026-07-03T14:50:00.019284+05:30
+[2026-07-03 14:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:50:00 IST] INFO | Stage fetcher duration: 313 ms
+[2026-07-03 14:51:26 IST] INFO | Stage indicator_engine duration: 85961 ms
+[2026-07-03 14:51:26 IST] INFO | Stage signal_engine duration: 184 ms
+[2026-07-03 14:51:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:51:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:51:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:51:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:51:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:51:26 IST] INFO | Stage trade_execution duration: 76 ms
+[2026-07-03 14:51:26 IST] INFO | Stage trade_monitoring duration: 17 ms
+[2026-07-03 14:51:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:51:26 IST] INFO | CYCLE #63 | Duration: 86.6s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 14:55:00 IST] INFO | CYCLE #64 started at 2026-07-03T14:55:00.003373+05:30
+[2026-07-03 14:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 14:55:00 IST] INFO | Stage fetcher duration: 314 ms
+[2026-07-03 14:56:25 IST] INFO | Stage indicator_engine duration: 85657 ms
+[2026-07-03 14:56:26 IST] INFO | Stage signal_engine duration: 186 ms
+[2026-07-03 14:56:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 14:56:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 14:56:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 14:56:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 14:56:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 14:56:26 IST] INFO | Stage trade_execution duration: 74 ms
+[2026-07-03 14:56:26 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-03 14:56:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 14:56:26 IST] INFO | CYCLE #64 | Duration: 86.3s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 15:00:00 IST] INFO | CYCLE #65 started at 2026-07-03T15:00:00.019240+05:30
+[2026-07-03 15:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:00:00 IST] INFO | Stage fetcher duration: 317 ms
+[2026-07-03 15:01:26 IST] INFO | Stage indicator_engine duration: 85811 ms
+[2026-07-03 15:01:26 IST] INFO | Stage signal_engine duration: 184 ms
+[2026-07-03 15:01:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 15:01:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 15:01:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 15:01:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 15:01:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 15:01:26 IST] INFO | Stage trade_execution duration: 72 ms
+[2026-07-03 15:01:26 IST] INFO | Stage trade_monitoring duration: 14 ms
+[2026-07-03 15:01:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 15:01:26 IST] INFO | CYCLE #65 | Duration: 86.4s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 15:05:00 IST] INFO | CYCLE #66 started at 2026-07-03T15:05:00.015912+05:30
+[2026-07-03 15:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:05:00 IST] INFO | Stage fetcher duration: 315 ms
+[2026-07-03 15:06:25 IST] INFO | Stage indicator_engine duration: 85245 ms
+[2026-07-03 15:06:25 IST] INFO | Stage signal_engine duration: 179 ms
+[2026-07-03 15:06:25 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 15:06:25 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 15:06:25 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 15:06:25 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 15:06:25 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 15:06:25 IST] INFO | Stage trade_execution duration: 72 ms
+[2026-07-03 15:06:25 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 15:06:25 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 15:06:25 IST] INFO | CYCLE #66 | Duration: 85.8s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 15:10:00 IST] INFO | CYCLE #67 started at 2026-07-03T15:10:00.003023+05:30
+[2026-07-03 15:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:10:00 IST] INFO | Stage fetcher duration: 326 ms
+[2026-07-03 15:11:26 IST] INFO | Stage indicator_engine duration: 85968 ms
+[2026-07-03 15:11:26 IST] INFO | Stage signal_engine duration: 186 ms
+[2026-07-03 15:11:26 IST] INFO | INFY rejected: Max open trades reached
+[2026-07-03 15:11:26 IST] INFO | ADANIPORTS rejected: Duplicate position
+[2026-07-03 15:11:26 IST] INFO | AXISBANK rejected: Duplicate position
+[2026-07-03 15:11:26 IST] INFO | HDFCBANK rejected: Duplicate position
+[2026-07-03 15:11:26 IST] INFO | HINDUNILVR rejected: Max open trades reached
+[2026-07-03 15:11:26 IST] INFO | Stage trade_execution duration: 82 ms
+[2026-07-03 15:11:26 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 15:11:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 15:11:26 IST] INFO | CYCLE #67 | Duration: 86.6s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹802,809
+[2026-07-03 15:15:00 IST] INFO | CYCLE #68 started at 2026-07-03T15:15:00.005034+05:30
+[2026-07-03 15:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:15:00 IST] INFO | Stage fetcher duration: 321 ms
+[2026-07-03 15:16:25 IST] INFO | Stage indicator_engine duration: 85572 ms
+[2026-07-03 15:16:26 IST] INFO | Stage signal_engine duration: 186 ms
+[2026-07-03 15:16:26 IST] INFO | INFY rejected: Market is closed
+[2026-07-03 15:16:26 IST] INFO | ADANIPORTS rejected: Market is closed
+[2026-07-03 15:16:26 IST] INFO | AXISBANK rejected: Market is closed
+[2026-07-03 15:16:26 IST] INFO | HDFCBANK rejected: Market is closed
+[2026-07-03 15:16:26 IST] INFO | HINDUNILVR rejected: Market is closed
+[2026-07-03 15:16:26 IST] INFO | Stage trade_execution duration: 73 ms
+[2026-07-03 15:16:26 IST] INFO | Stage trade_monitoring duration: 44 ms
+[2026-07-03 15:16:26 IST] INFO | Stage performance_stats duration: 16 ms
+[2026-07-03 15:16:26 IST] INFO | CYCLE #68 | Duration: 86.2s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 5 | Balance: ₹1,003,068
+[2026-07-03 15:20:00 IST] INFO | CYCLE #69 started at 2026-07-03T15:20:00.018685+05:30
+[2026-07-03 15:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:20:00 IST] INFO | Stage fetcher duration: 315 ms
+[2026-07-03 15:21:26 IST] INFO | Stage indicator_engine duration: 86196 ms
+[2026-07-03 15:21:26 IST] INFO | Stage signal_engine duration: 185 ms
+[2026-07-03 15:21:26 IST] INFO | INFY rejected: Market is closed
+[2026-07-03 15:21:26 IST] INFO | ADANIPORTS rejected: Market is closed
+[2026-07-03 15:21:26 IST] INFO | AXISBANK rejected: Market is closed
+[2026-07-03 15:21:26 IST] INFO | HDFCBANK rejected: Market is closed
+[2026-07-03 15:21:26 IST] INFO | HINDUNILVR rejected: Market is closed
+[2026-07-03 15:21:26 IST] INFO | Stage trade_execution duration: 73 ms
+[2026-07-03 15:21:26 IST] INFO | Stage trade_monitoring duration: 15 ms
+[2026-07-03 15:21:26 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-03 15:21:26 IST] INFO | CYCLE #69 | Duration: 86.8s | Scanned: 15 | Signals: 10 | Opened: 0 | Closed: 0 | Balance: ₹1,003,068
+[2026-07-03 15:25:00 IST] INFO | CYCLE #70 started at 2026-07-03T15:25:00.005106+05:30
+[2026-07-03 15:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:25:00 IST] INFO | Market closed, skipping
+[2026-07-03 15:25:00 IST] INFO | CYCLE #70 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹1,003,068
+[2026-07-03 15:30:00 IST] WARNING | Previous cycle still running; skipping this trigger
+[2026-07-03 15:30:00 IST] INFO | EOD CYCLE #71 started
+[2026-07-03 15:30:00 IST] INFO | Stage trade_monitoring duration: 2 ms
+[2026-07-03 15:30:00 IST] INFO | EOD CYCLE #71 | Duration: 0.0s | Closed: 0
+[2026-07-03 15:35:00 IST] INFO | CYCLE #72 started at 2026-07-03T15:35:00.004992+05:30
+[2026-07-03 15:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:35:00 IST] INFO | Market closed, skipping
+[2026-07-03 15:35:00 IST] INFO | CYCLE #72 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹1,003,068
+[2026-07-03 15:40:00 IST] INFO | CYCLE #73 started at 2026-07-03T15:40:00.011166+05:30
+[2026-07-03 15:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:40:00 IST] INFO | Market closed, skipping
+[2026-07-03 15:40:00 IST] INFO | CYCLE #73 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹1,003,068
+[2026-07-03 15:45:00 IST] INFO | CYCLE #74 started at 2026-07-03T15:45:00.003481+05:30
+[2026-07-03 15:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-03 15:45:00 IST] INFO | Market closed, skipping
+[2026-07-03 15:45:00 IST] INFO | CYCLE #74 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹1,003,068
