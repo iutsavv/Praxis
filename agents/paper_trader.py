@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS paper_trades (
     capital_required       REAL NOT NULL DEFAULT 0,
     exit_price             REAL,
     exit_time              TEXT,
-    exit_reason            TEXT,
+    exit_reason            TEXT CHECK(exit_reason IN ('TARGET_HIT', 'STOP_LOSS', 'EOD_EXIT', 'NO_CANDLE_DATA', 'REPLACED') OR exit_reason IS NULL),
     pnl                    REAL,
     pnl_pct                REAL,
     outcome                TEXT,
@@ -368,6 +368,150 @@ def open_trade(signal: dict[str, Any]) -> dict[str, Any]:
             )
         conn.commit()
         return {"success": True, "trade_id": trade_id}
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def get_open_trades_with_unrealized_pnl() -> list[dict[str, Any]]:
+    """Get all open trades with current unrealized PnL.
+    
+    Returns list of dicts with trade details plus unrealized_pnl and unrealized_pnl_pct.
+    """
+    conn = _connect()
+    try:
+        _ensure_paper_trades_schema(conn)
+        trades = conn.execute(
+            "SELECT * FROM paper_trades WHERE status = 'OPEN' ORDER BY id ASC"
+        ).fetchall()
+        
+        result = []
+        for trade in trades:
+            candle = _latest_candle(conn, trade["symbol"])
+            if candle is None:
+                # Skip trades with no current data
+                continue
+                
+            current_price = float(candle["close"])
+            direction = str(trade["direction"]).upper()
+            entry_price = float(trade["entry_price"])
+            quantity = int(trade["quantity"])
+            
+            unrealized_pnl = _calculate_pnl(direction, entry_price, current_price, quantity)
+            capital_required = float(trade["capital_required"] or 0)
+            unrealized_pnl_pct = (unrealized_pnl / capital_required) * 100 if capital_required else 0.0
+            
+            result.append({
+                "id": trade["id"],
+                "symbol": trade["symbol"],
+                "direction": direction,
+                "quantity": quantity,
+                "entry_price": entry_price,
+                "confidence_score": float(trade["confidence_score"] or 0),
+                "capital_required": capital_required,
+                "unrealized_pnl": unrealized_pnl,
+                "unrealized_pnl_pct": unrealized_pnl_pct,
+            })
+        
+        return result
+    finally:
+        conn.close()
+
+
+def close_trade(trade_id: int, exit_reason: str, exit_price: float | None = None) -> dict[str, Any]:
+    """Close a specific trade by ID.
+    
+    Parameters
+    ----------
+    trade_id : int
+        The ID of the trade to close
+    exit_reason : str
+        Reason for exit: 'REPLACED', 'TARGET_HIT', 'STOP_LOSS', 'EOD_EXIT', etc.
+    exit_price : float | None
+        Exit price. If None, uses current market price.
+        
+    Returns
+    -------
+    dict
+        Result with success status and trade details
+    """
+    conn = _connect()
+    try:
+        _ensure_paper_trades_schema(conn)
+        conn.execute("BEGIN")
+        
+        trade = conn.execute(
+            "SELECT * FROM paper_trades WHERE id = ? AND status = 'OPEN'",
+            (trade_id,)
+        ).fetchone()
+        
+        if trade is None:
+            conn.rollback()
+            return {"success": False, "reason": "Trade not found or already closed"}
+        
+        # Get current price if not provided
+        if exit_price is None:
+            candle = _latest_candle(conn, trade["symbol"])
+            if candle is None:
+                conn.rollback()
+                return {"success": False, "reason": "No current price data"}
+            exit_price = float(candle["close"])
+        
+        direction = str(trade["direction"]).upper()
+        entry_price = float(trade["entry_price"])
+        quantity = int(trade["quantity"])
+        
+        pnl = _calculate_pnl(direction, entry_price, exit_price, quantity)
+        capital_required = float(trade["capital_required"] or 0)
+        pnl_pct = (pnl / capital_required) * 100 if capital_required else 0.0
+        outcome = "WIN" if pnl > 0 else "LOSS"
+        
+        new_balance = _current_balance(conn) + capital_required + pnl
+        exit_time = _now_ist_text()
+        
+        _update_balance(conn, new_balance)
+        conn.execute(
+            """
+            UPDATE paper_trades
+            SET exit_price = ?,
+                exit_time = ?,
+                exit_reason = ?,
+                pnl = ?,
+                pnl_pct = ?,
+                outcome = ?,
+                status = 'CLOSED',
+                updated_at = datetime('now')
+            WHERE id = ?
+            """,
+            (exit_price, exit_time, exit_reason, pnl, pnl_pct, outcome, trade_id),
+        )
+        
+        if "open_positions_count" in _table_columns(conn, "paper_account"):
+            conn.execute(
+                """
+                UPDATE paper_account
+                SET open_positions_count = (
+                    SELECT COUNT(*) FROM paper_trades WHERE status = 'OPEN'
+                ), last_updated = datetime('now'), updated_at = datetime('now')
+                WHERE id = ?
+                """,
+                (_account_id(conn),),
+            )
+        
+        conn.commit()
+        
+        return {
+            "success": True,
+            "trade_id": trade_id,
+            "symbol": trade["symbol"],
+            "exit_reason": exit_reason,
+            "outcome": outcome,
+            "exit_price": exit_price,
+            "pnl": pnl,
+            "pnl_pct": pnl_pct,
+        }
     except Exception:
         conn.rollback()
         raise

@@ -33,7 +33,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agents.paper_trader import monitor_open_trades, open_trade
+from agents.paper_trader import monitor_open_trades, open_trade, get_open_trades_with_unrealized_pnl, close_trade
 from agents.learning_agent import run_learning_cycle
 from agents.performance_tracker import update_stats
 from agents.risk_manager import calculate_position
@@ -212,16 +212,157 @@ class Orchestrator:
         temporary.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         temporary.replace(STATUS_PATH)
 
-    def _execute_picks(self, picks: list[dict[str, Any]]) -> int:
+    def _get_dynamic_max_trades(self, market_condition: str) -> dict[str, Any]:
+        """Calculate dynamic max trades based on market condition.
+        
+        Base: 6 trades
+        TRENDING: +2 (total 8)
+        SIDEWAYS: 0 (total 6)
+        VOLATILE: -2 (total 4)
+        """
+        base = 6
+        adjustment = {
+            "TRENDING": 2,
+            "SIDEWAYS": 0,
+            "VOLATILE": -2,
+        }.get(market_condition, 0)
+        
+        max_trades = base + adjustment
+        return {
+            "max_trades": max_trades,
+            "base": base,
+            "adjustment": adjustment,
+            "market_condition": market_condition,
+        }
+
+    def _should_make_room_for_signal(
+        self, 
+        new_signal: dict[str, Any], 
+        open_trades: list[dict[str, Any]], 
+        dynamic_max: dict[str, Any]
+    ) -> tuple[bool, dict[str, Any] | None]:
+        """Even if at max capacity, check if this new signal is significantly better than any existing open trade.
+        
+        Parameters
+        ----------
+        new_signal : dict
+            New signal with weighted_score
+        open_trades : list
+            Currently open trades with unrealized_pnl_pct and confidence_score
+        dynamic_max : dict
+            Dynamic max trades info with max_trades
+            
+        Returns
+        -------
+        tuple[bool, dict | None]
+            (should_replace, weakest_trade_to_replace)
+        """
+        # If under capacity, no need to make room
+        if len(open_trades) < dynamic_max['max_trades']:
+            return False, None
+        
+        # Find the weakest open trade
+        # Weakest = most negative unrealized PnL + lowest entry confidence score
+        weakest_trade = min(
+            open_trades,
+            key=lambda t: (t['unrealized_pnl_pct'] * 0.7) + (t['confidence_score'] * 0.3)
+        )
+        
+        # Only replace if new signal is significantly better
+        score_advantage = new_signal['weighted_score'] - weakest_trade['confidence_score']
+        trade_is_losing = weakest_trade['unrealized_pnl_pct'] < -0.3  # losing more than 0.3%
+        new_signal_is_strong = new_signal['weighted_score'] >= 65
+        
+        if score_advantage >= 20 and trade_is_losing and new_signal_is_strong:
+            return True, weakest_trade  # make room by closing weakest
+        
+        return False, None
+
+    def _execute_picks(self, picks: list[dict[str, Any]], market_condition: str) -> int:
         opened = 0
+        replaced = 0
         had_error = False
         if "trade_execution" in self.disabled:
             self.logger.warning("Stage trade_execution skipped (disabled after repeated failures)")
             return 0
 
+        # Get dynamic max trades
+        dynamic_max = self._get_dynamic_max_trades(market_condition)
+        self.logger.info(
+            "Dynamic max trades: %d (base=%d, %s=%+d)",
+            dynamic_max['max_trades'],
+            dynamic_max['base'],
+            market_condition,
+            dynamic_max['adjustment']
+        )
+        
+        # Get current open trades with unrealized PnL
+        try:
+            open_trades = get_open_trades_with_unrealized_pnl() if not self.dry_run else []
+        except Exception:
+            self.logger.exception("Failed to get open trades; assuming empty")
+            open_trades = []
+
         for pick in picks:
             symbol = str(pick.get("symbol", "UNKNOWN"))
             try:
+                # Check if we should make room for this signal
+                should_replace, weakest_trade = self._should_make_room_for_signal(
+                    pick, open_trades, dynamic_max
+                )
+                
+                if should_replace and weakest_trade:
+                    self.logger.info(
+                        "Trade replacement opportunity: %s (score: %.1f, PnL: %.2f%%) → %s (score: %.1f)",
+                        weakest_trade['symbol'],
+                        weakest_trade['confidence_score'],
+                        weakest_trade['unrealized_pnl_pct'],
+                        symbol,
+                        pick['weighted_score']
+                    )
+                    
+                    if not self.dry_run:
+                        # Close the weakest trade
+                        close_result = close_trade(weakest_trade['id'], 'REPLACED')
+                        if close_result.get('success'):
+                            replaced += 1
+                            self.logger.info(
+                                "Replaced %s (score: %.1f, PnL: %.2f%%) with %s (score: %.1f)",
+                                weakest_trade['symbol'],
+                                weakest_trade['confidence_score'],
+                                weakest_trade['unrealized_pnl_pct'],
+                                symbol,
+                                pick['weighted_score']
+                            )
+                            # Remove from open_trades list
+                            open_trades = [t for t in open_trades if t['id'] != weakest_trade['id']]
+                        else:
+                            self.logger.warning(
+                                "Failed to close weakest trade %s: %s",
+                                weakest_trade['symbol'],
+                                close_result.get('reason')
+                            )
+                            continue
+                    else:
+                        self.logger.info(
+                            "DRY RUN | Would replace %s (score: %.1f, PnL: %.2f%%) with %s (score: %.1f)",
+                            weakest_trade['symbol'],
+                            weakest_trade['confidence_score'],
+                            weakest_trade['unrealized_pnl_pct'],
+                            symbol,
+                            pick['weighted_score']
+                        )
+                
+                # Check if we're still at capacity (after potential replacement)
+                if len(open_trades) >= dynamic_max['max_trades']:
+                    self.logger.info(
+                        "%s skipped: at max capacity (%d/%d)",
+                        symbol,
+                        len(open_trades),
+                        dynamic_max['max_trades']
+                    )
+                    continue
+                
                 validation = validate_signal(pick)
                 if not validation.get("approved"):
                     self.logger.info("%s rejected: %s", symbol, validation.get("reason", "unknown reason"))
@@ -261,6 +402,13 @@ class Orchestrator:
                 result = open_trade(pick)
                 if result.get("success"):
                     opened += 1
+                    # Add to open_trades list for next iteration
+                    open_trades.append({
+                        "id": result.get("trade_id"),
+                        "symbol": symbol,
+                        "confidence_score": pick.get("weighted_score", 0),
+                        "unrealized_pnl_pct": 0.0,
+                    })
                     self.logger.info("Opened %s trade_id=%s", symbol, result.get("trade_id"))
                 else:
                     self.logger.warning("Could not open %s: %s", symbol, result.get("reason"))
@@ -272,6 +420,10 @@ class Orchestrator:
             self._failure("trade_execution")
         else:
             self._success("trade_execution")
+        
+        if replaced > 0:
+            self.logger.info("Trade replacements: %d", replaced)
+        
         return opened
 
     def run_cycle(self, ignore_market_hours: bool = False) -> None:
@@ -288,6 +440,7 @@ class Orchestrator:
         now = datetime.now(IST)
         self.logger.info("CYCLE #%d started at %s", self.cycle_number, now.isoformat())
         scanned = signals = opened = closed_count = 0
+        market_condition = "SIDEWAYS"  # default
         try:
             market_started = time.perf_counter()
             market_open = self._is_market_open(now)
@@ -300,9 +453,13 @@ class Orchestrator:
             self._stage("indicator_engine", run_indicator_engine, [])
             picks, _ = self._stage("signal_engine", run_scan, [])
             scanned, signals = self._scan_counts()
+            
+            # Extract market condition from picks if available
+            if picks and len(picks) > 0:
+                market_condition = picks[0].get("market_condition", "SIDEWAYS")
 
             execution_started = time.perf_counter()
-            opened = self._execute_picks(picks)
+            opened = self._execute_picks(picks, market_condition)
             self.logger.info("Stage trade_execution duration: %.0f ms", (time.perf_counter() - execution_started) * 1000)
 
             if self.dry_run:
