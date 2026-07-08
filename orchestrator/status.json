@@ -1,9 +1,9 @@
 {
-  "last_run": "2026-07-08T11:34:30+05:30",
+  "last_run": "2026-07-08T11:37:13+05:30",
   "next_run": null,
   "cycle_number": 1,
-  "status": "stopped",
-  "last_cycle_duration_seconds": 0.0,
+  "status": "running",
+  "last_cycle_duration_seconds": 149.28,
   "cycle_interval_minutes": 5,
   "consecutive_failures": {
     "fetcher": 0,
