@@ -607,7 +607,8 @@ async def strategy_history() -> list[dict[str, Any]]:
         rows = conn.execute(
             """
             SELECT s.*, i.win_rate AS learning_win_rate,
-                   COALESCE(i.trades_analyzed, i.total_trades) AS trades_analyzed
+                   COALESCE(i.trades_analyzed, i.total_trades) AS trades_analyzed,
+                   i.findings_json, i.summary
             FROM strategy_rules s
             LEFT JOIN learning_insights i ON i.strategy_version = s.version
             ORDER BY s.version DESC

@@ -253,7 +253,7 @@ function StrategyPage() {
               <strong>v{item.version}{item.is_active ? ' (active)' : ''}</strong>
               <span>{item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}</span>
               <span>{item.learning_win_rate != null ? `${item.learning_win_rate.toFixed(1)}%` : '-'}</span>
-              <span className="notes-cell">{item.notes || 'Initial strategy'}</span>
+              <LearningAdjustments item={item} />
               <span>{item.trades_analyzed ?? '-'}</span>
             </div>
           ))}
@@ -277,6 +277,40 @@ function Metric({ label, value }: { label: string; value: string }) {
       <strong>{value}</strong>
     </div>
   );
+}
+
+function LearningAdjustments({ item }: { item: StrategyHistoryRow }) {
+  if (item.version === 1 || !item.findings_json) {
+    return <span className="notes-cell">{item.summary || item.notes || 'Initial strategy'}</span>;
+  }
+  
+  try {
+    const findings = JSON.parse(item.findings_json);
+    if (!findings.adjustments) return <span className="notes-cell">{item.summary || item.notes}</span>;
+    
+    return (
+      <div className="adjustments-grid notes-cell">
+        {Object.entries(findings.adjustments).map(([key, data]: [string, any]) => {
+          const isFired = data.status === 'FIRED';
+          const isReverted = data.status === 'REVERTED';
+          const isSkipped = data.status === 'SKIPPED';
+          let className = 'adj-badge ';
+          if (isFired) className += 'adj-fired';
+          else if (isSkipped) className += 'adj-skipped';
+          else if (isReverted) className += 'adj-reverted';
+          
+          return (
+            <div key={key} className="adj-item" title={data.reason || ''}>
+              <span className="adj-label">{key.replace('_', ' ')}</span>
+              <span className={className}>{data.status} ({data.samples} / {data.required || '?'} samples)</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  } catch (e) {
+    return <span className="notes-cell">{item.summary || item.notes}</span>;
+  }
 }
 
 function EmptyState({ text }: { text: string }) {

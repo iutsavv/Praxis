@@ -82,6 +82,8 @@ export interface StrategyRule {
 export interface StrategyHistoryRow extends StrategyRule {
   learning_win_rate?: number | null;
   trades_analyzed?: number | null;
+  findings_json?: string | null;
+  summary?: string | null;
 }
 
 export interface LearningInsight {
