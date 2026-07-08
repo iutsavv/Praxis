@@ -2726,3 +2726,194 @@
 [2026-07-08 11:37:13 IST] INFO | Stage performance_stats duration: 0 ms
 [2026-07-08 11:37:13 IST] INFO | CYCLE #1 | Duration: 149.3s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹1,003,341
 [2026-07-08 11:37:13 IST] INFO | Scheduler started in DRY RUN mode
+[2026-07-08 11:40:00 IST] INFO | CYCLE #2 started at 2026-07-08T11:40:00.010218+05:30
+[2026-07-08 11:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 11:40:25 IST] INFO | Stage fetcher duration: 25881 ms
+[2026-07-08 11:42:29 IST] INFO | Stage indicator_engine duration: 123829 ms
+[2026-07-08 11:42:30 IST] INFO | Stage signal_engine duration: 341 ms
+[2026-07-08 11:42:30 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-08 11:42:30 IST] INFO | TMCV rejected: Duplicate position
+[2026-07-08 11:42:30 IST] INFO | Stage trade_execution duration: 8 ms
+[2026-07-08 11:42:30 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 11:42:30 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 11:42:30 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 11:42:30 IST] INFO | CYCLE #2 | Duration: 150.1s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹802,945
+[2026-07-08 11:45:00 IST] INFO | CYCLE #3 started at 2026-07-08T11:45:00.014748+05:30
+[2026-07-08 11:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 11:45:08 IST] INFO | Stage fetcher duration: 8690 ms
+[2026-07-08 11:47:10 IST] INFO | Stage indicator_engine duration: 121748 ms
+[2026-07-08 11:47:10 IST] INFO | Stage signal_engine duration: 241 ms
+[2026-07-08 11:47:10 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-08 11:47:10 IST] INFO | TMCV rejected: Duplicate position
+[2026-07-08 11:47:10 IST] INFO | Stage trade_execution duration: 5 ms
+[2026-07-08 11:47:10 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 11:47:10 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 11:47:10 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 11:47:10 IST] INFO | CYCLE #3 | Duration: 130.7s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹802,945
+[2026-07-08 11:50:00 IST] INFO | CYCLE #4 started at 2026-07-08T11:50:00.004270+05:30
+[2026-07-08 11:50:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 11:50:12 IST] INFO | Stage fetcher duration: 12830 ms
+[2026-07-08 11:52:18 IST] INFO | Stage indicator_engine duration: 125974 ms
+[2026-07-08 11:52:19 IST] INFO | Stage signal_engine duration: 254 ms
+[2026-07-08 11:52:19 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-08 11:52:19 IST] INFO | Stage trade_execution duration: 1 ms
+[2026-07-08 11:52:19 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 11:52:19 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 11:52:19 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 11:52:19 IST] INFO | CYCLE #4 | Duration: 139.1s | Scanned: 15 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹802,945
+[2026-07-08 11:55:00 IST] INFO | CYCLE #5 started at 2026-07-08T11:55:00.007728+05:30
+[2026-07-08 11:55:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 11:55:28 IST] INFO | Stage fetcher duration: 28974 ms
+[2026-07-08 11:57:24 IST] INFO | Stage indicator_engine duration: 115815 ms
+[2026-07-08 11:57:25 IST] INFO | Stage signal_engine duration: 226 ms
+[2026-07-08 11:57:25 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-08 11:57:25 IST] INFO | Stage trade_execution duration: 0 ms
+[2026-07-08 11:57:25 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 11:57:25 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 11:57:25 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 11:57:25 IST] INFO | CYCLE #5 | Duration: 145.0s | Scanned: 15 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹802,945
+[2026-07-08 12:00:00 IST] INFO | CYCLE #6 started at 2026-07-08T12:00:00.001713+05:30
+[2026-07-08 12:00:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:00:59 IST] INFO | Stage fetcher duration: 59685 ms
+[2026-07-08 12:02:42 IST] INFO | Stage indicator_engine duration: 102842 ms
+[2026-07-08 12:02:42 IST] INFO | Stage signal_engine duration: 248 ms
+[2026-07-08 12:02:42 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-08 12:02:42 IST] INFO | Stage trade_execution duration: 0 ms
+[2026-07-08 12:02:42 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:02:42 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:02:42 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:02:42 IST] INFO | CYCLE #6 | Duration: 162.8s | Scanned: 15 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹802,945
+[2026-07-08 12:05:00 IST] INFO | CYCLE #7 started at 2026-07-08T12:05:00.024393+05:30
+[2026-07-08 12:05:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:05:26 IST] INFO | Stage fetcher duration: 26795 ms
+[2026-07-08 12:07:08 IST] INFO | Stage indicator_engine duration: 102122 ms
+[2026-07-08 12:07:09 IST] INFO | Stage signal_engine duration: 216 ms
+[2026-07-08 12:07:09 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:07:09 IST] INFO | POSITION SIZE | BUY RELIANCE | entry=1290.50 stop=1280.82 target=1309.86 risk/share=9.68 max_loss=8029.45 qty_from_risk=829 max_capital=160589.03 max_qty_cap=124 final_qty=124 capital=160022.00
+[2026-07-08 12:07:09 IST] INFO | DRY RUN | Would open BUY RELIANCE x124 at 1290.50
+[2026-07-08 12:07:09 IST] INFO | POSITION SIZE | BUY SBIN | entry=1036.00 stop=1028.23 target=1051.54 risk/share=7.77 max_loss=8029.45 qty_from_risk=1033 max_capital=160589.03 max_qty_cap=155 final_qty=155 capital=160580.00
+[2026-07-08 12:07:09 IST] INFO | DRY RUN | Would open BUY SBIN x155 at 1036.00
+[2026-07-08 12:07:09 IST] INFO | Stage trade_execution duration: 19 ms
+[2026-07-08 12:07:09 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:07:09 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:07:09 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:07:09 IST] INFO | CYCLE #7 | Duration: 129.2s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹802,945
+[2026-07-08 12:10:00 IST] INFO | CYCLE #8 started at 2026-07-08T12:10:00.023657+05:30
+[2026-07-08 12:10:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:10:37 IST] INFO | Stage fetcher duration: 37296 ms
+[2026-07-08 12:12:29 IST] INFO | Stage indicator_engine duration: 111956 ms
+[2026-07-08 12:12:29 IST] INFO | Stage signal_engine duration: 246 ms
+[2026-07-08 12:12:29 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:12:29 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:12:29 IST] INFO | POSITION SIZE | BUY SBIN | entry=1036.00 stop=1028.23 target=1051.54 risk/share=7.77 max_loss=6429.23 qty_from_risk=827 max_capital=128584.63 max_qty_cap=124 final_qty=124 capital=128464.00
+[2026-07-08 12:12:29 IST] INFO | DRY RUN | Would open BUY SBIN x124 at 1036.00
+[2026-07-08 12:12:29 IST] INFO | Stage trade_execution duration: 14 ms
+[2026-07-08 12:12:29 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:12:29 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:12:29 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:12:29 IST] INFO | CYCLE #8 | Duration: 149.5s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹642,923
+[2026-07-08 12:15:00 IST] INFO | CYCLE #9 started at 2026-07-08T12:15:00.020814+05:30
+[2026-07-08 12:15:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:15:08 IST] INFO | Stage fetcher duration: 8132 ms
+[2026-07-08 12:16:55 IST] INFO | Stage indicator_engine duration: 107360 ms
+[2026-07-08 12:16:55 IST] INFO | Stage signal_engine duration: 240 ms
+[2026-07-08 12:16:55 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:16:55 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:16:55 IST] INFO | SBIN rejected: Duplicate position
+[2026-07-08 12:16:55 IST] INFO | Stage trade_execution duration: 8 ms
+[2026-07-08 12:16:55 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:16:55 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:16:55 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:16:55 IST] INFO | CYCLE #9 | Duration: 115.8s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:20:00 IST] INFO | CYCLE #10 started at 2026-07-08T12:20:00.004478+05:30
+[2026-07-08 12:20:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:20:07 IST] INFO | Stage fetcher duration: 7925 ms
+[2026-07-08 12:21:52 IST] INFO | Stage indicator_engine duration: 104735 ms
+[2026-07-08 12:21:52 IST] INFO | Stage signal_engine duration: 231 ms
+[2026-07-08 12:21:52 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:21:52 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:21:52 IST] INFO | SBIN rejected: Duplicate position
+[2026-07-08 12:21:52 IST] INFO | Stage trade_execution duration: 9 ms
+[2026-07-08 12:21:52 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:21:52 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:21:52 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:21:52 IST] INFO | CYCLE #10 | Duration: 112.9s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:25:00 IST] INFO | CYCLE #11 started at 2026-07-08T12:25:00.004845+05:30
+[2026-07-08 12:25:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:25:19 IST] INFO | Stage fetcher duration: 19330 ms
+[2026-07-08 12:27:02 IST] INFO | Stage indicator_engine duration: 102732 ms
+[2026-07-08 12:27:02 IST] INFO | Stage signal_engine duration: 224 ms
+[2026-07-08 12:27:02 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:27:02 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:27:02 IST] INFO | SBIN rejected: Duplicate position
+[2026-07-08 12:27:02 IST] INFO | Stage trade_execution duration: 10 ms
+[2026-07-08 12:27:02 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:27:02 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:27:02 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:27:02 IST] INFO | CYCLE #11 | Duration: 122.3s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:30:00 IST] INFO | CYCLE #12 started at 2026-07-08T12:30:00.008237+05:30
+[2026-07-08 12:30:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:30:08 IST] INFO | Stage fetcher duration: 8562 ms
+[2026-07-08 12:32:08 IST] INFO | Stage indicator_engine duration: 120265 ms
+[2026-07-08 12:32:09 IST] INFO | Stage signal_engine duration: 261 ms
+[2026-07-08 12:32:09 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:32:09 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:32:09 IST] INFO | SBIN rejected: Duplicate position
+[2026-07-08 12:32:09 IST] INFO | Stage trade_execution duration: 11 ms
+[2026-07-08 12:32:09 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:32:09 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:32:09 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:32:09 IST] INFO | CYCLE #12 | Duration: 129.1s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:35:00 IST] INFO | CYCLE #13 started at 2026-07-08T12:35:00.002460+05:30
+[2026-07-08 12:35:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:35:08 IST] INFO | Stage fetcher duration: 8327 ms
+[2026-07-08 12:37:12 IST] INFO | Stage indicator_engine duration: 124606 ms
+[2026-07-08 12:37:13 IST] INFO | Stage signal_engine duration: 264 ms
+[2026-07-08 12:37:13 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:37:13 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:37:13 IST] INFO | Stage trade_execution duration: 6 ms
+[2026-07-08 12:37:13 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:37:13 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:37:13 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:37:13 IST] INFO | CYCLE #13 | Duration: 133.2s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:40:00 IST] INFO | CYCLE #14 started at 2026-07-08T12:40:00.010751+05:30
+[2026-07-08 12:40:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:40:23 IST] INFO | Stage fetcher duration: 23700 ms
+[2026-07-08 12:42:17 IST] INFO | Stage indicator_engine duration: 114115 ms
+[2026-07-08 12:42:18 IST] INFO | Stage signal_engine duration: 238 ms
+[2026-07-08 12:42:18 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:42:18 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:42:18 IST] INFO | Stage trade_execution duration: 8 ms
+[2026-07-08 12:42:18 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:42:18 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:42:18 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:42:18 IST] INFO | CYCLE #14 | Duration: 138.1s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:45:00 IST] INFO | CYCLE #15 started at 2026-07-08T12:45:00.016231+05:30
+[2026-07-08 12:45:00 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:45:08 IST] INFO | Stage fetcher duration: 8163 ms
+[2026-07-08 12:46:50 IST] INFO | Stage indicator_engine duration: 102660 ms
+[2026-07-08 12:46:51 IST] INFO | Stage signal_engine duration: 222 ms
+[2026-07-08 12:46:51 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:46:51 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:46:51 IST] INFO | Stage trade_execution duration: 5 ms
+[2026-07-08 12:46:51 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:46:51 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:46:51 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:46:51 IST] INFO | CYCLE #15 | Duration: 111.1s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:50:59 IST] INFO | CYCLE #1 started at 2026-07-08T12:50:59.280132+05:30
+[2026-07-08 12:50:59 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 12:51:12 IST] INFO | Stage fetcher duration: 12721 ms
+[2026-07-08 12:52:59 IST] INFO | Stage indicator_engine duration: 107758 ms
+[2026-07-08 12:52:59 IST] INFO | Stage signal_engine duration: 215 ms
+[2026-07-08 12:52:59 IST] INFO | Dynamic max trades: 4 (base=6, VOLATILE=-2)
+[2026-07-08 12:52:59 IST] INFO | POSITION SIZE | BUY INDIGO | entry=5290.50 stop=5250.82 target=5369.86 risk/share=39.68 max_loss=5144.59 qty_from_risk=129 max_capital=102891.83 max_qty_cap=19 final_qty=19 capital=100519.50
+[2026-07-08 12:52:59 IST] INFO | DRY RUN | Would open BUY INDIGO x19 at 5290.50
+[2026-07-08 12:52:59 IST] INFO | RELIANCE rejected: Duplicate position
+[2026-07-08 12:52:59 IST] INFO | Stage trade_execution duration: 14 ms
+[2026-07-08 12:52:59 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 12:52:59 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 12:52:59 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 12:52:59 IST] INFO | CYCLE #1 | Duration: 120.7s | Scanned: 15 | Signals: 2 | Opened: 0 | Closed: 0 | Balance: ₹514,459
+[2026-07-08 12:53:00 IST] INFO | Scheduler started in DRY RUN mode
+[2026-07-08 12:55:00 IST] INFO | CYCLE #2 started at 2026-07-08T12:55:00.004005+05:30
+[2026-07-08 12:55:00 IST] INFO | Stage market_check duration: 0 ms
