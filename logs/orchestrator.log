@@ -2698,3 +2698,17 @@
 [2026-07-06 15:45:00 IST] INFO | Stage market_check duration: 0 ms
 [2026-07-06 15:45:00 IST] INFO | Market closed, skipping
 [2026-07-06 15:45:00 IST] INFO | CYCLE #75 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹340,199
+[2026-07-08 11:32:09 IST] INFO | CYCLE #1 started at 2026-07-08T11:32:09.737456+05:30
+[2026-07-08 11:32:09 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-08 11:32:18 IST] INFO | Stage fetcher duration: 8496 ms
+[2026-07-08 11:34:30 IST] INFO | Stage indicator_engine duration: 132406 ms
+[2026-07-08 11:34:30 IST] INFO | Stage signal_engine duration: 176 ms
+[2026-07-08 11:34:30 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-08 11:34:30 IST] INFO | POSITION SIZE | BUY TMCV | entry=421.00 stop=417.84 target=427.31 risk/share=3.16 max_loss=10033.41 qty_from_risk=3177 max_capital=200668.23 max_qty_cap=476 final_qty=476 capital=200396.00
+[2026-07-08 11:34:30 IST] INFO | DRY RUN | Would open BUY TMCV x476 at 421.00
+[2026-07-08 11:34:30 IST] INFO | Stage trade_execution duration: 6 ms
+[2026-07-08 11:34:30 IST] INFO | DRY RUN | Stage trade_monitoring skipped; no trades will be closed
+[2026-07-08 11:34:30 IST] INFO | Stage trade_monitoring duration: 0 ms
+[2026-07-08 11:34:30 IST] INFO | Stage performance_stats duration: 0 ms
+[2026-07-08 11:34:30 IST] INFO | CYCLE #1 | Duration: 141.1s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹1,003,341
+[2026-07-08 11:34:30 IST] INFO | SHUTDOWN SUMMARY | Cycles: 1 | Opened: 0 | Closed: 0 | Final balance: ₹1,003,341
