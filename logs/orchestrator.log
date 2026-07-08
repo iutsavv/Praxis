@@ -2712,3 +2712,5 @@
 [2026-07-08 11:34:30 IST] INFO | Stage performance_stats duration: 0 ms
 [2026-07-08 11:34:30 IST] INFO | CYCLE #1 | Duration: 141.1s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 0 | Balance: ₹1,003,341
 [2026-07-08 11:34:30 IST] INFO | SHUTDOWN SUMMARY | Cycles: 1 | Opened: 0 | Closed: 0 | Final balance: ₹1,003,341
+[2026-07-08 11:34:43 IST] INFO | CYCLE #1 started at 2026-07-08T11:34:43.820337+05:30
+[2026-07-08 11:34:43 IST] INFO | Stage market_check duration: 0 ms
