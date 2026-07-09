@@ -243,6 +243,28 @@ TABLES: dict[str, str] = {
             reason      TEXT
         );
     """,
+
+    "stock_universe": """
+        CREATE TABLE IF NOT EXISTS stock_universe (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol              TEXT UNIQUE NOT NULL,
+            name                TEXT,
+            sector              TEXT,
+            industry            TEXT,
+            series              TEXT,
+            market_cap          REAL,
+            avg_daily_volume    REAL,
+            is_fo_stock         INTEGER DEFAULT 0,
+            is_large_cap        INTEGER DEFAULT 0,
+            is_mid_cap          INTEGER DEFAULT 0,
+            is_small_cap        INTEGER DEFAULT 0,
+            is_active           INTEGER DEFAULT 1,
+            in_stage2_scan      INTEGER DEFAULT 0,
+            listing_date        TEXT,
+            last_updated        TEXT,
+            added_at            TEXT DEFAULT (datetime('now'))
+        );
+    """,
 }
 
 

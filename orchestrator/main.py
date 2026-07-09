@@ -41,6 +41,7 @@ from agents.trade_validator import validate_signal
 from analysis.indicator_engine import run_indicator_engine
 from analysis.signal_engine import run_scan
 from data.fetcher import run_fetcher
+from data.universe_fetcher import update_universe
 
 
 IST = pytz.timezone("Asia/Kolkata")
@@ -558,6 +559,11 @@ class Orchestrator:
             run_learning_cycle,
             CronTrigger(day_of_week="sat", hour="10", minute="0", timezone=IST),
             id="weekly_learning", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            update_universe,
+            CronTrigger(day_of_week="sun", hour="9", minute="0", timezone=IST),
+            id="universe_update", max_instances=1, coalesce=True,
         )
         # Startup is intentionally immediate; the regular market-hours guard is bypassed.
         self.run_cycle(ignore_market_hours=True)

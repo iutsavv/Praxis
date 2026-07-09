@@ -50,16 +50,30 @@ def _get_connection() -> sqlite3.Connection:
 
 
 def get_active_symbols(conn: sqlite3.Connection) -> list[str]:
-    """Read all symbols from the stocks table where is_active = 1."""
+    """Read symbols from stock_universe for Stage 2 scanning, plus original stocks table."""
+    
+    # Get Stage 2 scan candidates from universe
+    cursor = conn.execute(
+        """SELECT symbol FROM stock_universe 
+           WHERE in_stage2_scan = 1 AND is_active = 1 
+           ORDER BY symbol"""
+    )
+    universe_symbols = [row[0] for row in cursor.fetchall()]
+    
+    # Get original stocks (for backward compatibility with trading)
     cursor = conn.execute(
         "SELECT symbol FROM stocks WHERE is_active = 1 ORDER BY symbol"
     )
-    symbols = [row[0] for row in cursor.fetchall()]
-    # Market-condition detection depends on Nifty history even though the
-    # index is not a tradable watchlist stock.
-    if NIFTY_SYMBOL not in symbols:
-        symbols.append(NIFTY_SYMBOL)
-    return symbols
+    trading_symbols = [row[0] for row in cursor.fetchall()]
+    
+    # Combine both lists, removing duplicates
+    all_symbols = list(set(universe_symbols + trading_symbols))
+    
+    # Market-condition detection depends on Nifty history
+    if NIFTY_SYMBOL not in all_symbols:
+        all_symbols.append(NIFTY_SYMBOL)
+    
+    return sorted(all_symbols)
 
 
 def get_latest_timestamp(conn: sqlite3.Connection, symbol: str) -> str | None:
