@@ -575,6 +575,115 @@ async def signals() -> list[dict[str, Any]]:
         return get_signal_scores(conn)
 
 
+@app.get("/api/scan/stage1/latest")
+async def get_stage1_latest() -> dict[str, Any]:
+    """Get latest Stage 1 scan results summary."""
+    with get_db() as conn:
+        # Get latest scan time
+        latest_scan = conn.execute(
+            "SELECT MAX(scan_time) FROM scan_results WHERE stage = 1"
+        ).fetchone()
+        
+        if not latest_scan or not latest_scan[0]:
+            return {
+                "scan_time": None,
+                "total_scanned": 0,
+                "total_flagged": 0,
+                "flagged_stocks": [],
+            }
+        
+        scan_time = latest_scan[0]
+        
+        # Get all flagged stocks from this scan
+        rows = conn.execute("""
+            SELECT symbol, stage1_price_change, stage1_volume_ratio, stage1_reason
+            FROM scan_results
+            WHERE scan_time = ? AND stage1_flagged = 1
+            ORDER BY ABS(stage1_price_change) DESC
+        """, (scan_time,)).fetchall()
+        
+        flagged_stocks = rows_to_dicts(rows)
+        
+        # Count reasons
+        reason_counts = {}
+        for stock in flagged_stocks:
+            reasons = stock.get('stage1_reason', '').split(', ')
+            for reason in reasons:
+                if reason:
+                    reason_counts[reason] = reason_counts.get(reason, 0) + 1
+        
+        return {
+            "scan_time": scan_time,
+            "total_scanned": conn.execute(
+                "SELECT COUNT(DISTINCT symbol) FROM stock_universe WHERE is_active = 1"
+            ).fetchone()[0],
+            "total_flagged": len(flagged_stocks),
+            "flagged_stocks": flagged_stocks[:50],  # Return top 50
+            "reason_summary": reason_counts,
+        }
+
+
+@app.get("/api/scan/stage2/latest")
+async def get_stage2_latest() -> dict[str, Any]:
+    """Get latest Stage 2 scan results with scores."""
+    with get_db() as conn:
+        # Get latest scan time where stage2 data exists
+        latest_scan = conn.execute(
+            "SELECT MAX(scan_time) FROM scan_results WHERE stage = 2"
+        ).fetchone()
+        
+        if not latest_scan or not latest_scan[0]:
+            return {
+                "scan_time": None,
+                "total_analyzed": 0,
+                "candidates_above_threshold": 0,
+                "candidates": [],
+            }
+        
+        scan_time = latest_scan[0]
+        
+        # Get all Stage 2 results
+        rows = conn.execute("""
+            SELECT 
+                symbol, stage2_score, stage2_direction,
+                stage2_pattern, stage2_setup, final_selected,
+                stage1_price_change, stage1_volume_ratio
+            FROM scan_results
+            WHERE scan_time = ? AND stage = 2
+            ORDER BY stage2_score DESC
+        """, (scan_time,)).fetchall()
+        
+        candidates = rows_to_dicts(rows)
+        candidates_selected = [c for c in candidates if c.get('final_selected') == 1]
+        
+        return {
+            "scan_time": scan_time,
+            "total_analyzed": len(candidates),
+            "candidates_above_threshold": len(candidates_selected),
+            "candidates": candidates_selected,
+            "all_analyzed": candidates[:20],  # Top 20 by score
+        }
+
+
+@app.get("/api/scan/history")
+async def get_scan_history() -> list[dict[str, Any]]:
+    """Get scan results history for last 24 hours."""
+    with get_db() as conn:
+        rows = conn.execute("""
+            SELECT 
+                scan_time,
+                COUNT(DISTINCT CASE WHEN stage1_flagged = 1 THEN symbol END) as stage1_count,
+                COUNT(DISTINCT CASE WHEN stage = 2 THEN symbol END) as stage2_analyzed,
+                COUNT(DISTINCT CASE WHEN final_selected = 1 THEN symbol END) as candidates
+            FROM scan_results
+            WHERE scan_time >= datetime('now', '-24 hours')
+            GROUP BY scan_time
+            ORDER BY scan_time DESC
+        """).fetchall()
+        
+        return rows_to_dicts(rows)
+
+
 @app.get("/api/top-picks")
 async def top_picks() -> list[dict[str, Any]]:
     with get_db() as conn:

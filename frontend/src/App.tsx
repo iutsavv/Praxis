@@ -75,27 +75,120 @@ function OverviewPage() {
 }
 
 function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
-  const { state } = useStore();
-  const resource = useSignals(wsConnected);
+  const [stage1, setStage1] = useState<{
+    scan_time: string | null;
+    total_scanned: number;
+    total_flagged: number;
+    flagged_stocks: Array<{ symbol: string; stage1_price_change: number; stage1_volume_ratio: number; stage1_reason: string }>;
+    reason_summary: Record<string, number>;
+  } | null>(null);
+  const [stage2, setStage2] = useState<{
+    scan_time: string | null;
+    total_analyzed: number;
+    candidates_above_threshold: number;
+    candidates: Array<{
+      symbol: string; stage2_score: number; stage2_direction: string;
+      stage2_pattern: string | null; stage1_price_change: number; stage1_volume_ratio: number;
+    }>;
+    all_analyzed: Array<{
+      symbol: string; stage2_score: number; stage2_direction: string;
+      stage2_pattern: string | null; stage1_price_change: number; stage1_volume_ratio: number;
+      final_selected: number;
+    }>;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchScanData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [s1, s2] = await Promise.all([
+        api.get('/api/scan/stage1/latest'),
+        api.get('/api/scan/stage2/latest'),
+      ]);
+      setStage1(s1.data);
+      setStage2(s2.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load scan data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchScanData();
+    const interval = setInterval(fetchScanData, 60_000);
+    return () => clearInterval(interval);
+  }, [fetchScanData]);
+
+  const scanTime = stage1?.scan_time || stage2?.scan_time;
+
   return (
     <section>
-      <ErrorBanner message={resource.error} onRetry={resource.refresh} />
-      <p className="muted">{state.lastWsUpdate ? minutesAgo(state.lastWsUpdate) : minutesAgo(resource.lastUpdated)}</p>
-      {resource.loading && state.signals.length === 0 ? <SkeletonGrid count={6} /> : null}
-      {state.signals.length === 0 && !resource.loading ? (
-        <EmptyState text="No signals yet. Run the scanner to see results." />
-      ) : (
+      <ErrorBanner message={error} onRetry={fetchScanData} />
+      <p className="muted">{scanTime ? minutesAgo(scanTime) : 'No scan data yet'}</p>
+
+      {/* Stage summary cards */}
+      <div className="grid" style={{ marginBottom: '1.5rem' }}>
+        <div className="card">
+          <h3>Stage 1 — Broad Scan</h3>
+          {stage1 && stage1.scan_time ? (
+            <>
+              <p style={{ fontSize: '1.4rem', fontWeight: 700 }}>
+                {stage1.total_scanned.toLocaleString()} stocks scanned →{' '}
+                <span className="positive">{stage1.total_flagged} flagged</span>
+              </p>
+              {stage1.reason_summary && Object.keys(stage1.reason_summary).length > 0 && (
+                <p className="muted" style={{ fontSize: '0.85rem' }}>
+                  {Object.entries(stage1.reason_summary)
+                    .map(([reason, count]) => `${reason}: ${count}`)
+                    .join(' · ')}
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="muted">No Stage 1 scan results yet.</p>
+          )}
+        </div>
+        <div className="card">
+          <h3>Stage 2 — Deep Analysis</h3>
+          {stage2 && stage2.scan_time ? (
+            <p style={{ fontSize: '1.4rem', fontWeight: 700 }}>
+              {stage2.total_analyzed} deep analyzed →{' '}
+              <span className="positive">{stage2.candidates_above_threshold} candidates</span>{' '}
+              <span className="muted" style={{ fontSize: '0.85rem' }}>above threshold</span>
+            </p>
+          ) : (
+            <p className="muted">No Stage 2 scan results yet.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Stage 2 results table */}
+      {loading && !stage2 ? <SkeletonGrid count={6} /> : null}
+      {stage2 && stage2.all_analyzed && stage2.all_analyzed.length > 0 ? (
         <div className="table">
-          {state.signals.map((signal) => (
-            <div className="row" key={signal.symbol}>
-              <strong>{signal.symbol}</strong>
-              <span className={`pill ${signal.direction.toLowerCase()}`}>{signal.direction}</span>
-              <span>{signal.confidence_score.toFixed(1)}</span>
-              <span>{signal.market_condition}</span>
+          {stage2.all_analyzed.map((stock) => (
+            <div className="row" key={stock.symbol}>
+              <strong>{stock.symbol}</strong>
+              <span className={`pill ${(stock.stage2_direction || 'hold').toLowerCase()}`}>
+                {stock.stage2_direction || 'HOLD'}
+              </span>
+              <span>{stock.stage2_score?.toFixed(1) ?? '-'}</span>
+              <span className={(stock.stage1_price_change ?? 0) >= 0 ? 'positive' : 'negative'}>
+                {stock.stage1_price_change != null ? `${stock.stage1_price_change >= 0 ? '+' : ''}${stock.stage1_price_change.toFixed(2)}%` : '-'}
+              </span>
+              <span className="muted">
+                {stock.stage1_volume_ratio != null ? `${stock.stage1_volume_ratio.toFixed(1)}x vol` : ''}
+              </span>
+              {stock.final_selected === 1 && <span className="pill buy">Selected</span>}
             </div>
           ))}
         </div>
-      )}
+      ) : !loading ? (
+        <EmptyState text="No Stage 2 results yet. Run the scanner pipeline to see deep analysis results." />
+      ) : null}
     </section>
   );
 }

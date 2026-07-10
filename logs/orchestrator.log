@@ -3335,3 +3335,16 @@
 [2026-07-08 15:40:00 IST] INFO | Stage market_check duration: 0 ms
 [2026-07-08 15:40:00 IST] INFO | Market closed, skipping
 [2026-07-08 15:40:00 IST] INFO | CYCLE #34 | Duration: 0.0s | Scanned: 0 | Signals: 0 | Opened: 0 | Closed: 0 | Balance: ₹331,278
+[2026-07-09 23:56:41 IST] INFO | CYCLE #1 started at 2026-07-09T23:56:41.358248+05:30
+[2026-07-09 23:56:41 IST] INFO | Stage market_check duration: 0 ms
+[2026-07-09 23:59:18 IST] INFO | Stage fetcher duration: 157506 ms
+[2026-07-10 00:01:35 IST] INFO | Stage indicator_engine duration: 136465 ms
+[2026-07-10 00:01:35 IST] INFO | Stage signal_engine duration: 260 ms
+[2026-07-10 00:01:35 IST] INFO | Dynamic max trades: 6 (base=6, SIDEWAYS=+0)
+[2026-07-10 00:01:35 IST] INFO | SUNPHARMA rejected: Market is closed
+[2026-07-10 00:01:35 IST] INFO | Stage trade_execution duration: 10 ms
+[2026-07-10 00:01:35 IST] INFO | Stage trade_monitoring duration: 16 ms
+[2026-07-10 00:01:35 IST] INFO | Stage performance_stats duration: 2 ms
+[2026-07-10 00:01:35 IST] INFO | CYCLE #1 | Duration: 294.3s | Scanned: 15 | Signals: 1 | Opened: 0 | Closed: 4 | Balance: ₹999,804
+[2026-07-10 00:01:35 IST] WARNING | Cycle duration 294.3s exceeded 240s guard; next scheduled cycle will be skipped
+[2026-07-10 00:01:35 IST] INFO | Scheduler started

@@ -265,6 +265,25 @@ TABLES: dict[str, str] = {
             added_at            TEXT DEFAULT (datetime('now'))
         );
     """,
+
+    "scan_results": """
+        CREATE TABLE IF NOT EXISTS scan_results (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol              TEXT NOT NULL,
+            scan_time           TEXT NOT NULL,
+            stage               INTEGER NOT NULL,
+            stage1_flagged      INTEGER DEFAULT 0,
+            stage1_price_change REAL,
+            stage1_volume_ratio REAL,
+            stage1_reason       TEXT,
+            stage2_score        REAL,
+            stage2_direction    TEXT,
+            stage2_pattern      TEXT,
+            stage2_setup        TEXT,
+            final_selected      INTEGER DEFAULT 0,
+            UNIQUE(symbol, scan_time)
+        );
+    """,
 }
 
 

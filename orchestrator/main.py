@@ -38,9 +38,11 @@ from agents.learning_agent import run_learning_cycle
 from agents.performance_tracker import update_stats
 from agents.risk_manager import calculate_position
 from agents.trade_validator import validate_signal
-from analysis.indicator_engine import run_indicator_engine
+from analysis.indicator_engine import run_indicator_engine, process_symbol as run_indicators_for_symbol
 from analysis.signal_engine import run_scan
-from data.fetcher import run_fetcher
+from analysis.stage1_scanner import run_stage1_scan
+from analysis.stage2_scanner import run_stage2_scan
+from data.fetcher import run_fetcher, fetch_candles, store_candles, get_latest_timestamp, _get_connection as get_fetcher_connection
 from data.universe_fetcher import update_universe
 
 
@@ -54,7 +56,8 @@ CYCLE_DURATION_GUARD_SECONDS = 240
 FAILURE_STAGES = (
     "fetcher",
     "indicator_engine",
-    "signal_engine",
+    "stage1_scanner",
+    "stage2_scanner",
     "trade_execution",
     "trade_monitoring",
 )
@@ -452,12 +455,78 @@ class Orchestrator:
 
             self._stage("fetcher", run_fetcher, None)
             self._stage("indicator_engine", run_indicator_engine, [])
-            picks, _ = self._stage("signal_engine", run_scan, [])
-            scanned, signals = self._scan_counts()
+            
+            # Stage 3a: Broad scan of all stocks
+            stage1_started = time.perf_counter()
+            stage1_result, stage1_ok = self._stage("stage1_scanner", run_stage1_scan, ([], ""))
+            self.logger.info("Stage stage1_scanner duration: %.0f ms", (time.perf_counter() - stage1_started) * 1000)
+            
+            flagged, scan_time = stage1_result if stage1_ok else ([], "")
+            
+            if stage1_ok:
+                self.logger.info("Stage 1 complete: %d stocks flagged for deep analysis", len(flagged))
+            
+            # Stage 3b: Fetch candles for flagged stocks that need data
+            if flagged:
+                symbols_needing_data = []
+                with sqlite3.connect(DB_PATH) as conn:
+                    for symbol in flagged:
+                        row = conn.execute("""
+                            SELECT COUNT(*) FROM candles 
+                            WHERE symbol = ? AND interval = '15m' 
+                                AND timestamp >= datetime('now', '-30 minutes')
+                        """, (symbol,)).fetchone()
+                        if not row or row[0] == 0:
+                            symbols_needing_data.append(symbol)
+                
+                if symbols_needing_data:
+                    self.logger.info(
+                        "Fetching candle data for %d flagged stocks missing recent data",
+                        len(symbols_needing_data),
+                    )
+                    fetcher_conn = get_fetcher_connection()
+                    indicator_conn = sqlite3.connect(DB_PATH)
+                    try:
+                        for sym in symbols_needing_data:
+                            try:
+                                latest_ts = get_latest_timestamp(fetcher_conn, sym)
+                                df = fetch_candles(sym, latest_ts)
+                                if not df.empty:
+                                    store_candles(fetcher_conn, sym, df)
+                                run_indicators_for_symbol(indicator_conn, sym)
+                            except Exception:
+                                self.logger.debug("Could not fetch/compute for %s", sym, exc_info=True)
+                    finally:
+                        fetcher_conn.close()
+                        indicator_conn.close()
+            
+            # Stage 3c: Deep scan on flagged stocks only
+            stage2_started = time.perf_counter()
+            top_picks, stage2_ok = self._stage(
+                "stage2_scanner", lambda: run_stage2_scan(flagged, scan_time), []
+            )
+            self.logger.info("Stage stage2_scanner duration: %.0f ms", (time.perf_counter() - stage2_started) * 1000)
+            
+            if stage2_ok:
+                self.logger.info("Stage 2 complete: %d candidates above threshold", len(top_picks))
+            
+            # Convert Stage 2 results to format expected by _execute_picks
+            picks = []
+            for candidate in top_picks:
+                picks.append({
+                    "symbol": candidate["symbol"],
+                    "weighted_score": candidate["score"],
+                    "direction": candidate["direction"],
+                    "market_condition": candidate.get("market_condition", "SIDEWAYS"),
+                })
+            
+            scanned, signals = len(flagged) if flagged else 0, len(top_picks)
             
             # Extract market condition from picks if available
             if picks and len(picks) > 0:
                 market_condition = picks[0].get("market_condition", "SIDEWAYS")
+            else:
+                market_condition = "SIDEWAYS"
 
             execution_started = time.perf_counter()
             opened = self._execute_picks(picks, market_condition)
