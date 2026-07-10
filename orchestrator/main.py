@@ -42,7 +42,7 @@ from analysis.indicator_engine import run_indicator_engine, process_symbol as ru
 from analysis.signal_engine import run_scan
 from analysis.stage1_scanner import run_stage1_scan
 from analysis.stage2_scanner import run_stage2_scan
-from data.fetcher import run_fetcher, fetch_candles, store_candles, get_latest_timestamp, _get_connection as get_fetcher_connection
+from data.fetcher import run_fetcher_for_intervals, fetch_candles, store_candles, get_latest_timestamp, _get_connection as get_fetcher_connection
 from data.universe_fetcher import update_universe
 
 
@@ -55,6 +55,8 @@ CYCLE_INTERVAL_MINUTES = 5
 CYCLE_DURATION_GUARD_SECONDS = 240
 FAILURE_STAGES = (
     "fetcher",
+    "hourly_candles",
+    "daily_candles",
     "indicator_engine",
     "stage1_scanner",
     "stage2_scanner",
@@ -453,7 +455,13 @@ class Orchestrator:
                 self.logger.info("Market closed, skipping")
                 return
 
-            self._stage("fetcher", run_fetcher, None)
+            self.logger.info("MARKET CYCLE #%d", self.cycle_number)
+            self._write_status("running", 0)
+
+            # Stage 1: Fast candle fetching
+            self._stage("fetcher", lambda: run_fetcher_for_intervals(['5m', '15m']), None)
+            
+            # Stage 2: Indicator generation (all intervals)
             self._stage("indicator_engine", run_indicator_engine, [])
             
             # Stage 3a: Broad scan of all stocks
@@ -612,12 +620,37 @@ class Orchestrator:
             self.cycle_number, self.session_opened, self.session_closed, f"{self._balance():,.0f}",
         )
 
+    def run_hourly_candle_fetch(self) -> None:
+        """Fetch and compute indicators for 1h candles every 30 mins."""
+        if not self._is_market_open():
+            return
+        self.logger.info("Starting hourly candle fetch (1h interval)")
+        self._stage("hourly_candles", lambda: run_fetcher_for_intervals(['1h']), None)
+        # We only compute indicators for '1h' immediately after fetch
+        self._stage("hourly_candles", lambda: run_indicator_engine(['1h']), None)
+
+    def run_daily_candle_fetch(self) -> None:
+        """Fetch and compute indicators for 1d candles once a day."""
+        self.logger.info("Starting daily candle fetch (1d interval)")
+        self._stage("daily_candles", lambda: run_fetcher_for_intervals(['1d']), None)
+        self._stage("daily_candles", lambda: run_indicator_engine(['1d']), None)
+
     def start(self) -> None:
         self.scheduler = BlockingScheduler(timezone=IST)
         self.scheduler.add_job(
             self.run_cycle,
             CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/5", timezone=IST),
             id="market_cycles", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_hourly_candle_fetch,
+            CronTrigger(day_of_week="mon-fri", hour="9-15", minute="0,30", timezone=IST),
+            id="hourly_candles", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_daily_candle_fetch,
+            CronTrigger(day_of_week="mon-fri", hour="9", minute="0", timezone=IST),
+            id="daily_candles", max_instances=1, coalesce=True,
         )
         self.scheduler.add_job(
             self.run_eod_cycle,
