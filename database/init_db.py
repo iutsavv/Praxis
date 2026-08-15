@@ -88,6 +88,42 @@ TABLES: dict[str, str] = {
         );
     """,
 
+    "price_levels": """
+        CREATE TABLE IF NOT EXISTS price_levels (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol          TEXT NOT NULL,
+            timeframe       TEXT NOT NULL,
+            level_price     REAL NOT NULL,
+            level_type      TEXT NOT NULL,
+            touches         INTEGER DEFAULT 0,
+            strength_score  REAL DEFAULT 0,
+            avg_volume_at_touch REAL,
+            first_touch     TEXT,
+            last_touch      TEXT,
+            broken_at       TEXT,
+            is_active       INTEGER DEFAULT 1,
+            last_updated    TEXT,
+            UNIQUE(symbol, timeframe, level_price, level_type)
+        );
+    """,
+
+    "patterns": """
+        CREATE TABLE IF NOT EXISTS patterns (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol          TEXT NOT NULL,
+            interval        TEXT NOT NULL,
+            timestamp       TEXT NOT NULL,
+            pattern_name    TEXT NOT NULL,
+            pattern_type    TEXT NOT NULL,
+            direction       TEXT NOT NULL,
+            strength        REAL DEFAULT 50,
+            volume_confirmed INTEGER DEFAULT 0,
+            candles_used    INTEGER DEFAULT 1,
+            detected_at     TEXT DEFAULT (datetime('now')),
+            UNIQUE(symbol, interval, timestamp, pattern_name)
+        );
+    """,
+
     "indicators": """
         CREATE TABLE IF NOT EXISTS indicators (
             id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,6 +158,8 @@ TABLES: dict[str, str] = {
             contrib_vwap        REAL,
             explanation         TEXT,
             notes               TEXT,
+            timeframe_confluence TEXT,
+            announcement_boost  REAL DEFAULT 0,
             created_at          TEXT    NOT NULL DEFAULT (datetime('now'))
         );
     """,
@@ -282,6 +320,72 @@ TABLES: dict[str, str] = {
             stage2_setup        TEXT,
             final_selected      INTEGER DEFAULT 0,
             UNIQUE(symbol, scan_time)
+        );
+    """,
+
+    "announcements": """
+        CREATE TABLE IF NOT EXISTS announcements (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol              TEXT NOT NULL,
+            exchange            TEXT,
+            announcement_type   TEXT,
+            headline            TEXT,
+            details             TEXT,
+            published_at        TEXT,
+            sentiment_score     REAL DEFAULT 0,
+            impact_score        REAL DEFAULT 0,
+            signal_boost        REAL DEFAULT 0,
+            fetched_at          TEXT DEFAULT (datetime('now')),
+            processed           INTEGER DEFAULT 0,
+            UNIQUE(symbol, published_at, headline)
+        );
+    """,
+
+    "news": """
+        CREATE TABLE IF NOT EXISTS news (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol          TEXT,
+            headline        TEXT NOT NULL,
+            summary         TEXT,
+            source          TEXT,
+            url             TEXT,
+            published_at    TEXT,
+            sentiment_score REAL DEFAULT 0,
+            keywords_json   TEXT,
+            urgency         TEXT DEFAULT 'LOW',
+            stocks_mentioned TEXT,
+            fetched_at      TEXT DEFAULT (datetime('now')),
+            UNIQUE(url)
+        );
+    """,
+
+    "api_usage": """
+        CREATE TABLE IF NOT EXISTS api_usage (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            api_name    TEXT,
+            call_date   TEXT,
+            call_count  INTEGER DEFAULT 0,
+            UNIQUE(api_name, call_date)
+        );
+    """,
+
+    "kronos_forecasts": """
+        CREATE TABLE IF NOT EXISTS kronos_forecasts (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol              TEXT NOT NULL,
+            scan_time           TEXT,
+            interval            TEXT NOT NULL,
+            lookback            INTEGER NOT NULL,
+            pred_len            INTEGER NOT NULL,
+            model_name          TEXT NOT NULL,
+            last_close          REAL,
+            predicted_close     REAL,
+            expected_return_pct REAL,
+            forecast_direction  TEXT,
+            score_adjustment    REAL DEFAULT 0,
+            confirms_signal     INTEGER DEFAULT 0,
+            message             TEXT,
+            created_at          TEXT NOT NULL DEFAULT (datetime('now'))
         );
     """,
 }

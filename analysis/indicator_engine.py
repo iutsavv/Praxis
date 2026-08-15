@@ -42,6 +42,8 @@ if hasattr(sys.stdout, "reconfigure"):
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(PROJECT_ROOT, "database", "trading.db")
 
+INTERVALS = ("5m", "15m", "1h", "1d")
+INTRADAY_VWAP_INTERVALS = {"5m", "15m"}
 INTERVAL = "15m"
 NIFTY_SYMBOL = "NSEI"
 WARMUP_CANDLES = 250
@@ -263,7 +265,7 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
         result["macd_signal"] = result["macd"].ewm(span=9, adjust=False, min_periods=1).mean()
         result["macd_histogram"] = result["macd"] - result["macd_signal"]
 
-    result["vwap"] = _compute_vwap(result)
+    result["vwap"] = _compute_vwap(result) if INTERVAL in INTRADAY_VWAP_INTERVALS else None
     result["volume_ratio"] = _compute_volume_ratio(result)
 
     return result
@@ -331,7 +333,10 @@ def insert_indicator_rows(
     validation_failures = 0
 
     for _, row in rows_to_insert.iterrows():
-        is_valid, reason = validate_indicator_row(row, require_vwap=symbol != NIFTY_SYMBOL)
+        is_valid, reason = validate_indicator_row(
+            row,
+            require_vwap=symbol != NIFTY_SYMBOL and INTERVAL in INTRADAY_VWAP_INTERVALS,
+        )
         if not is_valid:
             validation_failures += 1
             print(
@@ -446,6 +451,28 @@ def process_symbol(conn: sqlite3.Connection, symbol: str) -> SymbolRunResult:
     )
 
 
+def process_symbol_for_intervals(
+    conn: sqlite3.Connection,
+    symbol: str,
+    intervals: list[str] | tuple[str, ...] | None = None,
+) -> list[SymbolRunResult]:
+    """Compute indicators for one symbol across one or more intervals."""
+    global INTERVAL
+
+    requested_intervals = list(intervals or INTERVALS)
+    original_interval = INTERVAL
+    results: list[SymbolRunResult] = []
+    try:
+        for interval in requested_intervals:
+            if interval not in INTERVALS:
+                raise ValueError(f"Unsupported indicator interval: {interval}")
+            INTERVAL = interval
+            results.append(process_symbol(conn, symbol))
+        return results
+    finally:
+        INTERVAL = original_interval
+
+
 def print_run_summary(results: list[SymbolRunResult]) -> None:
     total_failures = sum(result.validation_failures for result in results)
 
@@ -502,23 +529,40 @@ def print_latest_samples(conn: sqlite3.Connection, sample_count: int = 3) -> Non
             """,
             (symbol,),
         ).fetchone()
+        vwap_text = f"{row['vwap']:.2f}" if row["vwap"] is not None else "n/a"
         print(
             f"  {row['symbol']:<12} {row['timestamp']}  "
             f"RSI={row['rsi']:.2f}  MACD={row['macd']:.4f}  "
             f"Signal={row['macd_signal']:.4f}  Hist={row['macd_histogram']:.4f}  "
-            f"VWAP={row['vwap']:.2f}  VolRatio={_clean_float(row['volume_ratio'])}"
+            f"VWAP={vwap_text}  "
+            f"VolRatio={_clean_float(row['volume_ratio'])}"
         )
 
 
-def run_indicator_engine() -> list[SymbolRunResult]:
-    conn = _get_connection()
+def run_indicator_engine(intervals: list[str] | tuple[str, ...] | None = None) -> list[SymbolRunResult]:
+    """Compute indicators for one or more candle intervals."""
+    global INTERVAL
+
+    requested_intervals = list(intervals or INTERVALS)
+    original_interval = INTERVAL
+    all_results: list[SymbolRunResult] = []
+
     try:
-        symbols = get_active_symbols(conn)
-        results = [process_symbol(conn, symbol) for symbol in symbols]
-        print_run_summary(results)
-        return results
+        for interval in requested_intervals:
+            if interval not in INTERVALS:
+                raise ValueError(f"Unsupported indicator interval: {interval}")
+            INTERVAL = interval
+            conn = _get_connection()
+            try:
+                symbols = get_active_symbols(conn)
+                results = [process_symbol(conn, symbol) for symbol in symbols]
+                print_run_summary(results)
+                all_results.extend(results)
+            finally:
+                conn.close()
+        return all_results
     finally:
-        conn.close()
+        INTERVAL = original_interval
 
 
 # ---------------------------------------------------------------------------

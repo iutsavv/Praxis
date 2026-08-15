@@ -256,6 +256,59 @@ def classify_stocks(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def refresh_stage2_flags_from_candles(
+    cursor: sqlite3.Cursor,
+    current_time: str,
+) -> int:
+    """Refresh cached volumes and Stage 2 flags from local candle history."""
+    rows = cursor.execute("""
+        SELECT symbol, AVG(daily_volume) AS avg_daily_volume
+        FROM (
+            SELECT symbol, DATE(timestamp) AS trade_date, SUM(volume) AS daily_volume
+            FROM candles
+            WHERE interval = '15m'
+            GROUP BY symbol, DATE(timestamp)
+        )
+        GROUP BY symbol
+    """).fetchall()
+
+    updated = 0
+    for row in rows:
+        avg_volume = float(row["avg_daily_volume"] or 0)
+        if avg_volume <= 0:
+            continue
+        cursor.execute(
+            """
+            UPDATE stock_universe
+            SET avg_daily_volume = ?,
+                in_stage2_scan = CASE
+                    WHEN is_fo_stock = 1 OR ? >= ? THEN 1
+                    ELSE 0
+                END,
+                last_updated = ?
+            WHERE symbol = ? AND is_active = 1
+            """,
+            (
+                avg_volume,
+                avg_volume,
+                STAGE2_VOLUME_THRESHOLD,
+                current_time,
+                row["symbol"],
+            ),
+        )
+        updated += cursor.rowcount
+
+    cursor.execute(
+        """
+        UPDATE stock_universe
+        SET in_stage2_scan = 1, last_updated = ?
+        WHERE is_fo_stock = 1 AND is_active = 1
+        """,
+        (current_time,),
+    )
+    return updated
+
+
 def update_universe() -> dict[str, Any]:
     """Main function to update the stock universe.
     
@@ -395,6 +448,7 @@ def update_universe() -> dict[str, Any]:
         [current_time] + list(current_symbols)
         ).rowcount
         
+        candle_volume_updates = refresh_stage2_flags_from_candles(cursor, current_time)
         conn.commit()
         
         # Get final counts
@@ -412,6 +466,7 @@ def update_universe() -> dict[str, Any]:
             'deactivated_stocks': deactivated,
             'fo_stocks': fo_count,
             'stage2_eligible': stage2_count,
+            'volume_updates': candle_volume_updates,
             'duration_seconds': round(duration, 2)
         }
         
@@ -422,6 +477,7 @@ def update_universe() -> dict[str, Any]:
         print(f"    Stocks deactivated: {deactivated}")
         print(f"    F&O eligible: {fo_count}")
         print(f"    Stage 2 scan eligible: {stage2_count:,}")
+        print(f"    Volume-derived Stage 2 refreshes: {candle_volume_updates:,}")
         
         return summary
         

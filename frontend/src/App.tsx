@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import api from './api/client';
+import api, { marketDataApi } from './api/client';
 import {
   useAccount,
   useSignals,
@@ -9,11 +9,12 @@ import {
 } from './hooks/useDataHooks';
 import PipelineControl from './pages/PipelineControl';
 import Backtest from './pages/Backtest';
+import News from './pages/News';
 import { useWebSocket } from './hooks/useWebSocket';
 import { StoreProvider, useStore } from './store/store';
-import type { LearningInsight, LearningRunResponse, PingResponse, StrategyHistoryRow } from './types';
+import type { LearningInsight, LearningRunResponse, MarketSentiment, PingResponse, ScanSummary, StockSentiment, TimeframeConfluence, UniverseSummary, StrategyHistoryRow } from './types';
 
-type Page = 'overview' | 'scanner' | 'openTrades' | 'tradeHistory' | 'strategy' | 'backtest' | 'pipeline';
+type Page = 'overview' | 'scanner' | 'news' | 'openTrades' | 'tradeHistory' | 'strategy' | 'backtest' | 'pipeline';
 
 function minutesAgo(value: string | null) {
   if (!value) return 'Never updated';
@@ -50,10 +51,38 @@ function SkeletonGrid({ count = 3 }: { count?: number }) {
 function OverviewPage() {
   const { state } = useStore();
   const resource = useAccount();
+  const [marketSentiment, setMarketSentiment] = useState<MarketSentiment | null>(null);
+  const [universe, setUniverse] = useState<UniverseSummary | null>(null);
+  const [scanSummary, setScanSummary] = useState<ScanSummary | null>(null);
   const account = state.account;
   const balance = account?.balance ?? account?.current_balance ?? account?.equity;
   const realized = account?.total_pnl ?? account?.realized_pnl ?? 0;
   const openTrades = account?.open_positions_count ?? account?.open_trades ?? 0;
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      marketDataApi.marketSentiment(),
+      marketDataApi.universeSummary(),
+      marketDataApi.scanLatest(),
+    ]).then(([sentiment, universeSummary, scan]) => {
+      if (!cancelled) {
+        setMarketSentiment(sentiment);
+        setUniverse(universeSummary);
+        setScanSummary(scan);
+      }
+    }).catch(() => {
+      if (!cancelled) {
+        setMarketSentiment({ overall_score: 0, label: 'NEUTRAL', article_count: 0, sector_sentiment: {} });
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const positivePct = marketSentiment?.article_count
+    ? Math.round(((marketSentiment.positive_count || 0) / marketSentiment.article_count) * 100)
+    : 0;
+
   return (
     <section>
       <ErrorBanner message={resource.error} onRetry={resource.refresh} />
@@ -70,6 +99,33 @@ function OverviewPage() {
           <Metric label="Max Drawdown" value={account?.max_drawdown != null ? `Rs ${account.max_drawdown.toLocaleString()}` : '-'} />
         </div>
       )}
+
+      <div className="grid overview-extra">
+        <div className="card market-card">
+          <span className="label">Market Sentiment</span>
+          <strong className={marketSentiment && marketSentiment.overall_score >= 0 ? 'positive' : 'negative'}>
+            {marketSentiment?.label || 'NEUTRAL'} {marketSentiment ? marketSentiment.overall_score.toFixed(2) : '0.00'}
+          </strong>
+          <div className="sentiment-bar"><span style={{ width: `${Math.min(100, Math.max(0, ((marketSentiment?.overall_score || 0) + 1) * 50))}%` }} /></div>
+          <p className="muted">{positivePct}% positive news today</p>
+          <div className="sector-bars">
+            {Object.entries(marketSentiment?.sector_sentiment || {}).slice(0, 6).map(([sector, score]) => (
+              <span key={sector}>
+                {sector} <b className={score >= 0 ? 'positive' : 'negative'}>{score.toFixed(2)}</b>
+              </span>
+            ))}
+            {!marketSentiment?.article_count && <span className="muted">No news fetched yet. News fetcher runs every 15 minutes during market hours.</span>}
+          </div>
+        </div>
+        <div className="card">
+          <span className="label">Scan Coverage</span>
+          <strong>{(universe?.total_stocks || 0).toLocaleString()} stocks monitored</strong>
+          <p>Stage 1: {scanSummary?.stage1_flagged || 0} flagged this cycle</p>
+          <p>Stage 2: {scanSummary?.stage2_candidates || 0} deep analyzed</p>
+          <p>F&O stocks: always included ({universe?.fo_stocks_count || 0})</p>
+          {!universe?.total_stocks && <p className="muted">Stock universe not yet populated. Run universe_fetcher.py to initialize.</p>}
+        </div>
+      </div>
     </section>
   );
 }
@@ -97,7 +153,18 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
     }>;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [runningScan, setRunningScan] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [universe, setUniverse] = useState<UniverseSummary | null>(null);
+  const [scanSummary, setScanSummary] = useState<ScanSummary | null>(null);
+  const [stockSectors, setStockSectors] = useState<Record<string, string>>({});
+  const [stockFo, setStockFo] = useState<Record<string, number>>({});
+  const [sentimentBySymbol, setSentimentBySymbol] = useState<Record<string, StockSentiment>>({});
+  const [confluenceBySymbol, setConfluenceBySymbol] = useState<Record<string, TimeframeConfluence>>({});
+  const [sectorFilter, setSectorFilter] = useState('');
+  const [sentimentFilter, setSentimentFilter] = useState('all');
+  const [stageFilter, setStageFilter] = useState('all');
+  const [showStage1Table, setShowStage1Table] = useState(false);
 
   const fetchScanData = useCallback(async () => {
     setLoading(true);
@@ -107,14 +174,41 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
         api.get('/api/scan/stage1/latest'),
         api.get('/api/scan/stage2/latest'),
       ]);
+      const [summary, universeSummary, stocks] = await Promise.all([
+        marketDataApi.scanLatest(),
+        marketDataApi.universeSummary(),
+        marketDataApi.universeStocks({ limit: 500 }),
+      ]);
       setStage1(s1.data);
       setStage2(s2.data);
+      setScanSummary(summary);
+      setUniverse(universeSummary);
+      setStockSectors(Object.fromEntries(stocks.items.map((stock) => [stock.symbol, stock.sector || 'Unknown'])));
+      setStockFo(Object.fromEntries(stocks.items.map((stock) => [stock.symbol, stock.is_fo_stock || 0])));
+      const symbols = (s2.data?.all_analyzed || []).slice(0, 25).map((stock: any) => stock.symbol);
+      const sentimentPairs = await Promise.all(symbols.map(async (symbol: string) => [symbol, await marketDataApi.stockSentiment(symbol)] as const));
+      const confluencePairs = await Promise.all(symbols.map(async (symbol: string) => [symbol, await marketDataApi.confluence(symbol)] as const));
+      setSentimentBySymbol(Object.fromEntries(sentimentPairs));
+      setConfluenceBySymbol(Object.fromEntries(confluencePairs));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load scan data');
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const runTwoStageScan = useCallback(async () => {
+    setRunningScan(true);
+    setError(null);
+    try {
+      await api.post('/api/pipeline/run-two-stage-scan');
+      await fetchScanData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to run two-stage scan');
+    } finally {
+      setRunningScan(false);
+    }
+  }, [fetchScanData]);
 
   useEffect(() => {
     fetchScanData();
@@ -123,11 +217,79 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
   }, [fetchScanData]);
 
   const scanTime = stage1?.scan_time || stage2?.scan_time;
+  const stage1ReasonSummary = {
+    priceUp: 0,
+    priceDown: 0,
+    volumeSpike: 0,
+    foStock: 0,
+    openTrade: 0,
+  };
+  Object.entries(stage1?.reason_summary || {}).forEach(([reason, count]) => {
+    if (reason === 'price_up') stage1ReasonSummary.priceUp += count;
+    else if (reason === 'price_down') stage1ReasonSummary.priceDown += count;
+    else if (reason === 'volume_spike') stage1ReasonSummary.volumeSpike += count;
+    else if (reason === 'fo_stock') stage1ReasonSummary.foStock += count;
+    else if (reason === 'open_trade') stage1ReasonSummary.openTrade += count;
+  });
+  const reasonChips = [
+    ['Price up', stage1ReasonSummary.priceUp, 'positive'],
+    ['Price down', stage1ReasonSummary.priceDown, 'negative'],
+    ['Volume spike', stage1ReasonSummary.volumeSpike, 'warning'],
+    ['F&O universe', stage1ReasonSummary.foStock, 'online'],
+    ['Open trades', stage1ReasonSummary.openTrade, 'hold'],
+  ].filter(([, count]) => Number(count) > 0);
+
+  const filteredRows = (stage2?.all_analyzed || []).filter((stock) => {
+    const sectorOk = !sectorFilter || stockSectors[stock.symbol] === sectorFilter;
+    const sentiment = sentimentBySymbol[stock.symbol]?.overall_sentiment;
+    const sentimentOk =
+      sentimentFilter === 'all' ||
+      (sentimentFilter === 'positive' && (sentiment || 0) > 0.2) ||
+      (sentimentFilter === 'negative' && (sentiment || 0) < -0.2) ||
+      (sentimentFilter === 'none' && !sentimentBySymbol[stock.symbol]?.article_count);
+    const stageOk =
+      stageFilter === 'all' ||
+      (stageFilter === 'stage2' && stock.final_selected === 1) ||
+      (stageFilter === 'fo' && stockFo[stock.symbol] === 1);
+    return sectorOk && sentimentOk && stageOk;
+  });
+
+  const dotClass = (bias?: string) => bias === 'BULLISH' ? 'dot green' : bias === 'BEARISH' ? 'dot red' : 'dot grey';
+  const sentimentDot = (score?: number) => (score || 0) > 0.2 ? 'dot green' : (score || 0) < -0.2 ? 'dot red' : 'dot grey';
 
   return (
     <section>
       <ErrorBanner message={error} onRetry={fetchScanData} />
-      <p className="muted">{scanTime ? minutesAgo(scanTime) : 'No scan data yet'}</p>
+      <div className="section-heading">
+        <p className="muted">{scanTime ? minutesAgo(scanTime) : 'No scan data yet'}</p>
+        <button onClick={runTwoStageScan} disabled={runningScan}>
+          {runningScan ? 'Running scan...' : 'Run Two-Stage Scan'}
+        </button>
+      </div>
+
+      <div className="summary-bar">
+        <span>Universe: <strong>{(universe?.total_stocks || 0).toLocaleString()}</strong> stocks</span>
+        <span>Stage 1: <strong>{scanSummary?.stage1_flagged || stage1?.total_flagged || 0}</strong> flagged</span>
+        <span>Stage 2: <strong>{scanSummary?.stage2_candidates || stage2?.candidates_above_threshold || 0}</strong> candidates</span>
+      </div>
+
+      <div className="filter-bar">
+        <select value={sectorFilter} onChange={(event) => setSectorFilter(event.target.value)}>
+          <option value="">All sectors</option>
+          {Object.keys(universe?.sector_distribution || {}).map((sector) => <option key={sector} value={sector}>{sector}</option>)}
+        </select>
+        <select value={sentimentFilter} onChange={(event) => setSentimentFilter(event.target.value)}>
+          <option value="all">All news</option>
+          <option value="positive">Positive News</option>
+          <option value="negative">Negative News</option>
+          <option value="none">No News</option>
+        </select>
+        <select value={stageFilter} onChange={(event) => setStageFilter(event.target.value)}>
+          <option value="all">All stages</option>
+          <option value="stage2">Stage 2 Candidates Only</option>
+          <option value="fo">F&O Only</option>
+        </select>
+      </div>
 
       {/* Stage summary cards */}
       <div className="grid" style={{ marginBottom: '1.5rem' }}>
@@ -139,9 +301,19 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
                 {stage1.total_scanned.toLocaleString()} stocks scanned →{' '}
                 <span className="positive">{stage1.total_flagged} flagged</span>
               </p>
-              {stage1.reason_summary && Object.keys(stage1.reason_summary).length > 0 && (
+              {reasonChips.length > 0 && (
+                <div className="reason-chip-grid">
+                  {reasonChips.map(([label, count, tone]) => (
+                    <span className={`reason-chip ${tone}`} key={label}>
+                      <strong>{count}</strong>
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {false && stage1?.reason_summary && Object.keys(stage1?.reason_summary || {}).length > 0 && (
                 <p className="muted" style={{ fontSize: '0.85rem' }}>
-                  {Object.entries(stage1.reason_summary)
+                  {Object.entries(stage1?.reason_summary || {})
                     .map(([reason, count]) => `${reason}: ${count}`)
                     .join(' · ')}
                 </p>
@@ -165,29 +337,75 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
         </div>
       </div>
 
+      {/* Stage 1 flagged stocks table */}
+      {stage1 && stage1.flagged_stocks && stage1.flagged_stocks.length > 0 && (
+        <>
+          <div className="section-heading" style={{ marginTop: '0.5rem' }}>
+            <h3 style={{ margin: 0 }}>Stage 1 — Flagged Stocks ({stage1.flagged_stocks.length})</h3>
+            <button onClick={() => setShowStage1Table(!showStage1Table)}>
+              {showStage1Table ? 'Hide details' : 'Show details'}
+            </button>
+          </div>
+          {showStage1Table && (
+            <div className="table">
+              <div className="row table-header" style={{ gridTemplateColumns: '1.2fr 1fr 1fr 1.5fr' }}>
+                <strong>Symbol</strong><span>Price Change</span><span>Volume Ratio</span><span>Reason</span>
+              </div>
+              {stage1.flagged_stocks.map((stock) => (
+                <div className="row" key={stock.symbol} style={{ gridTemplateColumns: '1.2fr 1fr 1fr 1.5fr' }}>
+                  <strong>{stock.symbol}</strong>
+                  <span className={(stock.stage1_price_change ?? 0) >= 0 ? 'positive' : 'negative'}>
+                    {stock.stage1_price_change != null ? `${stock.stage1_price_change >= 0 ? '+' : ''}${stock.stage1_price_change.toFixed(2)}%` : '-'}
+                  </span>
+                  <span className="muted">
+                    {stock.stage1_volume_ratio != null ? `${stock.stage1_volume_ratio.toFixed(1)}x` : '-'}
+                  </span>
+                  <span className="muted">{stock.stage1_reason || '-'}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
       {/* Stage 2 results table */}
       {loading && !stage2 ? <SkeletonGrid count={6} /> : null}
       {stage2 && stage2.all_analyzed && stage2.all_analyzed.length > 0 ? (
-        <div className="table">
-          {stage2.all_analyzed.map((stock) => (
+        <div className="table scanner-table">
+          <div className="row table-header">
+            <strong>Symbol</strong><span>Direction</span><span>Score</span><span>Confluence</span><span>News</span><span>Announcement</span><span>Sector</span><span>Move</span><span>Volume</span>
+          </div>
+          {filteredRows.map((stock) => {
+            const confluence = confluenceBySymbol[stock.symbol];
+            const news = sentimentBySymbol[stock.symbol];
+            return (
             <div className="row" key={stock.symbol}>
               <strong>{stock.symbol}</strong>
               <span className={`pill ${(stock.stage2_direction || 'hold').toLowerCase()}`}>
                 {stock.stage2_direction || 'HOLD'}
               </span>
               <span>{stock.stage2_score?.toFixed(1) ?? '-'}</span>
+              <span className="dot-group" title={confluence?.confluence_level || 'No confluence data'}>
+                {['5m', '15m', '1h'].map((tf) => <i key={tf} className={dotClass(confluence?.timeframes?.[tf]?.bias)} />)}
+              </span>
+              <span title={news?.latest_headline || 'No news fetched yet'}>
+                <i className={sentimentDot(news?.overall_sentiment)} /> {news?.article_count ? news.overall_sentiment.toFixed(2) : '-'}
+              </span>
+              <span className={`announcement-badge ${news?.latest_announcement_type ? 'active' : ''}`}>
+                {news?.latest_announcement_type || (news?.announcement_count ? `${news.announcement_count} today` : 'None')}
+              </span>
+              <span className="muted">{stockSectors[stock.symbol] || '-'}</span>
               <span className={(stock.stage1_price_change ?? 0) >= 0 ? 'positive' : 'negative'}>
                 {stock.stage1_price_change != null ? `${stock.stage1_price_change >= 0 ? '+' : ''}${stock.stage1_price_change.toFixed(2)}%` : '-'}
               </span>
               <span className="muted">
                 {stock.stage1_volume_ratio != null ? `${stock.stage1_volume_ratio.toFixed(1)}x vol` : ''}
               </span>
-              {stock.final_selected === 1 && <span className="pill buy">Selected</span>}
             </div>
-          ))}
+          )})}
         </div>
       ) : !loading ? (
-        <EmptyState text="No Stage 2 results yet. Run the scanner pipeline to see deep analysis results." />
+        <EmptyState text="No scan data yet. The orchestrator will populate this on next run." />
       ) : null}
     </section>
   );
@@ -412,17 +630,25 @@ function EmptyState({ text }: { text: string }) {
 
 function Dashboard({ ping }: { ping: PingResponse }) {
   const [page, setPage] = useState<Page>('overview');
+  const [hasUrgentNews, setHasUrgentNews] = useState(false);
   const { state } = useStore();
   const ws = useWebSocket();
   const pages: { id: Page; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'scanner', label: 'Scanner' },
+    { id: 'news', label: 'News' },
     { id: 'openTrades', label: 'Open Trades' },
     { id: 'tradeHistory', label: 'Trade History' },
     { id: 'strategy', label: 'Strategy' },
     { id: 'backtest', label: 'Backtest' },
     { id: 'pipeline', label: '▶ Pipeline' },
   ];
+
+  useEffect(() => {
+    marketDataApi.latestNews({ urgency: 'HIGH', since: '30min', limit: 1 })
+      .then((items) => setHasUrgentNews(items.length > 0))
+      .catch(() => setHasUrgentNews(false));
+  }, []);
 
   return (
     <main>
@@ -444,7 +670,7 @@ function Dashboard({ ping }: { ping: PingResponse }) {
       <nav>
         {pages.map((item) => (
           <button className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)} key={item.id}>
-            {item.label}
+            {item.label}{item.id === 'news' && hasUrgentNews ? <span className="nav-dot" /> : null}
           </button>
         ))}
       </nav>
@@ -452,6 +678,7 @@ function Dashboard({ ping }: { ping: PingResponse }) {
       <ErrorBanner message={state.globalError} onRetry={() => window.location.reload()} />
       {page === 'overview' && <OverviewPage />}
       {page === 'scanner' && <ScannerPage wsConnected={ws.connected} />}
+      {page === 'news' && <News />}
       {page === 'openTrades' && <OpenTradesPage wsConnected={ws.connected} />}
       {page === 'tradeHistory' && <TradeHistoryPage />}
       {page === 'strategy' && <StrategyPage />}

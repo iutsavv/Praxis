@@ -1,5 +1,5 @@
-"""
-fetcher.py — Raw OHLCV candle data fetcher for the AI Paper Trading Agent.
+﻿"""
+fetcher.py â€” Raw OHLCV candle data fetcher for the AI Paper Trading Agent.
 
 Single responsibility: fetch 15-minute candle data from Yahoo Finance (via
 yfinance) for every active NSE symbol in the watchlist and store the raw
@@ -31,8 +31,20 @@ import yfinance as yf
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(PROJECT_ROOT, "database", "trading.db")
 
-INTERVAL = "15m"                     # only 15-minute candles
-BACKFILL_DAYS = 59                   # initial load window (yfinance caps 15m at 60d)
+INTERVALS = {
+    "5m": {"period": "5d", "priority": "HIGH"},
+    "15m": {"period": "60d", "priority": "HIGH"},
+    "1h": {"period": "60d", "priority": "MEDIUM"},
+    "1d": {"period": "365d", "priority": "LOW"},
+}
+INTERVAL = "15m"
+BACKFILL_DAYS = 59
+INTERVAL_DELTAS = {
+    "5m": timedelta(minutes=5),
+    "15m": timedelta(minutes=15),
+    "1h": timedelta(hours=1),
+    "1d": timedelta(days=1),
+}
 NIFTY_SYMBOL = "NSEI"
 
 
@@ -51,39 +63,48 @@ def _get_connection() -> sqlite3.Connection:
 
 def get_active_symbols(conn: sqlite3.Connection) -> list[str]:
     """Read symbols from stock_universe for Stage 2 scanning, plus original stocks table."""
-    
+
     # Get Stage 2 scan candidates from universe
     cursor = conn.execute(
-        """SELECT symbol FROM stock_universe 
-           WHERE in_stage2_scan = 1 AND is_active = 1 
+        """SELECT symbol FROM stock_universe
+           WHERE in_stage2_scan = 1 AND is_active = 1
            ORDER BY symbol"""
     )
     universe_symbols = [row[0] for row in cursor.fetchall()]
-    
+
     # Get original stocks (for backward compatibility with trading)
     cursor = conn.execute(
         "SELECT symbol FROM stocks WHERE is_active = 1 ORDER BY symbol"
     )
     trading_symbols = [row[0] for row in cursor.fetchall()]
-    
+
     # Combine both lists, removing duplicates
     all_symbols = list(set(universe_symbols + trading_symbols))
-    
+
     # Market-condition detection depends on Nifty history
     if NIFTY_SYMBOL not in all_symbols:
         all_symbols.append(NIFTY_SYMBOL)
-    
+
     return sorted(all_symbols)
 
 
 def get_latest_timestamp(conn: sqlite3.Connection, symbol: str) -> str | None:
     """Return the latest stored timestamp for a symbol + interval, or None."""
+    return get_latest_timestamp_for_interval(conn, symbol, INTERVAL)
+
+
+def get_latest_timestamp_for_interval(
+    conn: sqlite3.Connection,
+    symbol: str,
+    interval: str,
+) -> str | None:
+    """Return the latest stored timestamp for a symbol and interval."""
     cursor = conn.execute(
         """
         SELECT MAX(timestamp) FROM candles
         WHERE symbol = ? AND interval = ?
         """,
-        (symbol, INTERVAL),
+        (symbol, interval),
     )
     row = cursor.fetchone()
     return row[0] if row and row[0] else None
@@ -93,7 +114,11 @@ def get_latest_timestamp(conn: sqlite3.Connection, symbol: str) -> str | None:
 # Fetching logic
 # ---------------------------------------------------------------------------
 
-def fetch_candles(symbol: str, latest_ts: str | None) -> pd.DataFrame:
+def fetch_candles(
+    symbol: str,
+    latest_ts: str | None = None,
+    interval: str | None = None,
+) -> pd.DataFrame:
     """Download 15m OHLCV candles for an NSE symbol via yfinance.
 
     Parameters
@@ -110,26 +135,32 @@ def fetch_candles(symbol: str, latest_ts: str | None) -> pd.DataFrame:
         Columns: Open, High, Low, Close, Volume with a DatetimeIndex.
         Empty DataFrame if nothing new is available.
     """
+    active_interval = interval or INTERVAL
+    if active_interval not in INTERVALS:
+        raise ValueError(f"Unsupported candle interval: {active_interval}")
+
     ticker = "^NSEI" if symbol in {"NSEI", "^NSEI"} else f"{symbol}.NS"
+    interval_delta = INTERVAL_DELTAS.get(active_interval, timedelta(minutes=15))
 
     if latest_ts is None:
-        # Initial backfill — yfinance caps 15m data to ~60 days
-        start_date = (datetime.now() - timedelta(days=BACKFILL_DAYS)).strftime("%Y-%m-%d")
         df = yf.download(
             ticker,
-            start=start_date,
-            interval=INTERVAL,
+            period=str(INTERVALS[active_interval]["period"]),
+            interval=active_interval,
             progress=False,
             auto_adjust=True,
             # multi_level_cols=False for yfinance>=0.2.37
         )
     else:
-        # Incremental — fetch from one interval after the last stored candle
-        start_dt = pd.Timestamp(latest_ts) + timedelta(minutes=15)
+        start_dt = pd.Timestamp(latest_ts) + interval_delta
+        now = pd.Timestamp.now(tz=start_dt.tz)
+        # If the next expected candle hasn't happened yet, skip the download
+        if start_dt > now:
+            return pd.DataFrame()
         df = yf.download(
             ticker,
             start=start_dt,
-            interval=INTERVAL,
+            interval=active_interval,
             progress=False,
             auto_adjust=True,
         )
@@ -137,7 +168,7 @@ def fetch_candles(symbol: str, latest_ts: str | None) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame()
 
-    # yfinance sometimes returns MultiIndex columns — flatten them
+    # yfinance sometimes returns MultiIndex columns â€” flatten them
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
 
@@ -145,7 +176,7 @@ def fetch_candles(symbol: str, latest_ts: str | None) -> pd.DataFrame:
     expected = ["Open", "High", "Low", "Close", "Volume"]
     missing = [c for c in expected if c not in df.columns]
     if missing:
-        print(f"    [WARN] {symbol}: missing columns {missing} — skipping")
+        print(f"    [WARN] {symbol}: missing columns {missing} â€” skipping")
         return pd.DataFrame()
 
     df = df[expected].copy()
@@ -156,6 +187,54 @@ def fetch_candles(symbol: str, latest_ts: str | None) -> pd.DataFrame:
     return df
 
 
+def fetch_candles_bulk(symbols: list[str], interval: str = "15m") -> dict[str, pd.DataFrame]:
+    """Fetch candles for multiple symbols at once using yfinance bulk download."""
+    if not symbols:
+        return {}
+
+    active_interval = interval or INTERVAL
+    tickers = [f"{sym}.NS" for sym in symbols]
+
+    df_bulk = yf.download(
+        tickers,
+        period=str(INTERVALS[active_interval]["period"]),
+        interval=active_interval,
+        group_by="ticker",
+        progress=False,
+        threads=True,
+        auto_adjust=True,
+    )
+
+    if df_bulk is None or df_bulk.empty:
+        return {}
+
+    result_dfs = {}
+
+    # If only one symbol was provided, yfinance might not use MultiIndex depending on the version
+    if not isinstance(df_bulk.columns, pd.MultiIndex):
+        df_bulk.columns = pd.MultiIndex.from_product([[tickers[0]], df_bulk.columns])
+
+    expected = ["Open", "High", "Low", "Close", "Volume"]
+
+    for ticker in df_bulk.columns.levels[0]:
+        symbol = ticker.replace(".NS", "")
+        if symbol not in symbols:
+            continue
+
+        try:
+            df = df_bulk[ticker].copy()
+            # Drop rows where all OHLCV are NaN
+            df.dropna(subset=["Open", "High", "Low", "Close"], how="all", inplace=True)
+
+            missing = [c for c in expected if c not in df.columns]
+            if not missing and not df.empty:
+                result_dfs[symbol] = df[expected]
+        except KeyError:
+            continue
+
+    return result_dfs
+
+
 # ---------------------------------------------------------------------------
 # Storage
 # ---------------------------------------------------------------------------
@@ -164,6 +243,7 @@ def store_candles(
     conn: sqlite3.Connection,
     symbol: str,
     df: pd.DataFrame,
+    interval: str | None = None,
 ) -> tuple[int, int]:
     """Write a DataFrame of candles into the candles table.
 
@@ -180,6 +260,7 @@ def store_candles(
     cursor = conn.cursor()
     inserted = 0
     skipped = 0
+    active_interval = interval or INTERVAL
 
     for idx, row in df.iterrows():
         ts = idx.strftime("%Y-%m-%d %H:%M:%S")
@@ -192,7 +273,7 @@ def store_candles(
                 """,
                 (
                     symbol,
-                    INTERVAL,
+                    active_interval,
                     float(row["Open"]),
                     float(row["High"]),
                     float(row["Low"]),
@@ -218,14 +299,14 @@ def store_candles(
 # ---------------------------------------------------------------------------
 
 def run_fetcher() -> None:
-    """Fetch and store 15m candles for every active symbol."""
+    """Fetch and store candles for every active symbol."""
 
     print("\n" + "=" * 64)
-    print("  AI Paper Trading Agent — OHLCV Candle Fetcher")
+    print("  AI Paper Trading Agent â€” OHLCV Candle Fetcher")
     print("=" * 64)
     print(f"  Database : {DB_PATH}")
     print(f"  Interval : {INTERVAL}")
-    print(f"  Backfill : {BACKFILL_DAYS} days (for new symbols)")
+    print(f"  Period   : {INTERVALS[INTERVAL]['period']} ({INTERVALS[INTERVAL]['priority']} priority)")
     print("=" * 64 + "\n")
 
     conn = _get_connection()
@@ -242,31 +323,31 @@ def run_fetcher() -> None:
     # Track per-symbol results for the final summary
     results: list[tuple[str, int, int, str]] = []
 
-    for i, symbol in enumerate(symbols, start=1):
-        prefix = f"  [{i:2d}/{len(symbols)}] {symbol:<12}"
-        try:
-            latest_ts = get_latest_timestamp(conn, symbol)
-            mode = "incremental" if latest_ts else f"backfill ({BACKFILL_DAYS}d)"
-            print(f"{prefix} | mode: {mode:<20}", end="", flush=True)
+    print(f"  Bulk downloading {len(symbols)} symbols...")
+    bulk_data = fetch_candles_bulk(symbols, INTERVAL)
+    mode = f"period ({INTERVALS[INTERVAL]['period']})"
 
-            df = fetch_candles(symbol, latest_ts)
+    for i, symbol in enumerate(symbols, start=1):
+        prefix = f"  [{i:3d}/{len(symbols)}] {symbol:<12}"
+        try:
+            df = bulk_data.get(symbol, pd.DataFrame())
 
             if df.empty:
-                print(f" | no new data")
+                print(f"{prefix} | no new data")
                 results.append((symbol, 0, 0, mode))
                 continue
 
-            inserted, skipped = store_candles(conn, symbol, df)
-            print(f" | +{inserted} new, ~{skipped} skipped")
+            inserted, skipped = store_candles(conn, symbol, df, INTERVAL)
+            print(f"{prefix} | +{inserted} new, ~{skipped} skipped")
             results.append((symbol, inserted, skipped, mode))
 
         except Exception as e:
-            print(f" | [ERROR] {e}")
+            print(f"{prefix} | [ERROR] {e}")
             results.append((symbol, 0, 0, f"error: {e}"))
 
     conn.close()
 
-    # ── Final summary ────────────────────────────────────────────
+    # â”€â”€ Final summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     print("\n" + "-" * 64)
     print("  FETCH SUMMARY")
     print("-" * 64)
@@ -285,6 +366,27 @@ def run_fetcher() -> None:
     print("-" * 64)
     print(f"  Finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 64 + "\n")
+
+
+def run_fetcher_for_intervals(intervals: list[str] | tuple[str, ...] | None = None) -> None:
+    """Fetch candles for the requested intervals.
+
+    The module stores the active interval in one global because the existing
+    helper functions share it. This wrapper keeps orchestrator calls explicit
+    while restoring the original interval after each run.
+    """
+    global INTERVAL
+
+    requested_intervals = list(intervals or [INTERVAL])
+    original_interval = INTERVAL
+    try:
+        for interval in requested_intervals:
+            if interval not in INTERVALS:
+                raise ValueError(f"Unsupported candle interval: {interval}")
+            INTERVAL = interval
+            run_fetcher()
+    finally:
+        INTERVAL = original_interval
 
 
 # ---------------------------------------------------------------------------

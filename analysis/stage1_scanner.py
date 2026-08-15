@@ -31,6 +31,7 @@ DB_PATH = PROJECT_ROOT / "database" / "trading.db"
 PRICE_CHANGE_THRESHOLD = 0.5  # Flag if abs(change) > 0.5%
 VOLUME_RATIO_THRESHOLD = 1.5  # Flag if volume > 1.5x average
 PRICE_CHECK_INTERVAL_MINUTES = 15  # Compare with price from 15 min ago
+PLACEHOLDER_AVG_VOLUME = 50000
 
 # NSE headers for API calls
 NSE_HEADERS = {
@@ -212,7 +213,7 @@ def calculate_price_change(symbol: str, current_price: float, prev_close: float)
     return ((current_price - prev_close) / prev_close) * 100
 
 
-def get_average_volume(symbol: str) -> float:
+def get_average_volume(symbol: str) -> float | None:
     """Get average daily volume from stock_universe (cached) or calculate from candles.
 
     Uses the cached avg_daily_volume from stock_universe first (fast).
@@ -228,7 +229,7 @@ def get_average_volume(symbol: str) -> float:
         (symbol,)
     ).fetchone()
 
-    if row and row[0] and row[0] > 0:
+    if row and row[0] and row[0] > PLACEHOLDER_AVG_VOLUME:
         conn.close()
         return float(row[0])
 
@@ -246,7 +247,98 @@ def get_average_volume(symbol: str) -> float:
     ).fetchone()
 
     conn.close()
-    return float(row[0]) if row and row[0] else 100000.0  # Default
+    return float(row[0]) if row and row[0] else None
+
+
+def get_average_volumes(symbols: list[str]) -> dict[str, float]:
+    """Load reliable average volumes for all scanned symbols in bulk."""
+    if not symbols:
+        return {}
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    placeholders = ",".join("?" for _ in symbols)
+    averages: dict[str, float] = {}
+
+    for symbol, avg_volume in cursor.execute(
+        f"""
+        SELECT symbol, avg_daily_volume
+        FROM stock_universe
+        WHERE symbol IN ({placeholders})
+          AND is_active = 1
+          AND avg_daily_volume > ?
+        """,
+        [*symbols, PLACEHOLDER_AVG_VOLUME],
+    ).fetchall():
+        averages[symbol] = float(avg_volume)
+
+    missing_symbols = [symbol for symbol in symbols if symbol not in averages]
+    if missing_symbols:
+        placeholders = ",".join("?" for _ in missing_symbols)
+        for symbol, avg_volume in cursor.execute(
+            f"""
+            SELECT symbol, AVG(daily_volume)
+            FROM (
+                SELECT symbol, DATE(timestamp) AS trade_date, SUM(volume) AS daily_volume
+                FROM candles
+                WHERE symbol IN ({placeholders})
+                GROUP BY symbol, DATE(timestamp)
+            )
+            GROUP BY symbol
+            """,
+            missing_symbols,
+        ).fetchall():
+            if avg_volume and avg_volume > 0:
+                averages[symbol] = float(avg_volume)
+
+    conn.close()
+    return averages
+
+
+def get_recent_15m_price_changes(symbols: list[str]) -> dict[str, float]:
+    """Return latest-vs-previous 15m candle change for symbols when available."""
+    if not symbols:
+        return {}
+
+    conn = sqlite3.connect(DB_PATH)
+    placeholders = ",".join("?" for _ in symbols)
+    rows = conn.execute(
+        f"""
+        WITH ranked AS (
+            SELECT
+                symbol,
+                close,
+                ROW_NUMBER() OVER (
+                    PARTITION BY symbol
+                    ORDER BY timestamp DESC
+                ) AS rn
+            FROM candles
+            WHERE interval = '15m'
+              AND symbol IN ({placeholders})
+        ),
+        latest AS (
+            SELECT symbol, close AS latest_close
+            FROM ranked
+            WHERE rn = 1
+        ),
+        previous AS (
+            SELECT symbol, close AS previous_close
+            FROM ranked
+            WHERE rn = 2
+        )
+        SELECT latest.symbol, latest.latest_close, previous.previous_close
+        FROM latest
+        JOIN previous ON previous.symbol = latest.symbol
+        """,
+        symbols,
+    ).fetchall()
+    conn.close()
+
+    changes: dict[str, float] = {}
+    for symbol, latest_close, previous_close in rows:
+        if previous_close:
+            changes[symbol] = ((latest_close - previous_close) / previous_close) * 100
+    return changes
 
 
 def get_fo_stocks() -> set[str]:
@@ -354,6 +446,9 @@ def run_stage1_scan() -> tuple[list[str], str]:
 
     total_stocks = len(prices_df)
     print(f"  Total stocks to scan: {total_stocks:,}")
+    symbols = prices_df['symbol'].astype(str).tolist()
+    average_volumes = get_average_volumes(symbols)
+    recent_price_changes = get_recent_15m_price_changes(symbols)
 
     # Scan and flag stocks
     flagged_stocks: list[dict[str, Any]] = []
@@ -368,11 +463,13 @@ def run_stage1_scan() -> tuple[list[str], str]:
         reasons: list[str] = []
 
         # Calculate metrics
-        price_change = calculate_price_change(symbol, current_price, prev_close)
+        price_change = recent_price_changes.get(
+            symbol,
+            calculate_price_change(symbol, current_price, prev_close),
+        )
 
-        # Get average volume (use cached value from stock_universe)
-        avg_volume = get_average_volume(symbol)
-        volume_ratio = today_volume / avg_volume if avg_volume > 0 else 1.0
+        avg_volume = average_volumes.get(symbol)
+        volume_ratio = today_volume / avg_volume if avg_volume and avg_volume > 0 else 1.0
 
         # Apply filters
         flag_stock = False
@@ -383,7 +480,7 @@ def run_stage1_scan() -> tuple[list[str], str]:
             reasons.append(f"price_{price_change:+.2f}%")
 
         # Rule 2: Volume spike
-        if volume_ratio > VOLUME_RATIO_THRESHOLD:
+        if avg_volume and volume_ratio > VOLUME_RATIO_THRESHOLD:
             flag_stock = True
             reasons.append(f"volume_{volume_ratio:.1f}x")
 

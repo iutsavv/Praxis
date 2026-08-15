@@ -25,6 +25,8 @@ from analysis.signal_engine import (
     detect_market_condition,
     load_config,
 )
+from analysis.kronos_forecaster import apply_kronos_adjustment, kronos_enabled
+from analysis.multi_timeframe import should_trade_confluence
 
 DB_PATH = PROJECT_ROOT / "database" / "trading.db"
 
@@ -37,30 +39,55 @@ def get_connection() -> sqlite3.Connection:
 
 
 def check_recent_candles(symbol: str, minutes: int = 10) -> bool:
-    """Check if symbol has candle data from last N minutes."""
+    """Check whether Stage 2 has usable candle data.
+
+    During weekends or after market hours, a strict wall-clock recency check
+    rejects perfectly valid latest-session candles. Stage 2 only needs enough
+    stored data to score indicators, so this falls back to latest available
+    15m candles when no within-window row exists.
+    """
     conn = get_connection()
     cursor = conn.cursor()
-    
+
     cutoff = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+
     row = cursor.execute("""
         SELECT COUNT(*) FROM candles
         WHERE symbol = ?
-        AND timestamp >= datetime(?, '-' || ? || ' minutes')
+          AND interval = '15m'
+          AND timestamp >= datetime(?, '-' || ? || ' minutes')
     """, (symbol, cutoff, minutes)).fetchone()
-    
+
+    if row and row[0] > 0:
+        conn.close()
+        return True
+
+    row = cursor.execute("""
+        SELECT COUNT(*) FROM candles
+        WHERE symbol = ? AND interval = '15m'
+    """, (symbol,)).fetchone()
+
     conn.close()
     return row[0] > 0 if row else False
 
 
 def detect_pattern(symbol: str) -> str | None:
-    """Stub for pattern detection (Feature 9).
-    
-    Future: Implement candlestick pattern recognition
-    (doji, hammer, engulfing, etc.)
+    """Detect candlestick patterns using the pattern_detector module.
+
+    Returns the name of the strongest detected pattern, or None.
     """
-    # TODO: Implement pattern detection
-    return None
+    try:
+        from analysis.pattern_detector import run_all_patterns
+
+        patterns = run_all_patterns(symbol, interval="15m")
+        if not patterns:
+            return None
+        # Pick the strongest detected pattern
+        best = max(patterns, key=lambda p: float(p.get("strength", 0)))
+        direction_tag = best.get("direction", "")
+        return f"{best['pattern_name']} ({direction_tag})"
+    except Exception:
+        return None
 
 
 def check_sentiment(symbol: str) -> dict[str, Any] | None:
@@ -83,6 +110,19 @@ def write_stage2_results(
     updated = 0
     for result in results:
         try:
+            setup_parts = []
+            if result.get('confluence_reasoning'):
+                setup_parts.append(str(result.get('confluence_reasoning')))
+            kronos_forecast = result.get('kronos_forecast') or {}
+            if kronos_forecast.get('available'):
+                setup_parts.append(
+                    "Kronos "
+                    f"{kronos_forecast.get('forecast_direction')} "
+                    f"{kronos_forecast.get('expected_return_pct', 0):+.2f}% "
+                    f"over {kronos_forecast.get('pred_len')} {kronos_forecast.get('interval')} candles"
+                )
+            setup_text = " | ".join(setup_parts) if setup_parts else result.get('confluence_reasoning')
+
             # Update existing Stage 1 record with Stage 2 data
             cursor.execute("""
                 UPDATE scan_results
@@ -97,7 +137,7 @@ def write_stage2_results(
                 result['score'],
                 result['direction'],
                 result.get('pattern'),
-                result.get('setup'),
+                setup_text,
                 result.get('final_selected', 0),
                 result['symbol'],
                 scan_time
@@ -109,18 +149,19 @@ def write_stage2_results(
                 # If no Stage 1 record exists, insert new Stage 2 record
                 cursor.execute("""
                     INSERT OR REPLACE INTO scan_results (
-                        symbol, scan_time, stage,
+                        symbol, scan_time, stage, stage1_flagged,
                         stage2_score, stage2_direction,
                         stage2_pattern, stage2_setup, final_selected
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     result['symbol'],
                     scan_time,
                     2,  # Stage 2
+                    1,  # Mark as flagged since Stage 2 only runs on flagged stocks
                     result['score'],
                     result['direction'],
                     result.get('pattern'),
-                    result.get('setup'),
+                    setup_text,
                     result.get('final_selected', 0)
                 ))
                 updated += 1
@@ -166,6 +207,7 @@ def run_stage2_scan(symbols: list[str], scan_time: str = "") -> list[dict[str, A
     
     print(f"  Market condition: {market_condition}")
     print(f"  Min score threshold: {weights.min_score_to_trade}")
+    print(f"  Kronos forecasts: {'enabled' if kronos_enabled() else 'disabled'}")
     
     results: list[dict[str, Any]] = []
     analyzed = 0
@@ -187,16 +229,29 @@ def run_stage2_scan(symbols: list[str], scan_time: str = "") -> list[dict[str, A
                 skipped += 1
                 continue
             
-            # Detect patterns (stub)
+            # Detect patterns using pattern_detector
             pattern = detect_pattern(symbol)
             
             # Check sentiment (stub)
             sentiment = check_sentiment(symbol)
+
+            adjusted_score, kronos_forecast = apply_kronos_adjustment(
+                symbol,
+                signal_result.direction,
+                signal_result.weighted_score,
+                scan_time=scan_time,
+            )
             
             # Build result
+            confluence = signal_result.timeframe_confluence
+            confluence_ok = (
+                should_trade_confluence(symbol)
+                and confluence.get("trade_direction") == signal_result.direction
+            )
             result = {
                 'symbol': symbol,
-                'score': signal_result.weighted_score,
+                'score': adjusted_score,
+                'base_score': signal_result.weighted_score,
                 'direction': signal_result.direction,
                 'rsi_score': signal_result.rsi_score,
                 'macd_score': signal_result.macd_score,
@@ -205,19 +260,28 @@ def run_stage2_scan(symbols: list[str], scan_time: str = "") -> list[dict[str, A
                 'market_condition': signal_result.market_condition,
                 'explanation': signal_result.explanation,
                 'pattern': pattern,
-                'setup': sentiment.get('setup') if sentiment else None,
+                'confluence_reasoning': confluence.get('reasoning'),
+                'timeframe_confluence': confluence,
+                'kronos_forecast': kronos_forecast,
                 'final_selected': 1 if (
                     signal_result.direction != 'HOLD' and
-                    signal_result.weighted_score >= weights.min_score_to_trade
+                    adjusted_score >= weights.min_score_to_trade and
+                    confluence_ok
                 ) else 0,
             }
             
             results.append(result)
             analyzed += 1
             
-            status = "✓" if result['final_selected'] else "○"
+            status = "SELECTED" if result['final_selected'] else "checked"
+            kronos_text = ""
+            if kronos_forecast.get("available"):
+                kronos_text = (
+                    f" kronos={kronos_forecast['forecast_direction']}"
+                    f"({kronos_forecast['expected_return_pct']:+.2f}%)"
+                )
             print(f"  [{status}] {symbol:<12} - {result['direction']:<5} "
-                  f"score={result['score']:.1f}")
+                  f"score={result['score']:.1f}{kronos_text}")
             
         except Exception as e:
             print(f"  [ERROR] {symbol:<12} - {e}")

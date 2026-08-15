@@ -221,3 +221,86 @@ export interface FullCycleResponse {
   finished_at?: string;
   [key: string]: unknown;
 }
+
+export interface StockUniverse {
+  symbol: string;
+  name?: string | null;
+  sector?: string | null;
+  market_cap?: number | null;
+  is_fo_stock?: number;
+  avg_daily_volume?: number | null;
+  in_stage2_scan?: number;
+}
+
+export interface UniverseSummary {
+  total_stocks: number;
+  fo_stocks_count: number;
+  stage2_eligible_count: number;
+  sector_distribution: Record<string, number>;
+  last_updated: string | null;
+}
+
+export interface ScanSummary {
+  scan_time: string | null;
+  stage1_total_scanned: number;
+  stage1_flagged: number;
+  stage2_analyzed: number;
+  stage2_candidates: number;
+  top_picks: Array<{ symbol: string; score: number; direction: string; pattern?: string | null; confluence_level?: string | null }>;
+  duration_seconds?: number | null;
+}
+
+export interface NewsArticle {
+  id: number;
+  symbol?: string | null;
+  headline: string;
+  source?: string | null;
+  url?: string | null;
+  published_at?: string | null;
+  sentiment_score: number;
+  urgency?: string | null;
+  stocks_mentioned?: string[] | string | null;
+}
+
+export interface Announcement {
+  id: number;
+  symbol: string;
+  exchange?: string | null;
+  announcement_type?: string | null;
+  headline?: string | null;
+  published_at?: string | null;
+  sentiment_score?: number | null;
+  signal_boost?: number | null;
+}
+
+export interface MarketSentiment {
+  overall_score: number;
+  label: string;
+  article_count: number;
+  positive_count?: number;
+  negative_count?: number;
+  top_positive_stock?: { symbol: string; headline: string; score: number } | null;
+  top_negative_stock?: { symbol: string; headline: string; score: number } | null;
+  sector_sentiment: Record<string, number>;
+  most_discussed?: Array<{ symbol: string; article_count: number }>;
+  recent_announcements_count?: number;
+}
+
+export interface StockSentiment {
+  symbol: string;
+  overall_sentiment: number;
+  article_count: number;
+  announcement_count: number;
+  signal_modifier: number;
+  latest_headline?: string;
+  latest_announcement_type?: string | null;
+  urgency: string;
+}
+
+export interface TimeframeConfluence {
+  symbol: string;
+  timeframes: Record<string, { bias: 'BULLISH' | 'BEARISH' | 'NEUTRAL'; rsi: number | null; macd_hist: number | null }>;
+  confluence_score: number;
+  confluence_level: 'HIGH' | 'MEDIUM' | 'LOW';
+  trade_direction: 'BUY' | 'SELL' | 'SKIP';
+}

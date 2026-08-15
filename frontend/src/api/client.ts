@@ -7,6 +7,14 @@ import type {
   PipelineErrorResponse,
   PipelineStatus,
   ScanRunResponse,
+  Announcement,
+  MarketSentiment,
+  NewsArticle,
+  ScanSummary,
+  StockSentiment,
+  StockUniverse,
+  TimeframeConfluence,
+  UniverseSummary,
 } from '../types';
 
 const api = axios.create({
@@ -56,6 +64,24 @@ export const pipelineApi = {
   runFullCycle: async () => (
     await api.post<FullCycleResponse>('/api/pipeline/run-full-cycle')
   ).data,
+};
+
+export const marketDataApi = {
+  universeSummary: async () => (await api.get<UniverseSummary>('/api/universe/summary')).data,
+  universeStocks: async (params?: { sector?: string; is_fo?: number; limit?: number; offset?: number }) => (
+    await api.get<{ items: StockUniverse[]; total: number; limit: number; offset: number }>('/api/universe/stocks', { params })
+  ).data,
+  scanLatest: async () => (await api.get<ScanSummary>('/api/scan/latest')).data,
+  stage1Flagged: async () => (await api.get<any[]>('/api/scan/stage1/flagged')).data,
+  stage2Results: async () => (await api.get<any[]>('/api/scan/stage2/results')).data,
+  latestNews: async (params?: { symbol?: string; sentiment?: string; urgency?: string; since?: string; limit?: number }) => (
+    await api.get<NewsArticle[]>('/api/news/latest', { params })
+  ).data,
+  stockNews: async (symbol: string) => (await api.get<Array<NewsArticle | Announcement>>(`/api/news/stock/${symbol}`)).data,
+  announcements: async (limit = 20) => (await api.get<Announcement[]>('/api/news/announcements', { params: { limit } })).data,
+  marketSentiment: async () => (await api.get<MarketSentiment>('/api/news/market-sentiment')).data,
+  stockSentiment: async (symbol: string) => (await api.get<StockSentiment>(`/api/news/sentiment/${symbol}`)).data,
+  confluence: async (symbol: string) => (await api.get<TimeframeConfluence>(`/api/signals/confluence/${symbol}`)).data,
 };
 
 export default api;

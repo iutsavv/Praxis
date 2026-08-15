@@ -123,6 +123,8 @@ class SignalResult:
     volume_score: float = 0.0
     vwap_score: float = 0.0
     weighted_score: float = 0.0
+    timeframe_confluence: dict[str, Any] = field(default_factory=dict)
+    announcement_boost: float = 0.0
     market_condition: str = "SIDEWAYS"
     explanation: str = ""
     notes: str = ""
@@ -181,7 +183,11 @@ def get_strategy_weights(conn: sqlite3.Connection) -> StrategyWeights:
     )
 
 
-def get_latest_indicator(conn: sqlite3.Connection, symbol: str) -> IndicatorRow | None:
+def get_latest_indicator(
+    conn: sqlite3.Connection,
+    symbol: str,
+    interval: str = "15m",
+) -> IndicatorRow | None:
     """Read the most recent indicator row for a symbol, joined with
     the close price from candles."""
     row = conn.execute(
@@ -190,10 +196,10 @@ def get_latest_indicator(conn: sqlite3.Connection, symbol: str) -> IndicatorRow 
                   c.close
            FROM indicators i
            JOIN candles c ON c.id = i.candle_id
-           WHERE i.symbol = ?
+           WHERE i.symbol = ? AND i.interval = ?
            ORDER BY i.timestamp DESC
            LIMIT 1""",
-        (symbol,),
+        (symbol, interval),
     ).fetchone()
     if row is None:
         return None
@@ -213,23 +219,23 @@ def get_latest_indicator(conn: sqlite3.Connection, symbol: str) -> IndicatorRow 
 
 
 def get_recent_macd(
-    conn: sqlite3.Connection, symbol: str, lookback: int
+    conn: sqlite3.Connection, symbol: str, lookback: int, interval: str = "15m"
 ) -> list[dict[str, float | None]]:
     """Return the last N indicator rows (oldest first) for MACD crossover detection."""
     rows = conn.execute(
         """SELECT macd, macd_signal, macd_histogram
            FROM indicators
-           WHERE symbol = ?
+           WHERE symbol = ? AND interval = ?
            ORDER BY timestamp DESC
            LIMIT ?""",
-        (symbol, lookback),
+        (symbol, interval, lookback),
     ).fetchall()
     # Reverse so index 0 = oldest, index -1 = latest
     return [dict(r) for r in reversed(rows)]
 
 
 def get_nifty_candles(
-    conn: sqlite3.Connection, count: int
+    conn: sqlite3.Connection, count: int, interval: str = "15m"
 ) -> list[dict[str, Any]]:
     """Return the last `count` indicator rows for NSEI (Nifty 50 index),
     joined with the candle close price.  Falls back to ^NSEI/NIFTY."""
@@ -238,10 +244,10 @@ def get_nifty_candles(
             """SELECT c.close, i.ema_20
                FROM indicators i
                JOIN candles c ON c.id = i.candle_id
-               WHERE i.symbol = ?
+               WHERE i.symbol = ? AND i.interval = ?
                ORDER BY i.timestamp DESC
                LIMIT ?""",
-            (symbol, count),
+            (symbol, interval, count),
         ).fetchall()
         if rows:
             return [dict(r) for r in reversed(rows)]
@@ -466,13 +472,16 @@ def score_stock(
 ) -> SignalResult | None:
     """Score a single stock.  Returns None if no indicator data exists."""
 
-    ind = get_latest_indicator(conn, symbol)
+    from analysis.multi_timeframe import get_timeframe_confluence
+    from data.announcement_fetcher import get_signal_boost_for_stock
+
+    ind = get_latest_indicator(conn, symbol, "15m")
     if ind is None:
         return None
 
     macd_cfg = cfg.get("macd", DEFAULT_CONFIG["macd"])
     lookback = macd_cfg.get("crossover_lookback", 3)
-    recent_macd = get_recent_macd(conn, symbol, lookback)
+    recent_macd = get_recent_macd(conn, symbol, lookback, "15m")
 
     hold_threshold = cfg.get("hold_threshold", DEFAULT_CONFIG["hold_threshold"])
 
@@ -546,6 +555,17 @@ def score_stock(
             boost_reasons.append("volume_confirmation")
         weighted_score = round(weighted_score, 2)
 
+    timeframe_confluence = get_timeframe_confluence(symbol)
+    confluence_level = timeframe_confluence.get("confluence_level")
+    if confluence_level == "HIGH":
+        weighted_score = min(round(weighted_score * 1.20, 2), 100.0)
+    elif confluence_level == "LOW":
+        weighted_score = round(weighted_score * 0.70, 2)
+
+    announcement_boost = get_signal_boost_for_stock(symbol)
+    if announcement_boost:
+        weighted_score = max(0.0, min(100.0, round(weighted_score + announcement_boost, 2)))
+
     # ── Step 5: Apply HOLD threshold ─────────────────────────────
     if weighted_score < hold_threshold:
         direction = "HOLD"
@@ -573,6 +593,13 @@ def score_stock(
     lines.append(f"  Market condition: {market_condition}")
     if boost_reasons:
         lines.append(f"  Secondary boost: {', '.join(boost_reasons)}")
+    lines.append(
+        "  Timeframe confluence: "
+        f"{timeframe_confluence.get('confluence_level')} "
+        f"({timeframe_confluence.get('reasoning')})"
+    )
+    if announcement_boost:
+        lines.append(f"  Announcement boost: {announcement_boost:+.1f}")
     explanation = "\n".join(lines)
     notes = ",".join(boost_reasons)
 
@@ -584,6 +611,8 @@ def score_stock(
         volume_score=vol_sc,
         vwap_score=vwap_sc,
         weighted_score=weighted_score,
+        timeframe_confluence=timeframe_confluence,
+        announcement_boost=announcement_boost,
         market_condition=market_condition,
         explanation=explanation,
         notes=notes,
@@ -604,6 +633,12 @@ def write_signal_scores(
     if "notes" not in columns:
         conn.execute("ALTER TABLE signal_scores ADD COLUMN notes TEXT")
         conn.commit()
+    if "timeframe_confluence" not in columns:
+        conn.execute("ALTER TABLE signal_scores ADD COLUMN timeframe_confluence TEXT")
+        conn.commit()
+    if "announcement_boost" not in columns:
+        conn.execute("ALTER TABLE signal_scores ADD COLUMN announcement_boost REAL DEFAULT 0")
+        conn.commit()
 
     cursor = conn.cursor()
     count = 0
@@ -613,8 +648,9 @@ def write_signal_scores(
             """INSERT INTO signal_scores
                    (symbol, scan_cycle, confidence_score, direction,
                     market_condition, contrib_rsi, contrib_macd,
-                    contrib_volume, contrib_vwap, explanation, notes)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    contrib_volume, contrib_vwap, explanation, notes,
+                    timeframe_confluence, announcement_boost)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 r.symbol,
                 scan_cycle,
@@ -627,6 +663,8 @@ def write_signal_scores(
                 r.vwap_score,
                 r.explanation,
                 r.notes,
+                json.dumps(r.timeframe_confluence),
+                r.announcement_boost,
             ),
         )
         count += 1
@@ -662,6 +700,8 @@ def get_top_picks(
             "vwap_score": r.vwap_score,
             "market_condition": r.market_condition,
             "explanation": r.explanation,
+            "timeframe_confluence": r.timeframe_confluence,
+            "announcement_boost": r.announcement_boost,
         }
         for r in actionable[:top_n]
     ]

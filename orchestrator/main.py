@@ -38,12 +38,22 @@ from agents.learning_agent import run_learning_cycle
 from agents.performance_tracker import update_stats
 from agents.risk_manager import calculate_position
 from agents.trade_validator import validate_signal
-from analysis.indicator_engine import run_indicator_engine, process_symbol as run_indicators_for_symbol
+from analysis.indicator_engine import run_indicator_engine, process_symbol_for_intervals
 from analysis.signal_engine import run_scan
+from analysis.sentiment_engine import process_unprocessed_news
+from analysis.support_resistance import update_all_levels
 from analysis.stage1_scanner import run_stage1_scan
 from analysis.stage2_scanner import run_stage2_scan
-from data.fetcher import run_fetcher_for_intervals, fetch_candles, store_candles, get_latest_timestamp, _get_connection as get_fetcher_connection
+from data.fetcher import (
+    run_fetcher_for_intervals,
+    fetch_candles,
+    store_candles,
+    get_latest_timestamp_for_interval,
+    _get_connection as get_fetcher_connection,
+)
 from data.universe_fetcher import update_universe
+from data.announcement_fetcher import run_announcement_fetch
+from data.news_fetcher import run_news_fetch
 
 
 IST = pytz.timezone("Asia/Kolkata")
@@ -57,6 +67,10 @@ FAILURE_STAGES = (
     "fetcher",
     "hourly_candles",
     "daily_candles",
+    "announcements",
+    "news",
+    "sentiment_processing",
+    "support_resistance",
     "indicator_engine",
     "stage1_scanner",
     "stage2_scanner",
@@ -494,16 +508,23 @@ class Orchestrator:
                     )
                     fetcher_conn = get_fetcher_connection()
                     indicator_conn = sqlite3.connect(DB_PATH)
+                    indicator_conn.row_factory = sqlite3.Row
                     try:
+                        from data.fetcher import fetch_candles_bulk
+                        for interval in ("5m", "15m", "1h", "1d"):
+                            bulk_data = fetch_candles_bulk(symbols_needing_data, interval)
+                            for sym in symbols_needing_data:
+                                try:
+                                    df = bulk_data.get(sym, pd.DataFrame())
+                                    if not df.empty:
+                                        store_candles(fetcher_conn, sym, df, interval)
+                                except Exception:
+                                    self.logger.debug("Could not fetch/store %s interval %s", sym, interval, exc_info=True)
                         for sym in symbols_needing_data:
                             try:
-                                latest_ts = get_latest_timestamp(fetcher_conn, sym)
-                                df = fetch_candles(sym, latest_ts)
-                                if not df.empty:
-                                    store_candles(fetcher_conn, sym, df)
-                                run_indicators_for_symbol(indicator_conn, sym)
+                                process_symbol_for_intervals(indicator_conn, sym)
                             except Exception:
-                                self.logger.debug("Could not fetch/compute for %s", sym, exc_info=True)
+                                self.logger.debug("Could not compute indicators for %s", sym, exc_info=True)
                     finally:
                         fetcher_conn.close()
                         indicator_conn.close()
@@ -622,7 +643,7 @@ class Orchestrator:
 
     def run_hourly_candle_fetch(self) -> None:
         """Fetch and compute indicators for 1h candles every 30 mins."""
-        if not self._is_market_open():
+        if not self._is_market_open(datetime.now(IST)):
             return
         self.logger.info("Starting hourly candle fetch (1h interval)")
         self._stage("hourly_candles", lambda: run_fetcher_for_intervals(['1h']), None)
@@ -634,6 +655,50 @@ class Orchestrator:
         self.logger.info("Starting daily candle fetch (1d interval)")
         self._stage("daily_candles", lambda: run_fetcher_for_intervals(['1d']), None)
         self._stage("daily_candles", lambda: run_indicator_engine(['1d']), None)
+
+    def run_announcement_fetch(self) -> None:
+        """Fetch NSE/BSE corporate announcements."""
+        result, ok = self._stage("announcements", run_announcement_fetch, {})
+        if ok:
+            self.logger.info(
+                "Announcements fetched: total=%s new=%s high_impact=%s errors=%s",
+                result.get("total_fetched", 0),
+                result.get("new_announcements", 0),
+                result.get("high_impact_count", 0),
+                len(result.get("errors", [])),
+            )
+
+    def run_news_fetch(self) -> None:
+        """Fetch free RSS market news."""
+        result, ok = self._stage("news", run_news_fetch, {})
+        if ok:
+            self.logger.info(
+                "News fetched: total=%s new=%s stocks_mentioned=%s newsapi_calls=%s daily_usage=%s",
+                result.get("total_articles", 0),
+                result.get("new_articles", 0),
+                result.get("stocks_mentioned", 0),
+                result.get("newsapi_calls_used", 0),
+                result.get("newsapi_daily_usage", 0),
+            )
+
+    def run_sentiment_processing(self) -> None:
+        """Process unscored news sentiment locally."""
+        processed, ok = self._stage("sentiment_processing", process_unprocessed_news, 0)
+        if ok:
+            self.logger.info("Sentiment processed: news_articles=%s", processed)
+
+    def run_support_resistance_update(self) -> None:
+        """Refresh support/resistance levels from candle history."""
+        result, ok = self._stage("support_resistance", update_all_levels, {})
+        if ok:
+            self.logger.info(
+                "Support/resistance updated: checked=%s updated=%s levels=%s inactive=%s errors=%s",
+                result.get("symbols_checked", 0),
+                result.get("symbols_updated", 0),
+                result.get("levels_saved", 0),
+                result.get("levels_marked_inactive", 0),
+                len(result.get("errors", [])),
+            )
 
     def start(self) -> None:
         self.scheduler = BlockingScheduler(timezone=IST)
@@ -651,6 +716,31 @@ class Orchestrator:
             self.run_daily_candle_fetch,
             CronTrigger(day_of_week="mon-fri", hour="9", minute="0", timezone=IST),
             id="daily_candles", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_announcement_fetch,
+            CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/30", timezone=IST),
+            id="announcement_fetch", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_support_resistance_update,
+            CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/30", timezone=IST),
+            id="support_resistance_update", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_news_fetch,
+            CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/15", timezone=IST),
+            id="news_fetch", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_sentiment_processing,
+            CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*/5", timezone=IST),
+            id="sentiment_processing", max_instances=1, coalesce=True,
+        )
+        self.scheduler.add_job(
+            self.run_announcement_fetch,
+            CronTrigger(day_of_week="mon-fri", hour="9", minute="10", timezone=IST),
+            id="premarket_announcement_fetch", max_instances=1, coalesce=True,
         )
         self.scheduler.add_job(
             self.run_eod_cycle,

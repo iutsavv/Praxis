@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ATLAS - AI Paper Trading Agent | Investor Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:10pt}
+body{font-family:'Inter','Segoe UI',sans-serif;background:#fff;color:#1a1a2e;line-height:1.6}
+@media print{
+  @page{size:A4;margin:0}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{page-break-after:always;break-after:page}
+  .page:last-child{page-break-after:avoid}
+  .no-print{display:none!important}
+}
+.page{width:210mm;min-height:297mm;margin:0 auto;position:relative;overflow:hidden;background:#fff}
+.print-btn{position:fixed;top:20px;right:20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(102,126,234,0.5);z-index:9999;transition:all .3s}
+.print-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(102,126,234,0.6)}
+
+.cover{background:linear-gradient(160deg,#0f0c29 0%,#302b63 45%,#24243e 100%);display:flex;flex-direction:column;min-height:297mm}
+.cover-top-bar{height:6px;background:linear-gradient(90deg,#667eea,#764ba2,#f093fb,#f5576c,#4facfe)}
+.cover-content{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:40mm 20mm 20mm 20mm}
+.cover-badge{display:inline-block;background:rgba(102,126,234,0.2);border:1px solid rgba(102,126,234,0.5);color:#a5b4fc;padding:6px 16px;border-radius:20px;font-size:10pt;font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.cover-title{font-size:56pt;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:8px}
+.cover-subtitle{font-size:20pt;font-weight:300;color:#a5b4fc;letter-spacing:6px;text-transform:uppercase;margin-bottom:24px}
+.cover-tagline{font-size:13pt;color:rgba(255,255,255,0.65);max-width:130mm;line-height:1.7;border-left:3px solid #667eea;padding-left:16px}
+.cover-stats-row{display:flex;gap:6mm;margin-top:20mm}
+.cover-stat{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px 18px;flex:1}
+.cover-stat-value{font-size:22pt;font-weight:800;color:#fff;line-height:1}
+.cover-stat-label{font-size:8pt;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.cover-footer{display:flex;justify-content:space-between;align-items:center;padding:10mm 20mm 12mm 20mm;border-top:1px solid rgba(255,255,255,0.1)}
+.cover-footer-left,.cover-footer-right{color:rgba(255,255,255,0.4);font-size:9pt}
+.cover-footer-right{text-align:right}
+
+.content-page{padding:16mm 18mm;min-height:297mm;display:flex;flex-direction:column}
+.page-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:2px solid #e5e7eb;margin-bottom:14px}
+.page-header-logo{font-size:13pt;font-weight:800;color:#302b63;letter-spacing:-0.5px}
+.page-header-logo span{color:#667eea}
+.page-header-section{font-size:8pt;color:#9ca3af;text-transform:uppercase;letter-spacing:1.5px}
+
+.section-title{font-size:18pt;font-weight:800;color:#1a1a2e;margin-bottom:4px;letter-spacing:-0.5px}
+.section-title span{color:#667eea}
+.section-subtitle{font-size:10pt;color:#6b7280;margin-bottom:14px}
+.section-divider{height:3px;background:linear-gradient(90deg,#667eea,#764ba2,transparent);border-radius:2px;margin-bottom:16px;width:60mm}
+
+.card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.card-purple{background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #c4b5fd}
+.card-blue{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd}
+.card-green{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac}
+.card-orange{background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1px solid #fdba74}
+.card-title{font-size:11pt;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+.card-body{font-size:9pt;color:#4b5563;line-height:1.65}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+
+.metric-box{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:10px;padding:14px;text-align:center}
+.metric-box.green{background:linear-gradient(135deg,#10b981,#059669)}
+.metric-box.blue{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.metric-box.orange{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.metric-box.teal{background:linear-gradient(135deg,#14b8a6,#0d9488)}
+.metric-value{font-size:20pt;font-weight:800;line-height:1}
+.metric-label{font-size:8pt;opacity:.85;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+.flow-diagram{background:linear-gradient(135deg,#0f0c29,#302b63);border-radius:12px;padding:16px;margin:10px 0;color:#fff}
+.flow-title{font-size:11pt;font-weight:700;color:#a5b4fc;margin-bottom:14px;text-align:center;text-transform:uppercase;letter-spacing:2px}
+.flow-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.flow-box{background:rgba(255,255,255,0.08);border:1px solid rgba(102,126,234,0.4);border-radius:8px;padding:8px 12px;flex:1;text-align:center}
+.flow-box-title{font-size:8.5pt;font-weight:700;color:#e0e7ff;margin-bottom:2px}
+.flow-box-sub{font-size:7pt;color:rgba(255,255,255,0.5)}
+.flow-box.highlight{background:rgba(102,126,234,0.25);border-color:#667eea}
+.flow-box.green-box{background:rgba(16,185,129,0.15);border-color:#10b981}
+.flow-arrow{font-size:14pt;color:#667eea;flex-shrink:0}
+.flow-down{text-align:center;font-size:16pt;color:#667eea;margin:4px 0}
+
+table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:8.5pt}
+th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:8px 10px;text-align:left;font-weight:600;font-size:8pt;text-transform:uppercase;letter-spacing:.5px}
+td{padding:7px 10px;border-bottom:1px solid #e5e7eb;color:#374151;vertical-align:top}
+tr:nth-child(even) td{background:#f9fafb}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:7.5pt;font-weight:600;margin-right:4px}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-orange{background:#ffedd5;color:#9a3412}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-gray{background:#f3f4f6;color:#374151}
+
+.timeline{margin:10px 0}
+.timeline-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.timeline-dot{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:8pt;font-weight:700;flex-shrink:0;margin-top:2px}
+.timeline-title{font-size:10pt;font-weight:700;color:#1a1a2e}
+.timeline-body{font-size:8.5pt;color:#6b7280;line-height:1.6;margin-top:2px}
+
+.callout{border-left:4px solid #667eea;background:#f5f3ff;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:9pt;color:#4b5563}
+.callout strong{color:#4f46e5}
+
+.progress-bar-container{margin-bottom:8px}
+.progress-label{display:flex;justify-content:space-between;font-size:8.5pt;font-weight:600;color:#374151;margin-bottom:4px}
+.progress-bar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#667eea,#764ba2)}
+.progress-fill.green{background:linear-gradient(90deg,#10b981,#059669)}
+
+.dark-section{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:14px 16px;border-radius:10px;margin-bottom:10px}
+.dark-section h3{color:#a5b4fc;font-size:10pt;margin-bottom:8px}
+.dark-section p{font-size:8.5pt;color:rgba(255,255,255,0.7);line-height:1.65}
+
+ul.check-list{list-style:none;padding:0;margin:0}
+ul.check-list li{padding:3px 0;font-size:8.5pt;color:#374151;display:flex;align-items:flex-start;gap:8px}
+ul.check-list li::before{content:"\2713";color:#10b981;font-weight:700;flex-shrink:0}
+ul.dot-list{list-style:none;padding:0;margin:0}
+ul.dot-list li{padding:3px 0;font-size:8.5pt;color:#374151;display:flex;align-items:flex-start;gap:8px}
+ul.dot-list li::before{content:"\2022";color:#667eea;font-weight:700;flex-shrink:0}
+
+p.body-text{font-size:9pt;color:#374151;line-height:1.7;margin-bottom:8px}
+h3.sub-heading{font-size:11pt;font-weight:700;color:#1a1a2e;margin-bottom:6px;margin-top:10px;border-bottom:1px dashed #e5e7eb;padding-bottom:4px}
+.page-footer{margin-top:auto;padding-top:10px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:7.5pt;color:#9ca3af}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">&#128424; Save as PDF</button>
+
+<!-- ==================== PAGE 1: COVER ==================== -->
+<div class="page cover" style="position:relative">
+<div style="position:absolute;width:200mm;height:200mm;border-radius:50%;background:radial-gradient(circle,#667eea 0%,transparent 70%);top:-80mm;right:-80mm;opacity:.08"></div>
+<div style="position:absolute;width:120mm;height:120mm;border-radius:50%;background:radial-gradient(circle,#f093fb 0%,transparent 70%);bottom:-40mm;left:-30mm;opacity:.07"></div>
+<div class="cover-top-bar"></div>
+<div class="cover-content">
+<div>
+<div class="cover-badge">&#129302; &nbsp; Confidential &middot; Investor Report &middot; 2026</div>
+<div class="cover-title">ATLAS</div>
+<div class="cover-subtitle">AI Trading Agent</div>
+<div class="cover-tagline">A fully autonomous, end-to-end AI-powered paper trading system for NSE stocks &mdash; featuring full-universe scanning, multi-timeframe confirmation, official exchange announcements, news intelligence, adaptive learning, and a professional React dashboard.</div>
+<div class="cover-stats-row">
+<div class="cover-stat"><div class="cover-stat-value">2,357+</div><div class="cover-stat-label">NSE Stocks Covered</div></div>
+<div class="cover-stat"><div class="cover-stat-value">2.4s</div><div class="cover-stat-label">Stage 1 Scan Speed</div></div>
+<div class="cover-stat"><div class="cover-stat-value">100&times;</div><div class="cover-stat-label">Efficiency Gain</div></div>
+<div class="cover-stat"><div class="cover-stat-value">5 min</div><div class="cover-stat-label">Cycle Frequency</div></div>
+<div class="cover-stat"><div class="cover-stat-value">4</div><div class="cover-stat-label">AI Signal Indicators</div></div>
+</div>
+</div>
+<div style="margin-top:auto">
+<div style="display:flex;align-items:center;gap:20px;margin-bottom:18mm">
+<div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div>
+<div style="color:rgba(255,255,255,0.3);font-size:8pt;letter-spacing:2px;text-transform:uppercase">Technology Stack</div>
+<div style="flex:1;height:1px;background:rgba(255,255,255,0.1)"></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#9889; FastAPI</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#9883;&#65039; React + Vite</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#128013; Python 3.11</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#128451; SQLite</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#128200; Pandas / TA-Lib</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#128339; APScheduler</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#127760; WebSocket</span>
+<span style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);padding:5px 14px;border-radius:20px;font-size:9pt">&#128200; Yahoo Finance / NSE</span>
+</div>
+</div>
+</div>
+<div class="cover-footer">
+<div class="cover-footer-left"><div style="font-weight:600;color:rgba(255,255,255,0.6)">ATLAS &mdash; AI Paper Trading Agent</div><div>NSE Stock Market &middot; India</div></div>
+<div class="cover-footer-right"><div>Prepared: July 2026</div><div>Classification: Confidential</div></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 2: EXECUTIVE SUMMARY ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Executive Summary</div></div>
+<div class="section-title">Executive <span>Summary</span></div>
+<div class="section-divider"></div>
+<p class="body-text">ATLAS is a fully autonomous, AI-powered paper trading agent designed for the NSE (National Stock Exchange) of India. It operates a complete end-to-end trading pipeline &mdash; from data ingestion and technical analysis, through intelligent signal scoring and trade validation, to real-time monitoring and adaptive learning &mdash; all without human intervention during market hours.</p>
+<p class="body-text">The system scans the <strong>entire NSE equity universe of 2,357+ stocks</strong> every 5 minutes during market hours using a proprietary two-stage scanning architecture, confirms setups across <strong>5m, 15m, 1h, and 1d</strong> market structure, incorporates official exchange announcements and financial news, validates trades against strict risk rules, and executes paper trades with defined targets and stop-losses. After each trading session, a learning agent analyzes closed trades and autonomously updates the strategy &mdash; creating a continuously improving system.</p>
+<div class="grid-4" style="margin:12px 0">
+<div class="metric-box"><div class="metric-value">&#8377;1L</div><div class="metric-label">Starting Capital (Paper)</div></div>
+<div class="metric-box green"><div class="metric-value">2,357</div><div class="metric-label">Stocks Scanned/Cycle</div></div>
+<div class="metric-box blue"><div class="metric-value">6&ndash;12</div><div class="metric-label">Trade Candidates/Scan</div></div>
+<div class="metric-box orange"><div class="metric-value">3 min</div><div class="metric-label">Full Cycle Time</div></div>
+</div>
+<h3 class="sub-heading">What Makes ATLAS Different</h3>
+<div class="grid-2">
+<div class="card card-purple"><div class="card-title">&#128640; Two-Stage + Multi-Timeframe Intelligence</div><div class="card-body">A proprietary pipeline that first filters the entire market in seconds, then runs deep analysis only on high-potential stocks with 5m, 15m, 1h, and 1d confluence &mdash; achieving 100&times; efficiency vs. brute-force analysis.</div></div>
+<div class="card card-green"><div class="card-title">&#129504; Self-Learning Strategy</div><div class="card-body">A dedicated Learning Agent reads every closed trade, analyzes performance by signal type (RSI, MACD, Volume, VWAP), and automatically versions and updates strategy weights to improve over time.</div></div>
+<div class="card card-blue"><div class="card-title">&#128737;&#65039; Multi-Layer Risk Control</div><div class="card-body">Every trade goes through a 7-point validation check &mdash; market hours, score threshold, position limits, capital sufficiency, no duplicate trades &mdash; before a single position is opened.</div></div>
+<div class="card card-orange"><div class="card-title">&#128240; News-Aware Signal Layer</div><div class="card-body">Reads NSE/BSE corporate announcements, free financial RSS feeds, Google News for flagged stocks, and quota-controlled NewsAPI articles for top Stage 2 candidates.</div></div>
+</div>
+<h3 class="sub-heading">Operational Modes</h3>
+<table>
+<thead><tr><th>Mode</th><th>Command</th><th>Behavior</th><th>Use Case</th></tr></thead>
+<tbody>
+<tr><td><span class="badge badge-orange">Smoke Test</span></td><td style="font-family:monospace;font-size:7.5pt">--run-once --dry-run</td><td>One cycle, no trades executed</td><td>Initial validation</td></tr>
+<tr><td><span class="badge badge-blue">Dry Run</span></td><td style="font-family:monospace;font-size:7.5pt">--dry-run</td><td>Continuous scan without trade execution</td><td>Strategy monitoring</td></tr>
+<tr><td><span class="badge badge-purple">Single Cycle</span></td><td style="font-family:monospace;font-size:7.5pt">--run-once</td><td>One full cycle with paper trade execution</td><td>Debugging</td></tr>
+<tr><td><span class="badge badge-green">Live Paper</span></td><td style="font-family:monospace;font-size:7.5pt">(no flags)</td><td>Continuous paper trading 09:15&ndash;15:30 IST</td><td>Production</td></tr>
+</tbody>
+</table>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 2</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 3: SYSTEM ARCHITECTURE ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">System Architecture</div></div>
+<div class="section-title">System <span>Architecture</span></div>
+<div class="section-divider"></div>
+<p class="body-text">ATLAS is built on a clean, modular architecture with four core services &mdash; Backend API, Frontend Dashboard, Orchestrator, and Database &mdash; each running independently and communicating via REST and WebSocket protocols.</p>
+<div class="flow-diagram">
+<div class="flow-title">&#127959;&#65039; System Architecture Overview</div>
+<div style="text-align:center;font-size:7.5pt;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">External Data Sources</div>
+<div class="flow-row">
+<div class="flow-box" style="border-color:#f59e0b"><div class="flow-box-title" style="color:#fcd34d">&#128200; Yahoo Finance API</div><div class="flow-box-sub">5m, 15m, 1h, 1d OHLCV</div></div>
+<div class="flow-box" style="border-color:#f59e0b"><div class="flow-box-title" style="color:#fcd34d">&#128200; NSE Archive</div><div class="flow-box-sub">Bhav Copy, F&amp;O List, Equity List</div></div>
+<div class="flow-box" style="border-color:#f59e0b"><div class="flow-box-title" style="color:#fcd34d">&#127760; NSE/BSE + News</div><div class="flow-box-sub">Announcements, RSS, NewsAPI</div></div>
+</div>
+<div class="flow-down">&darr;</div>
+<div style="text-align:center;font-size:7.5pt;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">Orchestration Layer</div>
+<div class="flow-row">
+<div class="flow-box highlight" style="flex:3"><div class="flow-box-title">&#9881;&#65039; APScheduler Orchestrator (Every 5 min &middot; 09:15&ndash;15:30 IST)</div><div class="flow-box-sub">Sequences: Candles &rarr; Indicators &rarr; News/Announcements &rarr; Stage1 &rarr; Stage2 &rarr; Trade Execution &rarr; Monitoring &rarr; Learning</div></div>
+</div>
+<div class="flow-down">&darr;</div>
+<div style="text-align:center;font-size:7.5pt;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">Processing Engine</div>
+<div class="flow-row">
+<div class="flow-box"><div class="flow-box-title">&#128229; Data Fetcher</div><div class="flow-box-sub">candles, universe</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box"><div class="flow-box-title">&#128208; Indicator Engine</div><div class="flow-box-sub">4 timeframes + confluence</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box highlight"><div class="flow-box-title">&#128269; Stage 1 Scanner</div><div class="flow-box-sub">2357 stocks &rarr; 211 flagged</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box highlight"><div class="flow-box-title">&#127919; Stage 2 Scanner</div><div class="flow-box-sub">211 &rarr; 6&ndash;12 candidates</div></div>
+</div>
+<div class="flow-down">&darr;</div>
+<div style="text-align:center;font-size:7.5pt;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">Agent Layer</div>
+<div class="flow-row">
+<div class="flow-box"><div class="flow-box-title">&#9989; Trade Validator</div><div class="flow-box-sub">7-point safety check</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box"><div class="flow-box-title">&#128207; Risk Manager</div><div class="flow-box-sub">Position sizing, SL/Target</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box green-box"><div class="flow-box-title">&#128188; Paper Trader</div><div class="flow-box-sub">Execute &amp; monitor trades</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box"><div class="flow-box-title">&#129504; Learning Agent</div><div class="flow-box-sub">Adapt strategy weights</div></div>
+</div>
+<div class="flow-down">&darr;</div>
+<div style="text-align:center;font-size:7.5pt;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px">Storage &amp; Serving Layer</div>
+<div class="flow-row">
+<div class="flow-box" style="border-color:#6366f1"><div class="flow-box-title" style="color:#a5b4fc">&#128451;&#65039; SQLite Database</div><div class="flow-box-sub">12+ tables &middot; 325 MB+ live data</div></div>
+<div class="flow-arrow">&#10234;</div>
+<div class="flow-box" style="border-color:#6366f1"><div class="flow-box-title" style="color:#a5b4fc">&#9889; FastAPI Backend :8000</div><div class="flow-box-sub">REST + WebSocket API</div></div>
+<div class="flow-arrow">&rarr;</div>
+<div class="flow-box green-box"><div class="flow-box-title">&#9883;&#65039; React Dashboard :5173</div><div class="flow-box-sub">Live UI &middot; TypeScript &middot; Vite</div></div>
+</div>
+</div>
+<h3 class="sub-heading">Service Endpoints</h3>
+<div class="grid-2">
+<div class="card card-blue"><div class="card-title">Backend API (Port 8000)</div><div class="card-body"><ul class="dot-list">
+<li><code>GET /api/ping</code> &mdash; Health check</li>
+<li><code>GET /api/health</code> &mdash; Orchestrator status</li>
+<li><code>GET /api/account</code> &mdash; Portfolio metrics</li>
+<li><code>GET /api/trades</code> &mdash; Trade history</li>
+<li><code>GET /api/scan/stage1/latest</code> &mdash; Stage 1 results</li>
+<li><code>GET /api/scan/stage2/latest</code> &mdash; Stage 2 candidates</li>
+<li><code>GET /api/scan/history</code> &mdash; 24h scan history</li>
+<li><code>WS /ws</code> &mdash; Real-time live updates</li>
+</ul></div></div>
+<div class="card card-purple"><div class="card-title">React Frontend (Port 5173)</div><div class="card-body"><ul class="dot-list">
+<li><strong>Dashboard</strong> &mdash; Portfolio overview, P&amp;L, positions</li>
+<li><strong>Scanner</strong> &mdash; Two-stage scan results &amp; metrics</li>
+<li><strong>Trades</strong> &mdash; Trade history, filters, export</li>
+<li><strong>Backtest</strong> &mdash; Historical strategy replay</li>
+<li><strong>Pipeline Control</strong> &mdash; Orchestrator controls</li>
+<li><strong>API Docs</strong> &mdash; Swagger at /docs</li>
+</ul></div></div>
+</div>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 3</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 4: TWO-STAGE PIPELINE ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Two-Stage Pipeline &mdash; Sequence Flow</div></div>
+<div class="section-title">Two-Stage Scanning <span>Pipeline</span></div>
+<div class="section-divider"></div>
+<p class="body-text">ATLAS's core innovation is a two-stage scanning pipeline that achieves <strong>100% NSE stock coverage</strong> in under 3 minutes per cycle &mdash; a 100&times; improvement over previous single-pass approaches that analyzed only 15 stocks.</p>
+
+<div class="flow-diagram">
+<div class="flow-title">&#128203; Complete Trading Cycle &mdash; Sequence Flow</div>
+<div style="display:grid;grid-template-columns:100px 1fr;gap:8px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="height:36px;display:flex;align-items:center;font-size:7pt;color:#fcd34d;font-weight:700;padding:0 8px">&#9201; T+0:00</div>
+<div style="height:36px;display:flex;align-items:center;font-size:7pt;color:#a5b4fc;font-weight:700;padding:0 8px">&#9201; T+0:30</div>
+<div style="height:36px;display:flex;align-items:center;font-size:7pt;color:#a5b4fc;font-weight:700;padding:0 8px">&#9201; T+0:45</div>
+<div style="height:40px;display:flex;align-items:center;font-size:7pt;color:#34d399;font-weight:700;padding:0 8px">&#9201; T+0:48</div>
+<div style="height:40px;display:flex;align-items:center;font-size:7pt;color:#34d399;font-weight:700;padding:0 8px">&#9201; T+1:00</div>
+<div style="height:40px;display:flex;align-items:center;font-size:7pt;color:#fb923c;font-weight:700;padding:0 8px">&#9201; T+2:30</div>
+<div style="height:40px;display:flex;align-items:center;font-size:7pt;color:#fb923c;font-weight:700;padding:0 8px">&#9201; T+2:45</div>
+<div style="height:36px;display:flex;align-items:center;font-size:7pt;color:#f87171;font-weight:700;padding:0 8px">&#9201; T+3:30</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);border-radius:6px;padding:8px 12px;height:36px;display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:8.5pt;font-weight:700;color:#fcd34d">1. DATA FETCH &mdash; Universe + Candles</span><span class="badge badge-orange">fetcher.py</span></div>
+<div style="background:rgba(165,180,252,0.12);border:1px solid rgba(165,180,252,0.35);border-radius:6px;padding:8px 12px;height:36px;display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:8.5pt;font-weight:700;color:#c7d2fe">2. CANDLE FETCH &mdash; 5m + 15m + 1h + 1d intervals</span><span class="badge badge-purple">fetcher.py</span></div>
+<div style="background:rgba(165,180,252,0.12);border:1px solid rgba(165,180,252,0.35);border-radius:6px;padding:8px 12px;height:36px;display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:8.5pt;font-weight:700;color:#c7d2fe">3. INDICATORS + CONFLUENCE &mdash; RSI, MACD, EMA, VWAP</span><span class="badge badge-purple">indicator_engine.py</span></div>
+<div style="background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.4);border-radius:6px;padding:8px 12px;height:40px;display:flex;align-items:center;justify-content:space-between">
+<div><span style="font-size:8.5pt;font-weight:700;color:#6ee7b7">4. STAGE 1 SCAN &mdash; All 2,357 NSE stocks &middot; 2.4 seconds</span><div style="font-size:7pt;color:rgba(255,255,255,0.4)">Filter: Price &gt;0.5% OR Volume &gt;1.5&times; OR F&amp;O stock OR Open trade &rarr; ~211 flagged</div></div>
+<span class="badge badge-green">stage1_scanner.py</span></div>
+<div style="background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.4);border-radius:6px;padding:8px 12px;height:40px;display:flex;align-items:center;justify-content:space-between">
+<div><span style="font-size:8.5pt;font-weight:700;color:#6ee7b7">5. STAGE 2 DEEP ANALYSIS &mdash; 211 flagged stocks &middot; ~1&ndash;2 min</span><div style="font-size:7pt;color:rgba(255,255,255,0.4)">Signal score + multi-timeframe gate + news/announcement boosts &rarr; 6&ndash;12 candidates</div></div>
+<span class="badge badge-green">stage2_scanner.py</span></div>
+<div style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.4);border-radius:6px;padding:8px 12px;height:40px;display:flex;align-items:center;justify-content:space-between">
+<div><span style="font-size:8.5pt;font-weight:700;color:#fdba74">6. TRADE VALIDATION &rarr; RISK SIZING &rarr; EXECUTION</span><div style="font-size:7pt;color:rgba(255,255,255,0.4)">7-point validate &rarr; Position size/SL/target &rarr; Open paper trade in DB</div></div>
+<span class="badge badge-orange">paper_trader.py</span></div>
+<div style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.4);border-radius:6px;padding:8px 12px;height:40px;display:flex;align-items:center;justify-content:space-between">
+<div><span style="font-size:8.5pt;font-weight:700;color:#fdba74">7. MONITOR OPEN POSITIONS</span><div style="font-size:7pt;color:rgba(255,255,255,0.4)">Check Target Hit / Stop Loss / EOD Exit (15:30 IST) &middot; Update unrealized P&amp;L</div></div>
+<span class="badge badge-orange">paper_trader.py</span></div>
+<div style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);border-radius:6px;padding:8px 12px;height:36px;display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:8.5pt;font-weight:700;color:#fca5a5">8. LEARNING CYCLE &mdash; Update strategy weights from closed trades</span><span class="badge badge-red">learning_agent.py</span></div>
+</div>
+</div>
+<div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:7.5pt;color:rgba(255,255,255,0.5);text-align:center">&#8634; Entire cycle repeats every <strong style="color:#a5b4fc">5 minutes</strong> from 09:15 IST to 15:30 IST &middot; Mon&ndash;Fri &middot; Auto EOD close at 15:30</div>
+</div>
+
+<h3 class="sub-heading">Stage Performance Benchmarks</h3>
+<div class="grid-3">
+<div class="card card-green"><div class="card-title">Stage 1 Performance</div><div class="card-body">
+<div class="progress-bar-container"><div class="progress-label"><span>Speed</span><span>980 stocks/sec</span></div><div class="progress-bar"><div class="progress-fill green" style="width:97%"></div></div></div>
+<div class="progress-bar-container"><div class="progress-label"><span>Coverage</span><span>100% of NSE</span></div><div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div></div>
+<div class="progress-bar-container"><div class="progress-label"><span>Duration</span><span>2.4 seconds</span></div><div class="progress-bar"><div class="progress-fill green" style="width:15%"></div></div></div>
+<div style="font-size:8pt;color:#059669;font-weight:700;margin-top:6px">&#10003; Target: &lt;30 sec &middot; ACHIEVED</div>
+</div></div>
+<div class="card card-blue"><div class="card-title">Stage 2 Performance</div><div class="card-body">
+<div class="progress-bar-container"><div class="progress-label"><span>Input stocks</span><span>~211 (9%)</span></div><div class="progress-bar"><div class="progress-fill" style="width:9%"></div></div></div>
+<div class="progress-bar-container"><div class="progress-label"><span>Output quality</span><span>6&ndash;12 picks</span></div><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div></div>
+<div class="progress-bar-container"><div class="progress-label"><span>Duration</span><span>1&ndash;2 minutes</span></div><div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div></div>
+<div style="font-size:8pt;color:#2563eb;font-weight:700;margin-top:6px">&#10003; Full indicator scoring per stock</div>
+</div></div>
+<div class="card card-purple"><div class="card-title">Total Pipeline</div><div class="card-body">
+<div class="progress-bar-container"><div class="progress-label"><span>Efficiency gain</span><span>100&times;</span></div><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div>
+<div class="progress-bar-container"><div class="progress-label"><span>Total cycle time</span><span>3&ndash;5 min</span></div><div class="progress-bar"><div class="progress-fill" style="width:35%"></div></div></div>
+<div class="progress-bar-container"><div class="progress-label"><span>Cycles per day</span><span>~72 cycles</span></div><div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div></div>
+<div style="font-size:8pt;color:#5b21b6;font-weight:700;margin-top:6px">&#10003; Scalable to 10,000+ stocks</div>
+</div></div>
+</div>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 4</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 5: CORE MODULES ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Core Modules &amp; Features</div></div>
+<div class="section-title">Core <span>Modules</span></div>
+<div class="section-divider"></div>
+<div class="grid-2">
+<div>
+<div class="card card-purple" style="margin-bottom:8px"><div class="card-title">&#128229; Data Fetcher <span class="badge badge-gray" style="font-weight:400;font-size:7pt">data/fetcher.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Fetches 5m, 15m, 1h, and 1d OHLCV candles via Yahoo Finance</li>
+<li>Priority cadence: 5m/15m every cycle, 1h every 30 min, 1d daily at 09:00 IST</li>
+<li>Auto-backfills missing historical candle data on first run</li>
+<li>Stores data in local SQLite &mdash; zero repeated API calls</li>
+<li>Retry logic with exponential backoff for network failures</li>
+</ul></div></div>
+
+<div class="card card-blue" style="margin-bottom:8px"><div class="card-title">&#127760; Universe Fetcher <span class="badge badge-gray" style="font-weight:400;font-size:7pt">data/universe_fetcher.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Downloads the full NSE equity + F&amp;O stock list weekly</li>
+<li>Classifies stocks by market cap (Large / Mid / Small cap)</li>
+<li>Maintains avg_daily_volume for Stage 1 volume ratio</li>
+<li>Persists 2,357+ symbols in stock_universe table</li>
+</ul></div></div>
+
+<div class="card card-green" style="margin-bottom:8px"><div class="card-title">&#128208; Indicator Engine <span class="badge badge-gray" style="font-weight:400;font-size:7pt">analysis/indicator_engine.py</span></div><div class="card-body"><ul class="dot-list">
+<li><strong>RSI (14)</strong> &mdash; Momentum oscillator for overbought/oversold</li>
+<li><strong>MACD (12,26,9)</strong> &mdash; Trend direction &amp; crossovers</li>
+<li><strong>EMA 20 &amp; 50</strong> &mdash; Short &amp; medium trend tracking</li>
+<li><strong>VWAP</strong> &mdash; Volume-weighted price benchmark</li>
+<li><strong>Confluence:</strong> 5m / 15m / 1h / 1d trend agreement</li>
+<li><strong>Volume Ratio</strong> &mdash; Today volume vs 10-day average</li>
+<li>Requires 250 warmup candles per symbol for accuracy</li>
+</ul></div></div>
+
+<div class="card card-orange"><div class="card-title">&#128269; Stage 1 Scanner <span class="badge badge-gray" style="font-weight:400;font-size:7pt">analysis/stage1_scanner.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Scans all 2,357 NSE stocks in <strong>2.4 seconds</strong></li>
+<li>Price change threshold: &gt;0.5% (configurable)</li>
+<li>Volume surge threshold: &gt;1.5&times; 10-day average</li>
+<li>Always includes all 210 F&amp;O stocks (max liquidity)</li>
+<li>Always flags stocks with open positions</li>
+<li>Fetches NSE Bhav Copy CSV (single download)</li>
+</ul></div></div>
+</div>
+
+<div>
+<div class="card card-purple" style="margin-bottom:8px"><div class="card-title">&#127919; Stage 2 Scanner <span class="badge badge-gray" style="font-weight:400;font-size:7pt">analysis/stage2_scanner.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Accepts flagged symbols from Stage 1 only</li>
+<li>Runs full signal scoring via signal_engine</li>
+<li>Detects market condition: TRENDING / SIDEWAYS / VOLATILE</li>
+<li>Requires at least 2 of 3 main timeframes to agree</li>
+<li>Filters by min_score_to_trade threshold (default: 60)</li>
+<li>Sorts candidates by score descending</li>
+<li>Uses confluence score as a final signal multiplier</li>
+<li>Feeds top 5 candidates into NewsAPI enrichment</li>
+</ul></div></div>
+
+<div class="card card-blue" style="margin-bottom:8px"><div class="card-title">&#128200; Signal Engine <span class="badge badge-gray" style="font-weight:400;font-size:7pt">analysis/signal_engine.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Configurable 4-indicator weighted scoring (0&ndash;100)</li>
+<li><strong>RSI Score:</strong> Tiered thresholds (max 25 pts)</li>
+<li><strong>MACD Score:</strong> Crossover (25pts) + histogram (15pts)</li>
+<li><strong>Volume Score:</strong> Ratio tiers (max 25 pts at 2.5&times;)</li>
+<li><strong>VWAP Score:</strong> Position &amp; distance scoring (max 25 pts)</li>
+<li><strong>Boosts:</strong> confluence multiplier + announcement signal boost</li>
+<li>Reads config from signal_config.json (live-editable)</li>
+</ul></div></div>
+
+<div class="card card-purple" style="margin-bottom:8px"><div class="card-title">&#128240; News Intelligence <span class="badge badge-gray" style="font-weight:400;font-size:7pt">data/news_fetcher.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Reads official NSE/BSE corporate announcements</li>
+<li>Fetches free financial RSS feeds every 15 minutes</li>
+<li>Runs Google News only for Stage 1 flagged stocks</li>
+<li>Runs NewsAPI only for top 5 Stage 2 candidates</li>
+<li>Tracks NewsAPI daily usage with 90-call safety guard</li>
+</ul></div></div>
+
+<div class="card card-green" style="margin-bottom:8px"><div class="card-title">&#9989; Trade Validator <span class="badge badge-gray" style="font-weight:400;font-size:7pt">agents/trade_validator.py</span></div><div class="card-body"><ul class="dot-list">
+<li><strong>Check 1:</strong> Market hours guard (09:15&ndash;15:15 IST)</li>
+<li><strong>Check 2:</strong> Minimum confidence score threshold</li>
+<li><strong>Check 3:</strong> Maximum open trades limit</li>
+<li><strong>Check 4:</strong> No duplicate trades (same symbol)</li>
+<li><strong>Check 5:</strong> Capital sufficiency check</li>
+<li><strong>Check 6:</strong> Market condition filter</li>
+<li><strong>Check 7:</strong> Data freshness validation</li>
+</ul></div></div>
+
+<div class="card card-orange"><div class="card-title">&#128207; Risk Manager <span class="badge badge-gray" style="font-weight:400;font-size:7pt">agents/risk_manager.py</span></div><div class="card-body"><ul class="dot-list">
+<li>Max capital per trade: 20% of portfolio</li>
+<li>Stop-loss distance: 0.75% from entry price</li>
+<li>Target: +1.5% for BUY, -1.5% for SELL (2:1 R/R)</li>
+<li>Position size from risk_per_trade_pct</li>
+<li>Reads live balance from paper_account table</li>
+</ul></div></div>
+</div>
+</div>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 5</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 6: AI AGENTS ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">AI Agents</div></div>
+<div class="section-title">AI <span>Agents</span></div>
+<div class="section-divider"></div>
+
+<div class="card" style="border-left:4px solid #10b981;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="card-title" style="margin:0">&#128188; Paper Trader Agent</div><span class="badge badge-green">agents/paper_trader.py &middot; 908 lines</span></div>
+<p style="font-size:8.5pt;color:#4b5563;margin-bottom:8px;line-height:1.6">The core execution agent. Opens and monitors paper trades by reading market prices from the local candles table &mdash; zero network calls during trade management. Tracks full trade lifecycle from PENDING &rarr; OPEN &rarr; CLOSED.</p>
+<div class="grid-3">
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Trade Entry Fields</div><ul class="dot-list" style="font-size:8pt">
+<li>Symbol, Direction (BUY/SELL)</li><li>Entry Price, Quantity</li><li>RSI, MACD, VWAP at entry</li><li>Volume ratio at entry</li><li>Market condition</li><li>All 4 indicator scores</li>
+</ul></div>
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Exit Conditions</div><ul class="dot-list" style="font-size:8pt">
+<li><span class="badge badge-green">TARGET_HIT</span> +1.5% target</li>
+<li><span class="badge badge-red">STOP_LOSS</span> -0.75% hit</li>
+<li><span class="badge badge-blue">EOD_EXIT</span> 15:30 IST close</li>
+<li><span class="badge badge-gray">NO_CANDLE_DATA</span> stale data</li>
+<li><span class="badge badge-orange">REPLACED</span> better signal</li>
+</ul></div>
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Outcome Tracking</div><ul class="dot-list" style="font-size:8pt">
+<li>P&amp;L in &#8377; and percentage</li><li>WIN / LOSS / BREAKEVEN</li><li>Status: OPEN / CLOSED</li><li>Unrealized P&amp;L (live)</li><li>Full trade history stored</li>
+</ul></div>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid #8b5cf6;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="card-title" style="margin:0">&#129504; Learning Agent</div><span class="badge badge-purple">agents/learning_agent.py &middot; 513 lines</span></div>
+<div class="grid-2" style="gap:10px">
+<div>
+<p style="font-size:8.5pt;color:#4b5563;margin-bottom:6px;line-height:1.6">ATLAS's adaptive brain. Reads all closed trades and uses statistical analysis to update the strategy &mdash; adjusting signal weights, score thresholds, trade limits, and time windows.</p>
+<div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Learning Triggers (min samples required)</div>
+<table style="font-size:8pt;margin-bottom:0"><thead><tr><th>Update Type</th><th>Min Trades</th></tr></thead><tbody>
+<tr><td>Signal weights (RSI/MACD/Vol/VWAP)</td><td>20 trades</td></tr>
+<tr><td>Score threshold adjustment</td><td>50 trades</td></tr>
+<tr><td>Max open trades limit</td><td>30 trades</td></tr>
+<tr><td>Sideways market filter</td><td>40 trades</td></tr>
+<tr><td>Best entry time window</td><td>25 trades</td></tr>
+</tbody></table>
+</div>
+<div>
+<div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Strategy Parameters Updated</div>
+<ul class="check-list" style="font-size:8pt">
+<li>RSI signal weight (bounded: 5%&ndash;50%)</li><li>MACD signal weight (bounded: 5%&ndash;50%)</li><li>Volume signal weight (bounded: 5%&ndash;50%)</li><li>VWAP signal weight (bounded: 5%&ndash;50%)</li><li>Score threshold (floor: 40, ceiling: 65)</li><li>Max concurrent open trades</li><li>Trade-in-sideways flag (on/off)</li><li>Best entry time window (HH:MM format)</li>
+</ul>
+<div class="callout" style="margin-top:6px;font-size:8pt;padding:8px 12px"><strong>Versioning:</strong> Each learning cycle creates a new strategy_rules version &mdash; full history preserved.</div>
+</div>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid #3b82f6;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="card-title" style="margin:0">&#128200; Performance Tracker</div><span class="badge badge-blue">agents/performance_tracker.py &middot; 174 lines</span></div>
+<div class="grid-3">
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Account Metrics</div><ul class="dot-list" style="font-size:8pt"><li>Current balance &amp; total P&amp;L</li><li>Daily P&amp;L (today's closed trades)</li><li>Peak balance &amp; max drawdown</li></ul></div>
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Trade Statistics</div><ul class="dot-list" style="font-size:8pt"><li>Total / winning / losing trades</li><li>Win rate (percentage)</li><li>Open positions count</li></ul></div>
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Update Frequency</div><ul class="dot-list" style="font-size:8pt"><li>After every trade close</li><li>Atomic DB update (single query)</li><li>Real-time via WebSocket push</li></ul></div>
+</div>
+</div>
+
+<div class="card" style="border-left:4px solid #f59e0b">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div class="card-title" style="margin:0">&#9194; Backtester</div><span class="badge badge-orange">analysis/backtester.py &middot; 447 lines</span></div>
+<p style="font-size:8.5pt;color:#4b5563;margin-bottom:6px;line-height:1.6">Historical strategy replay engine. Replays the exact signal-scoring logic on historical candle data to validate strategy performance without touching live trading/account tables.</p>
+<div class="grid-3">
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Simulation</div><ul class="dot-list" style="font-size:8pt"><li>Starting balance: &#8377;1,00,000</li><li>Indicator window: 320 candles</li><li>Causal replay (no lookahead)</li></ul></div>
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Output Stored</div><ul class="dot-list" style="font-size:8pt"><li>backtest_runs table</li><li>backtest_trades table</li><li>UUID per run for tracking</li></ul></div>
+<div><div style="font-size:8pt;font-weight:700;color:#374151;margin-bottom:4px">Viewable In</div><ul class="dot-list" style="font-size:8pt"><li>Backtest page in Dashboard</li><li>JSON export available</li><li>Statistics: mean, stdev</li></ul></div>
+</div>
+</div>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 6</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 7: DATABASE SCHEMA ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Database Schema</div></div>
+<div class="section-title">Database <span>Schema</span></div>
+<div class="section-divider"></div>
+<p class="body-text">ATLAS uses a single SQLite database (<code>database/trading.db</code>) with 12+ optimized tables. The database currently holds <strong>325 MB+ of live market data</strong> with full trade history, multi-timeframe candle data, indicator snapshots, scan results, official announcements, and financial news.</p>
+<div class="grid-3" style="margin-bottom:8px">
+<div class="metric-box teal"><div class="metric-value">12+</div><div class="metric-label">Database Tables</div></div>
+<div class="metric-box blue"><div class="metric-value">325 MB+</div><div class="metric-label">Live Data Size</div></div>
+<div class="metric-box green"><div class="metric-value">2,357+</div><div class="metric-label">Symbols Tracked</div></div>
+</div>
+<table>
+<thead><tr><th>Table</th><th>Purpose</th><th>Key Columns</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>stocks</strong></td><td>Initial watchlist (seed)</td><td>symbol, name, sector, is_active</td><td>15 liquid NSE stocks seeded</td></tr>
+<tr><td><strong>stock_universe</strong></td><td>Full NSE equity universe</td><td>symbol, market_cap, avg_daily_volume, is_fo_stock</td><td>2,357+ stocks &middot; Weekly updates</td></tr>
+<tr><td><strong>candles</strong></td><td>OHLCV price data</td><td>symbol, interval, open, high, low, close, volume, timestamp</td><td>UNIQUE(symbol, interval, timestamp)</td></tr>
+<tr><td><strong>indicators</strong></td><td>Technical indicators</td><td>candle_id, rsi, macd, macd_signal, ema_20, ema_50, vwap, volume_ratio</td><td>FK &rarr; candles</td></tr>
+<tr><td><strong>signal_scores</strong></td><td>Signal scoring results</td><td>symbol, scan_cycle, confidence_score, direction, market_condition, timeframe_confluence, announcement_boost</td><td>Score range: 0&ndash;100</td></tr>
+<tr><td><strong>scan_results</strong></td><td>Two-stage scan output</td><td>symbol, scan_time, stage, stage1_flagged, stage2_score, final_selected</td><td>UNIQUE(symbol, scan_time)</td></tr>
+<tr><td><strong>paper_trades</strong></td><td>All trade records</td><td>symbol, direction, entry/exit price/time, target, stop_loss, pnl, status</td><td>Full indicator snapshot at entry</td></tr>
+<tr><td><strong>paper_account</strong></td><td>Portfolio metrics</td><td>balance, total_pnl, daily_pnl, win_rate, max_drawdown, peak_balance</td><td>Real-time updated</td></tr>
+<tr><td><strong>strategy_rules</strong></td><td>Adaptive strategy config</td><td>version, weight_rsi/macd/volume/vwap, min_score_to_trade, max_open_trades</td><td>Versioned &middot; Auto-updated</td></tr>
+<tr><td><strong>learning_insights</strong></td><td>Learning summaries</td><td>week_start/end, win_rate, best_time_window, findings_json</td><td>Weekly analysis records</td></tr>
+<tr><td><strong>trade_logs</strong></td><td>Signal audit log</td><td>timestamp, symbol, direction, score, approved, reason</td><td>Every signal logged</td></tr>
+<tr><td><strong>announcements</strong></td><td>Official exchange disclosures</td><td>symbol, exchange, announcement_type, headline, sentiment_score, signal_boost</td><td>NSE/BSE corporate announcements</td></tr>
+<tr><td><strong>news</strong></td><td>Financial news intelligence</td><td>symbol, headline, source, url, sentiment_score, urgency, stocks_mentioned</td><td>RSS, Google News, NewsAPI</td></tr>
+<tr><td><strong>api_usage</strong></td><td>External API quota tracking</td><td>api_name, call_date, call_count</td><td>NewsAPI 90-call/day guard</td></tr>
+</tbody>
+</table>
+<h3 class="sub-heading">Signal Scoring Configuration (signal_config.json)</h3>
+<div class="grid-2">
+<div class="card card-blue"><div class="card-title">RSI &amp; MACD Scoring</div><div class="card-body">
+<table style="margin-bottom:0;font-size:8pt"><thead><tr><th>RSI Value</th><th>BUY Score</th><th>MACD Event</th><th>Score</th></tr></thead><tbody>
+<tr><td>&lt; 30 / &gt; 70</td><td>25 pts</td><td>Crossover (3-candle lookback)</td><td>25 pts</td></tr>
+<tr><td>&lt; 40 / &gt; 60</td><td>20 pts</td><td>Histogram growing</td><td>15 pts</td></tr>
+<tr><td>&lt; 50 / &gt; 50</td><td>10 pts</td><td>&mdash;</td><td>&mdash;</td></tr>
+</tbody></table>
+</div></div>
+<div class="card card-purple"><div class="card-title">Volume &amp; VWAP Scoring</div><div class="card-body">
+<table style="margin-bottom:0;font-size:8pt"><thead><tr><th>Volume Ratio</th><th>Score</th><th>VWAP Band</th><th>Score</th></tr></thead><tbody>
+<tr><td>&gt; 2.5&times;</td><td>25 pts</td><td>&gt;0.5% above/below</td><td>25 pts</td></tr>
+<tr><td>&gt; 2.0&times;</td><td>20 pts</td><td>&gt;0.1% above/below</td><td>15 pts</td></tr>
+<tr><td>&gt; 1.5&times;</td><td>15 pts</td><td>Neutral band</td><td>10 pts</td></tr>
+<tr><td>&gt; 1.0&times;</td><td>5 pts</td><td>&mdash;</td><td>&mdash;</td></tr>
+</tbody></table>
+</div></div>
+</div>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 7</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 8: ORCHESTRATOR ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Orchestrator &amp; Scheduler</div></div>
+<div class="section-title">Orchestrator &amp; <span>Scheduler</span></div>
+<div class="section-divider"></div>
+<div class="two-col" style="gap:12px;margin-bottom:10px">
+<div>
+<p class="body-text">The Orchestrator is the heartbeat of ATLAS. Built on <strong>APScheduler</strong>, it runs a cron-triggered cycle every <strong>5 minutes</strong> during NSE market hours (09:15&ndash;15:30 IST, Mon&ndash;Fri). It sequences market data, indicators, announcements, news, scanning, execution, monitoring, and learning while managing failure counters, session statistics, graceful shutdown, and <code>status.json</code> health reporting.</p>
+</div>
+<div>
+<div class="card card-purple" style="margin:0"><div class="card-title">&#127939; Scheduler Specs</div><div class="card-body"><ul class="dot-list">
+<li>Engine: APScheduler BlockingScheduler</li><li>Main trigger: CronTrigger every 5 min</li><li>1h candles + announcements every 30 min</li><li>RSS/NewsAPI intelligence every 15 min</li><li>Daily candles at 09:00; pre-market announcements at 09:10</li><li>Failure limit: 3 consecutive &rarr; stage disabled</li>
+</ul></div></div>
+</div>
+</div>
+
+<div class="dark-section">
+<h3>&#9881;&#65039; Full Orchestrator run_cycle() Sequence</h3>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px">
+<div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#fcd34d;font-weight:700;text-transform:uppercase">Step 1</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Roll Day Check</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">Reset today's counters if new date</div></div>
+<div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#fcd34d;font-weight:700;text-transform:uppercase">Step 2</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Update Universe</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">Refresh NSE stock list if needed</div></div>
+<div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#fcd34d;font-weight:700;text-transform:uppercase">Step 3</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Fetch Candles</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">5m, 15m, 1h, 1d intervals</div></div>
+<div style="background:rgba(255,255,255,0.06);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#fcd34d;font-weight:700;text-transform:uppercase">Step 4</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Run Indicators</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">RSI, MACD, EMA, VWAP + confluence</div></div>
+<div style="background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#34d399;font-weight:700;text-transform:uppercase">Step 5</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Stage 1 Scan</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">2,357 stocks &rarr; ~211 flagged</div></div>
+<div style="background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#34d399;font-weight:700;text-transform:uppercase">Step 6</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Stage 2 Scan</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">211 &rarr; 6&ndash;12 candidates</div></div>
+<div style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.3);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#fb923c;font-weight:700;text-transform:uppercase">Step 7</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Execute Picks</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">Validate &rarr; Size &rarr; Open trades</div></div>
+<div style="background:rgba(251,146,60,0.15);border:1px solid rgba(251,146,60,0.3);border-radius:6px;padding:8px;text-align:center"><div style="font-size:7pt;color:#fb923c;font-weight:700;text-transform:uppercase">Step 8</div><div style="font-size:8.5pt;color:#e0e7ff;font-weight:600;margin:4px 0">Monitor Trades</div><div style="font-size:7pt;color:rgba(255,255,255,0.4)">SL/Target/EOD for open positions</div></div>
+</div>
+<div style="margin-top:10px;padding:8px 12px;background:rgba(255,255,255,0.04);border-radius:6px;font-size:7.5pt;color:rgba(255,255,255,0.5)">After each cycle &rarr; <strong style="color:#a5b4fc">update_stats()</strong> refreshes paper_account &middot; <strong style="color:#a5b4fc">run_learning_cycle()</strong> adapts strategy &middot; <strong style="color:#a5b4fc">status.json</strong> updated</div>
+</div>
+
+<h3 class="sub-heading">Failure Resilience &amp; Health Monitoring</h3>
+<div class="grid-2">
+<div class="card card-orange"><div class="card-title">&#9888;&#65039; Stage Failure Tracking</div><div class="card-body">Each pipeline stage has an independent failure counter. If a stage fails <strong>3 consecutive times</strong>, it is automatically disabled for the session to prevent cascading errors. Tracked stages include fetcher, hourly_candles, daily_candles, announcements, news, indicator_engine, stage1_scanner, stage2_scanner, trade_execution, and trade_monitoring.</div></div>
+<div class="card card-green"><div class="card-title">&#9989; Graceful Shutdown</div><div class="card-body"><ul class="check-list">
+<li>On SIGINT/SIGTERM waits for active cycle (up to 240s)</li>
+<li>Writes status: stopped to status.json</li>
+<li>Logs full session summary (opened/closed trades)</li>
+<li>Safe to Ctrl+C at any time without data corruption</li>
+</ul></div></div>
+</div>
+<table style="font-size:8.5pt"><thead><tr><th>Artifact</th><th>Location</th><th>Content</th></tr></thead><tbody>
+<tr><td><strong>status.json</strong></td><td>orchestrator/status.json</td><td>status, last_run, next_run, cycle_number, consecutive_failures</td></tr>
+<tr><td><strong>Rotating Log</strong></td><td>logs/orchestrator.log</td><td>10 MB &times; 5 backups &middot; IST timestamps &middot; DEBUG + INFO</td></tr>
+<tr><td><strong>Health API</strong></td><td>GET /api/health</td><td>orchestrator_alive, last_run, next_run, cycle interval</td></tr>
+<tr><td><strong>Dashboard</strong></td><td>localhost:5173</td><td>Live if status=running AND last_run &lt; 20 min ago</td></tr>
+</tbody></table>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 8</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 9: FRONTEND DASHBOARD ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Frontend Dashboard &amp; Tech Stack</div></div>
+<div class="section-title">React <span>Dashboard</span></div>
+<div class="section-divider"></div>
+<p class="body-text">A professional React + TypeScript frontend built with Vite, featuring real-time WebSocket updates, comprehensive portfolio analytics, and full pipeline control &mdash; accessible at <code>http://localhost:5173</code>.</p>
+<div class="grid-2" style="margin-bottom:10px">
+<div class="card card-blue"><div class="card-title">&#128200; Main Dashboard</div><div class="card-body"><ul class="check-list">
+<li>Portfolio balance &amp; P&amp;L cards (total + daily)</li><li>Win rate, max drawdown, peak balance</li><li>Open positions count with unrealized P&amp;L</li><li>Orchestrator live status (green/red indicator)</li><li>Market hours indicator (IST)</li><li>Real-time WebSocket push updates</li>
+</ul></div></div>
+<div class="card card-green"><div class="card-title">&#128269; Scanner Page</div><div class="card-body"><ul class="check-list">
+<li>Stage 1 summary: X stocks scanned &rarr; Y flagged</li><li>Readable reason chips for price, volume, F&amp;O, and open-trade flags</li><li>Stage 2 summary: Y analyzed &rarr; Z candidates</li><li>Run Two-Stage Scan control connected to backend pipeline</li><li>Candidate table: Symbol, Score, Direction, Price, Volume</li><li>Live refresh from /api/scan endpoints</li>
+</ul></div></div>
+<div class="card card-purple"><div class="card-title">&#128188; Trades Page</div><div class="card-body"><ul class="check-list">
+<li>Full trade history table with filters</li><li>Entry/exit price, time, quantity, direction</li><li>P&amp;L per trade with WIN/LOSS badge</li><li>Exit reason breakdown (TARGET/SL/EOD)</li><li>Indicator values at entry</li><li>Open positions with live unrealized P&amp;L</li>
+</ul></div></div>
+<div class="card card-orange"><div class="card-title">&#9194; Backtest &amp; Pipeline Control</div><div class="card-body"><ul class="check-list">
+<li>Historical strategy replay interface</li><li>Configurable date range &amp; symbol selection</li><li>Visual P&amp;L curve over backtest period</li><li>Start / Stop orchestrator controls</li><li>Dry-run toggle &amp; single cycle trigger</li><li>Failure counters per stage</li>
+</ul></div></div>
+</div>
+
+<h3 class="sub-heading">Full Technology Stack</h3>
+<div class="grid-2">
+<div>
+<table><thead><tr><th colspan="2">Frontend Stack</th></tr></thead><tbody>
+<tr><td><strong>React</strong></td><td>Component UI framework</td></tr>
+<tr><td><strong>TypeScript</strong></td><td>Type-safe JavaScript</td></tr>
+<tr><td><strong>Vite</strong></td><td>Build tool &amp; dev server (HMR)</td></tr>
+<tr><td><strong>WebSocket</strong></td><td>Real-time data push from FastAPI</td></tr>
+<tr><td><strong>Zustand</strong></td><td>Global state management</td></tr>
+</tbody></table>
+</div>
+<div>
+<table><thead><tr><th colspan="2">Backend Stack</th></tr></thead><tbody>
+<tr><td><strong>FastAPI</strong> &ge;0.115</td><td>REST API + WebSocket server</td></tr>
+<tr><td><strong>Uvicorn</strong> &ge;0.30</td><td>ASGI web server (hot reload)</td></tr>
+<tr><td><strong>APScheduler</strong> &ge;3.10</td><td>Cron scheduler</td></tr>
+<tr><td><strong>requests</strong></td><td>NSE/BSE announcements + NewsAPI</td></tr>
+<tr><td><strong>feedparser</strong></td><td>Free financial RSS ingestion</td></tr>
+<tr><td><strong>Pandas</strong> &ge;2.0</td><td>Data manipulation</td></tr>
+<tr><td><strong>TA-Lib / ta</strong></td><td>Indicator calculations</td></tr>
+<tr><td><strong>yfinance</strong> &ge;0.2</td><td>Yahoo Finance data</td></tr>
+<tr><td><strong>pytz</strong></td><td>IST timezone handling</td></tr>
+<tr><td><strong>NumPy</strong></td><td>Numerical computations</td></tr>
+<tr><td><strong>SQLite3</strong></td><td>Local database (built-in)</td></tr>
+</tbody></table>
+</div>
+</div>
+
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 9</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 10: ROADMAP & INVESTMENT ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Roadmap &amp; Investment Thesis</div></div>
+<div class="section-title">Roadmap &amp; <span>Investment Thesis</span></div>
+<div class="section-divider"></div>
+
+<h3 class="sub-heading" style="margin-top:0">Current Features (Completed &#9989;)</h3>
+<div class="grid-2" style="margin-bottom:10px">
+<div><ul class="check-list">
+<li>Full NSE stock universe (2,357+ stocks)</li><li>Two-stage intelligent scanning pipeline</li><li>Multi-timeframe candles: 5m, 15m, 1h, 1d</li><li>4-indicator signal scoring engine</li><li>Multi-timeframe confluence gate</li><li>7-point trade validation system</li><li>Automated position sizing &amp; risk management</li><li>Self-learning adaptive strategy agent</li>
+</ul></div>
+<div><ul class="check-list">
+<li>Official NSE/BSE announcement ingestion</li><li>RSS + Google News + NewsAPI intelligence</li><li>FastAPI backend with 15+ REST endpoints</li><li>WebSocket real-time push updates</li><li>React + TypeScript professional dashboard</li><li>APScheduler with multi-cadence automation</li><li>Rotating logs + health monitoring</li><li>SQLite with 12+ table schema (325 MB+ live data)</li>
+</ul></div>
+</div>
+
+<h3 class="sub-heading">Next Phase Roadmap (Planned &#128295;)</h3>
+<div class="timeline">
+<div class="timeline-item"><div class="timeline-dot" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">NLP</div><div class="timeline-content"><div class="timeline-title">Advanced NLP Sentiment Model</div><div class="timeline-body">Move beyond keyword scoring into transformer-based sentiment, event severity detection, and source credibility weighting trained on Indian market outcomes.</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">9</div><div class="timeline-content"><div class="timeline-title">Feature 9 &mdash; Candlestick Pattern Recognition</div><div class="timeline-body">Full pattern detection engine (Doji, Hammer, Engulfing, etc.). Support/resistance levels. Trend line analysis. Pattern stub already in Stage 2 scanner.</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:linear-gradient(135deg,#10b981,#059669)">ML</div><div class="timeline-content"><div class="timeline-title">Machine Learning Scoring Model</div><div class="timeline-body">Train classification models on historical scan results + trade outcomes. Predict trade success probability. Dynamically optimize thresholds by market regime.</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:linear-gradient(135deg,#f59e0b,#d97706)">LB</div><div class="timeline-content"><div class="timeline-title">Live Broker Integration</div><div class="timeline-body">Connect to Zerodha Kite / Upstox / Angel One for real-money trading. Full order management, brokerage tracking, margin handling.</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:linear-gradient(135deg,#f43f5e,#be123c)">CF</div><div class="timeline-content"><div class="timeline-title">Custom Filters &amp; Sector Analysis</div><div class="timeline-body">User-defined Stage 1 rules (sector-specific, market cap ranges). Sector rotation detection. NIFTY 50 / NIFTY 500 index-aware scanning.</div></div></div>
+</div>
+
+<div class="dark-section">
+<h3>&#127919; Why ATLAS is a Strong Investment Opportunity</h3>
+<div class="grid-2" style="margin-top:8px;gap:10px">
+<div>
+<p style="font-size:8.5pt;color:rgba(255,255,255,0.8);margin-bottom:8px;font-weight:600">Market Opportunity</p>
+<p style="font-size:8pt;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:8px">The NSE is one of the world's largest exchanges with 2,000+ actively traded stocks. Retail algorithmic trading in India is growing at 30%+ YoY. ATLAS addresses the gap between professional-grade quant systems (expensive, closed) and retail trading tools (simplistic, manual).</p>
+<p style="font-size:8.5pt;color:rgba(255,255,255,0.8);margin-bottom:4px;font-weight:600">Defensible Moat</p>
+<p style="font-size:8pt;color:rgba(255,255,255,0.6);line-height:1.7">The self-learning feedback loop creates an ever-improving system. The historical trade database becomes a proprietary dataset that grows more valuable with time &mdash; a compounding data advantage competitors cannot replicate.</p>
+</div>
+<div>
+<p style="font-size:8.5pt;color:rgba(255,255,255,0.8);margin-bottom:8px;font-weight:600">Technical Excellence</p>
+<ul class="check-list" style="font-size:8pt"><li>Production-grade modular codebase</li><li>Full test suite (pytest)</li><li>Low-cost public data stack with optional NewsAPI free tier</li><li>Self-contained local-first architecture</li><li>100% paper trading (zero financial risk)</li><li>Proven 100&times; efficiency gain in scanning</li></ul>
+<div style="margin-top:8px;padding:8px 10px;background:rgba(102,126,234,0.15);border-radius:6px;border:1px solid rgba(102,126,234,0.3)">
+<p style="font-size:8pt;color:#a5b4fc;font-weight:600;margin-bottom:4px">Revenue Model (Post-Launch)</p>
+<ul class="dot-list" style="font-size:7.5pt">
+<li>SaaS subscription (&#8377;999&ndash;&#8377;4,999/mo)</li><li>White-label API for brokers &amp; fintech</li><li>Performance-based fees on live trading</li><li>Data licensing (curated NSE signal history)</li>
+</ul></div>
+</div>
+</div>
+</div>
+
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential</span><span>Page 10</span></div>
+</div>
+</div>
+
+<!-- ==================== PAGE 11: RISK & CLOSING ==================== -->
+<div class="page">
+<div class="content-page">
+<div class="page-header"><div class="page-header-logo">ATLAS<span>.</span></div><div class="page-header-section">Risk, Compliance &amp; Closing</div></div>
+<div class="section-title">Risk &amp; <span>Compliance</span></div>
+<div class="section-divider"></div>
+<div class="grid-2" style="margin-bottom:10px">
+<div>
+<h3 class="sub-heading" style="margin-top:0">&#9888;&#65039; Technical Risks</h3>
+<div class="card card-orange" style="margin-bottom:8px"><div class="card-title">Data Dependency Risk</div><div class="card-body">Stage 2 requires recent candle data. If Yahoo Finance API is unavailable, Stage 2 is skipped &mdash; Stage 1 still runs. 3-day backfill + retry logic handles failures.</div></div>
+<div class="card card-orange" style="margin-bottom:8px"><div class="card-title">NSE API Rate Limits</div><div class="card-body">Stage 1 uses NSE Bhav Copy (single daily CSV). Session cookies managed automatically. Retry adapter with backoff handles 429/5xx.</div></div>
+<div class="card card-orange" style="margin-bottom:8px"><div class="card-title">NewsAPI Quota</div><div class="card-body">NewsAPI free tier is protected by a 90-call/day guard and is used only for top 5 Stage 2 candidates. RSS, Google News, and exchange announcements continue if quota is exhausted.</div></div>
+<div class="card card-orange"><div class="card-title">Database Locking</div><div class="card-body">SQLite WAL mode for concurrent readers. Threading locks on cycle prevent concurrent writes. 325 MB+ stable, WAL journal active.</div></div>
+</div>
+<div>
+<h3 class="sub-heading" style="margin-top:0">&#128737;&#65039; Built-in Safeguards</h3>
+<ul class="check-list" style="margin-bottom:10px">
+<li><strong>Paper-only by default</strong> &mdash; No real money at risk</li>
+<li><strong>Market hours guard</strong> &mdash; 09:15&ndash;15:15 IST only</li>
+<li><strong>Max position limit</strong> &mdash; Max 3 concurrent trades</li>
+<li><strong>Capital cap</strong> &mdash; Max 20% of balance per trade</li>
+<li><strong>Stop-loss mandatory</strong> &mdash; 0.75% on every trade</li>
+<li><strong>EOD forced close</strong> &mdash; All positions by 15:30 IST</li>
+<li><strong>Score threshold</strong> &mdash; Min 60/100 to trade</li>
+<li><strong>Duplicate prevention</strong> &mdash; No two same-symbol trades</li>
+<li><strong>News quota guard</strong> &mdash; NewsAPI stops at 90 calls/day</li>
+<li><strong>3-strike disable</strong> &mdash; Failing stages auto-disabled</li>
+<li><strong>Audit trail</strong> &mdash; Every signal decision logged</li>
+</ul>
+<div class="callout"><strong>SEBI / Regulatory:</strong> ATLAS is a paper trading system only. No real trades, no real money, no SEBI algo registration required. Market and disclosure data comes from public NSE/BSE sources, Yahoo Finance, RSS feeds, and optional NewsAPI enrichment.</div>
+<div class="callout" style="margin-top:8px;border-left-color:#10b981;background:#f0fdf4"><strong style="color:#059669">Data Privacy:</strong> No user personal data collected. All data local &mdash; no cloud uploads, no third-party data sharing.</div>
+</div>
+</div>
+
+<div style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden">
+<table style="margin:0"><thead><tr><th colspan="4" style="text-align:center;font-size:10pt">Complete File &amp; Module Index</th></tr><tr><th>Module</th><th>File</th><th>Lines</th><th>Responsibility</th></tr></thead><tbody>
+<tr><td>Orchestrator</td><td>orchestrator/main.py</td><td>~720</td><td>Scheduling, cycle management, failure tracking</td></tr>
+<tr><td>Backend API</td><td>backend/main.py</td><td>849</td><td>FastAPI REST endpoints + WebSocket</td></tr>
+<tr><td>Paper Trader</td><td>agents/paper_trader.py</td><td>908</td><td>Trade execution &amp; position monitoring</td></tr>
+<tr><td>Learning Agent</td><td>agents/learning_agent.py</td><td>513</td><td>Adaptive strategy learning &amp; versioning</td></tr>
+<tr><td>Trade Validator</td><td>agents/trade_validator.py</td><td>346</td><td>7-point signal approval checks</td></tr>
+<tr><td>Risk Manager</td><td>agents/risk_manager.py</td><td>207</td><td>Position sizing, SL, target calculation</td></tr>
+<tr><td>Perf. Tracker</td><td>agents/performance_tracker.py</td><td>174</td><td>Portfolio stats computation</td></tr>
+<tr><td>Signal Engine</td><td>analysis/signal_engine.py</td><td>~820</td><td>4-indicator scoring + confluence/news boosts</td></tr>
+<tr><td>Multi-Timeframe</td><td>analysis/multi_timeframe.py</td><td>~120</td><td>5m/15m/1h/1d confluence scoring</td></tr>
+<tr><td>Stage 1 Scanner</td><td>analysis/stage1_scanner.py</td><td>444</td><td>Broad scan: 2,357 stocks in 2.4s</td></tr>
+<tr><td>Stage 2 Scanner</td><td>analysis/stage2_scanner.py</td><td>~300</td><td>Deep analysis of flagged stocks</td></tr>
+<tr><td>Indicator Engine</td><td>analysis/indicator_engine.py</td><td>~560</td><td>RSI, MACD, EMA, VWAP across 4 timeframes</td></tr>
+<tr><td>Backtester</td><td>analysis/backtester.py</td><td>447</td><td>Historical strategy replay engine</td></tr>
+<tr><td>Data Fetcher</td><td>data/fetcher.py</td><td>~380</td><td>Yahoo Finance 5m/15m/1h/1d candle ingestion</td></tr>
+<tr><td>Universe Fetcher</td><td>data/universe_fetcher.py</td><td>~650</td><td>NSE equity + F&amp;O universe</td></tr>
+<tr><td>Announcements</td><td>data/announcement_fetcher.py</td><td>~300</td><td>NSE/BSE corporate announcement ingestion</td></tr>
+<tr><td>News Fetcher</td><td>data/news_fetcher.py</td><td>~500</td><td>RSS, Google News, NewsAPI, API usage tracking</td></tr>
+<tr><td>Database Init</td><td>database/init_db.py</td><td>~630</td><td>Schema creation, seed data, migrations</td></tr>
+<tr><td>Frontend App</td><td>frontend/src/App.tsx</td><td>~660</td><td>React routing + WebSocket management</td></tr>
+</tbody></table>
+</div>
+
+<div style="background:linear-gradient(135deg,#0f0c29,#302b63);border-radius:12px;padding:16px 20px;text-align:center;margin-top:10px">
+<div style="font-size:14pt;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-0.5px">ATLAS &mdash; Ready for the Next Stage</div>
+<div style="font-size:9pt;color:rgba(255,255,255,0.6);max-width:120mm;margin:0 auto;line-height:1.7">From scanning 2,357 NSE stocks in 2.4 seconds to autonomously learning from every trade, ATLAS represents a fully functional, production-ready AI trading infrastructure &mdash; built to scale, built to adapt, and built to win.</div>
+<div style="display:flex;justify-content:center;gap:20px;margin-top:12px;font-size:8pt">
+<span style="color:#a5b4fc">&#128231; Contact for demo access</span>
+<span style="color:rgba(255,255,255,0.3)">|</span>
+<span style="color:#a5b4fc">&#127760; Dashboard: localhost:5173</span>
+<span style="color:rgba(255,255,255,0.3)">|</span>
+<span style="color:#a5b4fc">&#128218; API Docs: localhost:8000/docs</span>
+</div>
+</div>
+<div class="page-footer"><span>ATLAS &ndash; AI Paper Trading Agent | Confidential &middot; July 2026</span><span>Page 11 &mdash; End of Report</span></div>
+</div>
+</div>
+
+</body>
+</html>

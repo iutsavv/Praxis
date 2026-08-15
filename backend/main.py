@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -47,6 +47,58 @@ def get_db() -> sqlite3.Connection:
 
 def rows_to_dicts(rows: list[sqlite3.Row]) -> list[dict[str, Any]]:
     return [dict(row) for row in rows]
+
+
+def table_exists(conn: sqlite3.Connection, table_name: str) -> bool:
+    row = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name = ?",
+        (table_name,),
+    ).fetchone()
+    return row is not None
+
+
+def table_columns(conn: sqlite3.Connection, table_name: str) -> set[str]:
+    if not table_exists(conn, table_name):
+        return set()
+    return {row["name"] for row in conn.execute(f"PRAGMA table_info({table_name})")}
+
+
+def has_columns(conn: sqlite3.Connection, table_name: str, required: set[str]) -> bool:
+    return required.issubset(table_columns(conn, table_name))
+
+
+def sentiment_label(score: float) -> str:
+    if score >= 0.6:
+        return "VERY_POSITIVE"
+    if score >= 0.2:
+        return "POSITIVE"
+    if score <= -0.6:
+        return "VERY_NEGATIVE"
+    if score <= -0.2:
+        return "NEGATIVE"
+    return "NEUTRAL"
+
+
+def parse_json_list(value: Any) -> list[Any]:
+    if value in (None, ""):
+        return []
+    if isinstance(value, list):
+        return value
+    try:
+        parsed = json.loads(str(value))
+        return parsed if isinstance(parsed, list) else []
+    except json.JSONDecodeError:
+        return []
+
+
+def ensure_signal_scores_schema(conn: sqlite3.Connection) -> None:
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(signal_scores)")}
+    if "timeframe_confluence" not in columns:
+        conn.execute("ALTER TABLE signal_scores ADD COLUMN timeframe_confluence TEXT")
+        conn.commit()
+    if "announcement_boost" not in columns:
+        conn.execute("ALTER TABLE signal_scores ADD COLUMN announcement_boost REAL DEFAULT 0")
+        conn.commit()
 
 
 def ist_now() -> datetime:
@@ -120,11 +172,13 @@ def latest_price(conn: sqlite3.Connection, symbol: str) -> float | None:
 
 
 def get_latest_signal(conn: sqlite3.Connection, symbol: str) -> dict[str, Any] | None:
+    ensure_signal_scores_schema(conn)
     row = conn.execute(
         """
         SELECT id, symbol, scan_cycle, confidence_score, direction,
                market_condition, contrib_rsi, contrib_macd, contrib_volume,
-               contrib_vwap, explanation, created_at
+               contrib_vwap, explanation, notes, timeframe_confluence,
+               announcement_boost, created_at
         FROM signal_scores
         WHERE UPPER(symbol) = UPPER(?)
         ORDER BY scan_cycle DESC, created_at DESC, id DESC
@@ -137,6 +191,10 @@ def get_latest_signal(conn: sqlite3.Connection, symbol: str) -> dict[str, Any] |
 
     signal = dict(row)
     signal["weighted_score"] = signal["confidence_score"]
+    try:
+        signal["timeframe_confluence"] = json.loads(signal.get("timeframe_confluence") or "{}")
+    except json.JSONDecodeError:
+        signal["timeframe_confluence"] = {}
     return signal
 
 
@@ -163,6 +221,7 @@ def latest_table_timestamp(
 
 
 def get_signal_scores(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    ensure_signal_scores_schema(conn)
     rows = conn.execute(
         """
         WITH latest AS (
@@ -172,7 +231,8 @@ def get_signal_scores(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         )
         SELECT s.id, s.symbol, s.scan_cycle, s.confidence_score, s.direction,
                s.market_condition, s.contrib_rsi, s.contrib_macd,
-               s.contrib_volume, s.contrib_vwap, s.explanation, s.created_at
+               s.contrib_volume, s.contrib_vwap, s.explanation,
+               s.timeframe_confluence, s.announcement_boost, s.created_at
         FROM signal_scores s
         JOIN latest l ON l.symbol = s.symbol AND l.scan_cycle = s.scan_cycle
         ORDER BY s.confidence_score DESC, s.symbol ASC
@@ -180,7 +240,15 @@ def get_signal_scores(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     ).fetchall()
 
     if rows:
-        return rows_to_dicts(rows)
+        signals = rows_to_dicts(rows)
+        for signal in signals:
+            try:
+                signal["timeframe_confluence"] = json.loads(
+                    signal.get("timeframe_confluence") or "{}"
+                )
+            except json.JSONDecodeError:
+                signal["timeframe_confluence"] = {}
+        return signals
 
     stocks = conn.execute(
         "SELECT symbol FROM stocks WHERE is_active = 1 ORDER BY symbol"
@@ -344,6 +412,70 @@ def run_scan_stage() -> dict[str, Any]:
     }
 
 
+def run_two_stage_scan_stage() -> dict[str, Any]:
+    from analysis.stage1_scanner import run_stage1_scan
+    from analysis.stage2_scanner import run_stage2_scan
+    from analysis.indicator_engine import process_symbol_for_intervals
+    from data.fetcher import (
+        _get_connection as get_fetcher_connection,
+        fetch_candles,
+        get_latest_timestamp_for_interval,
+        store_candles,
+    )
+
+    flagged, scan_time = run_stage1_scan()
+
+    symbols_needing_data: list[str] = []
+    with get_db() as conn:
+        for symbol in flagged:
+            row = conn.execute(
+                """
+                SELECT COUNT(*) AS candle_count
+                FROM candles
+                WHERE symbol = ? AND interval = '15m'
+                  AND timestamp >= datetime('now', '-30 minutes')
+                """,
+                (symbol,),
+            ).fetchone()
+            if not row or int(row["candle_count"] or 0) == 0:
+                symbols_needing_data.append(symbol)
+
+    data_errors: list[dict[str, str]] = []
+    if symbols_needing_data:
+        fetcher_conn = get_fetcher_connection()
+        indicator_conn = get_db()
+        try:
+            from data.fetcher import fetch_candles_bulk
+            for interval in ("5m", "15m", "1h", "1d"):
+                bulk_data = fetch_candles_bulk(symbols_needing_data, interval)
+                for symbol in symbols_needing_data:
+                    try:
+                        df = bulk_data.get(symbol, pd.DataFrame())
+                        if not df.empty:
+                            store_candles(fetcher_conn, symbol, df, interval)
+                    except Exception as exc:
+                        data_errors.append({"symbol": symbol, "error": f"{interval}: {exc}"})
+            for symbol in symbols_needing_data:
+                try:
+                    process_symbol_for_intervals(indicator_conn, symbol)
+                except Exception as exc:
+                    data_errors.append({"symbol": symbol, "error": f"indicator: {exc}"})
+        finally:
+            fetcher_conn.close()
+            indicator_conn.close()
+
+    top_picks = run_stage2_scan(flagged, scan_time)
+    return {
+        "status": "success",
+        "scan_time": scan_time,
+        "stage1_flagged": len(flagged),
+        "data_refreshed": len(symbols_needing_data) - len(data_errors),
+        "stage2_candidates": len(top_picks),
+        "top_picks": top_picks,
+        "errors": data_errors,
+    }
+
+
 def execute_trade_stage(symbol: str) -> dict[str, Any]:
     from agents import paper_trader, risk_manager, trade_validator
 
@@ -475,6 +607,14 @@ async def run_scan():
         return pipeline_error("scan", exc)
 
 
+@app.post("/api/pipeline/run-two-stage-scan")
+async def run_two_stage_scan():
+    try:
+        return await asyncio.to_thread(run_two_stage_scan_stage)
+    except Exception as exc:
+        return pipeline_error("two_stage_scan", exc)
+
+
 @app.post("/api/pipeline/execute-trade")
 async def execute_trade(request: ExecuteTradeRequest):
     try:
@@ -575,13 +715,435 @@ async def signals() -> list[dict[str, Any]]:
         return get_signal_scores(conn)
 
 
+@app.get("/api/universe/summary")
+async def universe_summary() -> dict[str, Any]:
+    with get_db() as conn:
+        if not table_exists(conn, "stock_universe"):
+            return {
+                "total_stocks": 0,
+                "fo_stocks_count": 0,
+                "stage2_eligible_count": 0,
+                "sector_distribution": {},
+                "last_updated": None,
+            }
+        cols = table_columns(conn, "stock_universe")
+        total = conn.execute("SELECT COUNT(*) FROM stock_universe WHERE COALESCE(is_active, 1) = 1").fetchone()[0]
+        fo_count = conn.execute(
+            "SELECT COUNT(*) FROM stock_universe WHERE COALESCE(is_active, 1) = 1 AND COALESCE(is_fo_stock, 0) = 1"
+        ).fetchone()[0] if "is_fo_stock" in cols else 0
+        stage2_count = conn.execute(
+            "SELECT COUNT(*) FROM stock_universe WHERE COALESCE(is_active, 1) = 1 AND COALESCE(in_stage2_scan, 0) = 1"
+        ).fetchone()[0] if "in_stage2_scan" in cols else 0
+        sector_distribution = {}
+        if "sector" in cols:
+            sector_rows = conn.execute(
+                """
+                SELECT COALESCE(NULLIF(sector, ''), 'Unknown') AS sector, COUNT(*) AS count
+                FROM stock_universe
+                WHERE COALESCE(is_active, 1) = 1
+                GROUP BY COALESCE(NULLIF(sector, ''), 'Unknown')
+                ORDER BY count DESC, sector ASC
+                """
+            ).fetchall()
+            sector_distribution = {row["sector"]: row["count"] for row in sector_rows}
+        last_updated = latest_table_timestamp(conn, "stock_universe", ["last_updated", "added_at"])
+        return {
+            "total_stocks": total,
+            "fo_stocks_count": fo_count,
+            "stage2_eligible_count": stage2_count,
+            "sector_distribution": sector_distribution,
+            "last_updated": last_updated,
+        }
+
+
+@app.get("/api/universe/stocks")
+async def universe_stocks(
+    sector: str | None = None,
+    is_fo: int | None = None,
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+) -> dict[str, Any]:
+    with get_db() as conn:
+        if not table_exists(conn, "stock_universe"):
+            return {"items": [], "total": 0, "limit": limit, "offset": offset}
+        where = ["COALESCE(is_active, 1) = 1"]
+        params: list[Any] = []
+        cols = table_columns(conn, "stock_universe")
+        if sector and "sector" in cols:
+            where.append("sector = ?")
+            params.append(sector)
+        if is_fo is not None and "is_fo_stock" in cols:
+            where.append("COALESCE(is_fo_stock, 0) = ?")
+            params.append(1 if int(is_fo) else 0)
+        where_sql = " AND ".join(where)
+        total = conn.execute(f"SELECT COUNT(*) FROM stock_universe WHERE {where_sql}", params).fetchone()[0]
+        rows = conn.execute(
+            f"""
+            SELECT symbol, name, sector, market_cap, avg_daily_volume, is_fo_stock, in_stage2_scan
+            FROM stock_universe
+            WHERE {where_sql}
+            ORDER BY symbol
+            LIMIT ? OFFSET ?
+            """,
+            [*params, limit, offset],
+        ).fetchall()
+        return {"items": rows_to_dicts(rows), "total": total, "limit": limit, "offset": offset}
+
+
+@app.get("/api/scan/latest")
+async def scan_latest() -> dict[str, Any]:
+    with get_db() as conn:
+        if not table_exists(conn, "scan_results"):
+            return {
+                "scan_time": None,
+                "stage1_total_scanned": 0,
+                "stage1_flagged": 0,
+                "stage2_analyzed": 0,
+                "stage2_candidates": 0,
+                "top_picks": [],
+                "duration_seconds": None,
+            }
+        latest = conn.execute("SELECT MAX(scan_time) AS scan_time FROM scan_results").fetchone()["scan_time"]
+        if not latest:
+            return {
+                "scan_time": None,
+                "stage1_total_scanned": 0,
+                "stage1_flagged": 0,
+                "stage2_analyzed": 0,
+                "stage2_candidates": 0,
+                "top_picks": [],
+                "duration_seconds": None,
+            }
+        total_scanned = conn.execute("SELECT COUNT(DISTINCT symbol) FROM stock_universe WHERE COALESCE(is_active, 1) = 1").fetchone()[0] if table_exists(conn, "stock_universe") else 0
+        stage1_flagged = conn.execute(
+            "SELECT COUNT(DISTINCT symbol) FROM scan_results WHERE scan_time = ? AND stage1_flagged = 1",
+            (latest,),
+        ).fetchone()[0]
+        stage2_analyzed = conn.execute(
+            "SELECT COUNT(DISTINCT symbol) FROM scan_results WHERE scan_time = ? AND stage = 2",
+            (latest,),
+        ).fetchone()[0]
+        stage2_candidates = conn.execute(
+            "SELECT COUNT(DISTINCT symbol) FROM scan_results WHERE scan_time = ? AND final_selected = 1",
+            (latest,),
+        ).fetchone()[0]
+        top_rows = conn.execute(
+            """
+            SELECT symbol, stage2_score AS score, stage2_direction AS direction,
+                   stage2_pattern AS pattern, stage2_setup AS confluence_level
+            FROM scan_results
+            WHERE scan_time = ? AND stage = 2
+            ORDER BY final_selected DESC, COALESCE(stage2_score, 0) DESC
+            LIMIT 10
+            """,
+            (latest,),
+        ).fetchall()
+        return {
+            "scan_time": latest,
+            "stage1_total_scanned": total_scanned,
+            "stage1_flagged": stage1_flagged,
+            "stage2_analyzed": stage2_analyzed,
+            "stage2_candidates": stage2_candidates,
+            "top_picks": rows_to_dicts(top_rows),
+            "duration_seconds": None,
+        }
+
+
+@app.get("/api/scan/stage1/flagged")
+async def scan_stage1_flagged() -> list[dict[str, Any]]:
+    with get_db() as conn:
+        if not table_exists(conn, "scan_results"):
+            return []
+        latest = conn.execute("SELECT MAX(scan_time) AS scan_time FROM scan_results WHERE stage1_flagged = 1").fetchone()["scan_time"]
+        if not latest:
+            return []
+        rows = conn.execute(
+            """
+            SELECT symbol, stage1_price_change, stage1_volume_ratio, stage1_reason
+            FROM scan_results
+            WHERE scan_time = ? AND stage1_flagged = 1
+            ORDER BY ABS(COALESCE(stage1_price_change, 0)) DESC, COALESCE(stage1_volume_ratio, 0) DESC
+            """,
+            (latest,),
+        ).fetchall()
+        return rows_to_dicts(rows)
+
+
+@app.get("/api/scan/stage2/results")
+async def scan_stage2_results() -> list[dict[str, Any]]:
+    with get_db() as conn:
+        if not table_exists(conn, "scan_results"):
+            return []
+        latest = conn.execute("SELECT MAX(scan_time) AS scan_time FROM scan_results WHERE stage = 2").fetchone()["scan_time"]
+        if not latest:
+            return []
+        rows = conn.execute(
+            """
+            SELECT symbol, stage2_score AS score, stage2_direction AS direction,
+                   stage2_pattern AS pattern, stage2_setup AS confluence_level,
+                   final_selected
+            FROM scan_results
+            WHERE scan_time = ? AND stage = 2
+            ORDER BY COALESCE(stage2_score, 0) DESC
+            """,
+            (latest,),
+        ).fetchall()
+        return rows_to_dicts(rows)
+
+
+@app.get("/api/news/latest")
+async def news_latest(
+    symbol: str | None = None,
+    sentiment: str | None = None,
+    urgency: str | None = None,
+    since: str | None = None,
+    limit: int = Query(50, ge=1, le=200),
+) -> list[dict[str, Any]]:
+    with get_db() as conn:
+        if not table_exists(conn, "news"):
+            return []
+        where = ["1=1"]
+        params: list[Any] = []
+        if symbol:
+            where.append("(UPPER(symbol) = UPPER(?) OR UPPER(COALESCE(stocks_mentioned, '')) LIKE ?)")
+            params.extend([symbol, f"%{symbol.upper()}%"])
+        if sentiment == "positive":
+            where.append("COALESCE(sentiment_score, 0) > 0.2")
+        elif sentiment == "negative":
+            where.append("COALESCE(sentiment_score, 0) < -0.2")
+        elif sentiment == "neutral":
+            where.append("COALESCE(sentiment_score, 0) BETWEEN -0.2 AND 0.2")
+        if urgency:
+            where.append("UPPER(COALESCE(urgency, 'LOW')) = UPPER(?)")
+            params.append(urgency)
+        if since == "30min":
+            where.append("COALESCE(published_at, fetched_at) >= datetime('now', '-30 minutes')")
+        rows = conn.execute(
+            f"""
+            SELECT id, symbol, headline, source, url, published_at,
+                   sentiment_score, urgency, stocks_mentioned
+            FROM news
+            WHERE {' AND '.join(where)}
+            ORDER BY COALESCE(published_at, fetched_at) DESC, id DESC
+            LIMIT ?
+            """,
+            [*params, limit],
+        ).fetchall()
+        items = rows_to_dicts(rows)
+        for item in items:
+            item["stocks_mentioned"] = parse_json_list(item.get("stocks_mentioned"))
+        return items
+
+
+@app.get("/api/news/announcements")
+async def news_announcements(limit: int = Query(20, ge=1, le=100)) -> list[dict[str, Any]]:
+    with get_db() as conn:
+        if not table_exists(conn, "announcements"):
+            return []
+        rows = conn.execute(
+            """
+            SELECT id, symbol, exchange, announcement_type, headline, published_at,
+                   sentiment_score, signal_boost
+            FROM announcements
+            ORDER BY COALESCE(published_at, fetched_at) DESC, id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+        return rows_to_dicts(rows)
+
+
+@app.get("/api/news/stock/{symbol}")
+async def news_for_stock(symbol: str) -> list[dict[str, Any]]:
+    combined: list[dict[str, Any]] = []
+    with get_db() as conn:
+        if table_exists(conn, "news"):
+            rows = conn.execute(
+                """
+                SELECT id, symbol, headline, source, url, published_at,
+                       sentiment_score, urgency, stocks_mentioned
+                FROM news
+                WHERE UPPER(symbol) = UPPER(?) OR UPPER(COALESCE(stocks_mentioned, '')) LIKE ?
+                ORDER BY COALESCE(published_at, fetched_at) DESC, id DESC
+                LIMIT 10
+                """,
+                (symbol, f"%{symbol.upper()}%"),
+            ).fetchall()
+            combined.extend(dict(row) | {"kind": "news"} for row in rows)
+        if table_exists(conn, "announcements"):
+            rows = conn.execute(
+                """
+                SELECT id, symbol, exchange, announcement_type, headline, published_at,
+                       sentiment_score, signal_boost
+                FROM announcements
+                WHERE UPPER(symbol) = UPPER(?)
+                ORDER BY COALESCE(published_at, fetched_at) DESC, id DESC
+                LIMIT 10
+                """,
+                (symbol,),
+            ).fetchall()
+            combined.extend(dict(row) | {"kind": "announcement"} for row in rows)
+    return sorted(combined, key=lambda item: item.get("published_at") or "", reverse=True)[:20]
+
+
+@app.get("/api/news/market-sentiment")
+async def market_sentiment() -> dict[str, Any]:
+    with get_db() as conn:
+        empty = {
+            "overall_score": 0.0,
+            "label": "NEUTRAL",
+            "article_count": 0,
+            "positive_count": 0,
+            "negative_count": 0,
+            "top_positive_stock": None,
+            "top_negative_stock": None,
+            "sector_sentiment": {},
+            "most_discussed": [],
+            "recent_announcements_count": 0,
+        }
+        if not table_exists(conn, "news"):
+            return empty
+        if table_exists(conn, "stock_universe"):
+            rows = conn.execute(
+                """
+                SELECT n.symbol, n.headline, n.sentiment_score, n.published_at,
+                       COALESCE(su.sector, 'Unknown') AS sector
+                FROM news n
+                LEFT JOIN stock_universe su ON UPPER(su.symbol) = UPPER(n.symbol)
+                WHERE COALESCE(n.published_at, n.fetched_at) >= datetime('now', '-4 hours')
+                """,
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """
+                SELECT symbol, headline, sentiment_score, published_at, 'Unknown' AS sector
+                FROM news
+                WHERE COALESCE(published_at, fetched_at) >= datetime('now', '-4 hours')
+                """,
+            ).fetchall()
+        if not rows:
+            return empty
+        scores = [float(row["sentiment_score"] or 0.0) for row in rows]
+        overall = round(sum(scores) / len(scores), 4)
+        sector_bucket: dict[str, list[float]] = {}
+        counts: dict[str, int] = {}
+        for row in rows:
+            sector_bucket.setdefault(row["sector"] or "Unknown", []).append(float(row["sentiment_score"] or 0.0))
+            if row["symbol"]:
+                counts[row["symbol"]] = counts.get(row["symbol"], 0) + 1
+        positives = [row for row in rows if float(row["sentiment_score"] or 0.0) > 0.2]
+        negatives = [row for row in rows if float(row["sentiment_score"] or 0.0) < -0.2]
+        top_pos = max(rows, key=lambda row: float(row["sentiment_score"] or 0.0))
+        top_neg = min(rows, key=lambda row: float(row["sentiment_score"] or 0.0))
+        recent_ann = 0
+        if table_exists(conn, "announcements"):
+            recent_ann = conn.execute(
+                "SELECT COUNT(*) FROM announcements WHERE COALESCE(published_at, fetched_at) >= datetime('now', '-1 hour')"
+            ).fetchone()[0]
+        return {
+            "overall_score": overall,
+            "label": sentiment_label(overall),
+            "article_count": len(rows),
+            "positive_count": len(positives),
+            "negative_count": len(negatives),
+            "top_positive_stock": {"symbol": top_pos["symbol"], "headline": top_pos["headline"], "score": top_pos["sentiment_score"]},
+            "top_negative_stock": {"symbol": top_neg["symbol"], "headline": top_neg["headline"], "score": top_neg["sentiment_score"]},
+            "sector_sentiment": {
+                sector: round(sum(values) / len(values), 4) for sector, values in sector_bucket.items()
+            },
+            "most_discussed": [
+                {"symbol": symbol, "article_count": count}
+                for symbol, count in sorted(counts.items(), key=lambda item: item[1], reverse=True)[:8]
+            ],
+            "recent_announcements_count": recent_ann,
+        }
+
+
+@app.get("/api/news/sentiment/{symbol}")
+async def stock_sentiment(symbol: str) -> dict[str, Any]:
+    try:
+        from analysis.sentiment_engine import get_stock_news_sentiment
+
+        summary = get_stock_news_sentiment(symbol)
+    except Exception:
+        summary = {
+            "symbol": symbol.upper(),
+            "overall_sentiment": 0.0,
+            "article_count": 0,
+            "announcement_count": 0,
+            "highest_impact": "",
+            "signal_modifier": 0.0,
+            "urgency": "LOW",
+        }
+    with get_db() as conn:
+        latest_announcement_type = None
+        if table_exists(conn, "announcements") and has_columns(
+            conn,
+            "announcements",
+            {"symbol", "announcement_type", "published_at"},
+        ):
+            row = conn.execute(
+                """
+                SELECT announcement_type
+                FROM announcements
+                WHERE UPPER(symbol) = UPPER(?)
+                  AND date(COALESCE(published_at, fetched_at)) = date('now')
+                ORDER BY COALESCE(published_at, fetched_at) DESC, id DESC
+                LIMIT 1
+                """,
+                (symbol,),
+            ).fetchone()
+            latest_announcement_type = row["announcement_type"] if row else None
+    summary["latest_headline"] = summary.pop("highest_impact", "")
+    summary["latest_announcement_type"] = latest_announcement_type
+    return summary
+
+
+@app.get("/api/signals/confluence/{symbol}")
+async def signal_confluence(symbol: str) -> dict[str, Any]:
+    timeframes = {}
+    score = 0.0
+    with get_db() as conn:
+        if not table_exists(conn, "indicators"):
+            return {"symbol": symbol.upper(), "timeframes": {}, "confluence_score": 0.0, "confluence_level": "LOW", "trade_direction": "SKIP"}
+        for timeframe in ("5m", "15m", "1h", "1d"):
+            row = conn.execute(
+                """
+                SELECT rsi, macd_histogram
+                FROM indicators
+                WHERE UPPER(symbol) = UPPER(?) AND interval = ?
+                ORDER BY timestamp DESC
+                LIMIT 1
+                """,
+                (symbol, timeframe),
+            ).fetchone()
+            if not row:
+                timeframes[timeframe] = {"bias": "NEUTRAL", "rsi": None, "macd_hist": None}
+                continue
+            rsi = float(row["rsi"] or 50)
+            hist = float(row["macd_histogram"] or 0)
+            bias = "BULLISH" if rsi >= 55 and hist > 0 else "BEARISH" if rsi <= 45 and hist < 0 else "NEUTRAL"
+            score += 1 if bias == "BULLISH" else -1 if bias == "BEARISH" else 0
+            timeframes[timeframe] = {"bias": bias, "rsi": rsi, "macd_hist": hist}
+    abs_score = abs(score)
+    level = "HIGH" if abs_score >= 3 else "MEDIUM" if abs_score >= 2 else "LOW"
+    direction = "BUY" if score >= 2 else "SELL" if score <= -2 else "SKIP"
+    return {
+        "symbol": symbol.upper(),
+        "timeframes": timeframes,
+        "confluence_score": score,
+        "confluence_level": level,
+        "trade_direction": direction,
+    }
+
+
 @app.get("/api/scan/stage1/latest")
 async def get_stage1_latest() -> dict[str, Any]:
     """Get latest Stage 1 scan results summary."""
     with get_db() as conn:
         # Get latest scan time
         latest_scan = conn.execute(
-            "SELECT MAX(scan_time) FROM scan_results WHERE stage = 1"
+            "SELECT MAX(scan_time) FROM scan_results WHERE stage1_flagged = 1"
         ).fetchone()
         
         if not latest_scan or not latest_scan[0]:
@@ -604,19 +1166,47 @@ async def get_stage1_latest() -> dict[str, Any]:
         
         flagged_stocks = rows_to_dicts(rows)
         
-        # Count reasons
-        reason_counts = {}
+        # Count reasons by user-facing category instead of every raw threshold value.
+        reason_counts = {
+            "price_up": 0,
+            "price_down": 0,
+            "volume_spike": 0,
+            "fo_stock": 0,
+            "open_trade": 0,
+        }
         for stock in flagged_stocks:
             reasons = stock.get('stage1_reason', '').split(', ')
             for reason in reasons:
-                if reason:
-                    reason_counts[reason] = reason_counts.get(reason, 0) + 1
+                if reason.startswith("price_+"):
+                    reason_counts["price_up"] += 1
+                elif reason.startswith("price_-"):
+                    reason_counts["price_down"] += 1
+                elif reason.startswith("volume_"):
+                    reason_counts["volume_spike"] += 1
+                elif reason == "fo_stock":
+                    reason_counts["fo_stock"] += 1
+                elif reason == "open_trade":
+                    reason_counts["open_trade"] += 1
+        reason_counts = {key: value for key, value in reason_counts.items() if value > 0}
         
+        # Prefer stock_universe count; fall back to distinct candle
+        # symbols so the count stays meaningful even when the universe
+        # table has not been populated yet.
+        total_scanned = 0
+        if table_exists(conn, "stock_universe"):
+            total_scanned = conn.execute(
+                "SELECT COUNT(DISTINCT symbol) FROM stock_universe WHERE is_active = 1"
+            ).fetchone()[0]
+        if total_scanned == 0 and table_exists(conn, "candles"):
+            total_scanned = conn.execute(
+                "SELECT COUNT(DISTINCT symbol) FROM candles"
+            ).fetchone()[0]
+        if total_scanned == 0:
+            total_scanned = len(flagged_stocks)
+
         return {
             "scan_time": scan_time,
-            "total_scanned": conn.execute(
-                "SELECT COUNT(DISTINCT symbol) FROM stock_universe WHERE is_active = 1"
-            ).fetchone()[0],
+            "total_scanned": total_scanned,
             "total_flagged": len(flagged_stocks),
             "flagged_stocks": flagged_stocks[:50],  # Return top 50
             "reason_summary": reason_counts,
