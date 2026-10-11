@@ -441,6 +441,23 @@ def run_learning_cycle(force: bool = False) -> dict[str, Any]:
             },
         })
 
+        try:
+            from brain.setup_library import update_setup_stats
+
+            setup_stats = update_setup_stats()
+            findings["setup_stats"] = setup_stats
+            report_lines.append("")
+            report_lines.append(
+                "SETUP LIBRARY: "
+                f"{setup_stats.get('updated', 0)} updated, "
+                f"{setup_stats.get('deactivated', 0)} deactivated"
+            )
+        except Exception as exc:
+            setup_stats = {"updated": 0, "deactivated": 0, "errors": [str(exc)]}
+            findings["setup_stats"] = setup_stats
+            report_lines.append("")
+            report_lines.append(f"SETUP LIBRARY: skipped ({exc})")
+
         strategy_columns = _columns(conn, "strategy_rules")
         copy_columns = [
             name for name in strategy_columns

@@ -1,7 +1,7 @@
 """
 init_db.py — Database initialiser for the AI Paper Trading Agent.
 
-Creates a SQLite database (trading.db) inside the database/ folder with 9 tables
+Creates a SQLite database (trading.db) inside the database/ folder with all tables
 and seeds it with an initial watchlist of 15 liquid NSE symbols plus a default
 strategy-rules row and a default paper-account row when needed.
 
@@ -369,6 +369,64 @@ TABLES: dict[str, str] = {
         );
     """,
 
+    "setups": """
+        CREATE TABLE IF NOT EXISTS setups (
+            id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+            setup_code              TEXT UNIQUE NOT NULL,
+            setup_name              TEXT NOT NULL,
+            setup_type              TEXT NOT NULL,
+            direction_bias          TEXT NOT NULL,
+            conditions_json         TEXT NOT NULL,
+            entry_method            TEXT NOT NULL,
+            target_method           TEXT NOT NULL,
+            stoploss_method         TEXT NOT NULL,
+            best_market_condition   TEXT,
+            avoid_market_condition  TEXT,
+            best_time_start         TEXT,
+            best_time_end           TEXT,
+            min_timeframe_confluence INTEGER DEFAULT 2,
+            total_trades            INTEGER DEFAULT 0,
+            win_rate                REAL DEFAULT 0,
+            avg_win_pct             REAL DEFAULT 0,
+            avg_loss_pct            REAL DEFAULT 0,
+            profit_factor           REAL DEFAULT 0,
+            best_stock              TEXT,
+            is_active               INTEGER DEFAULT 1,
+            created_at              TEXT DEFAULT (datetime('now')),
+            last_updated            TEXT
+        );
+    """,
+
+    "trade_features": """
+        CREATE TABLE IF NOT EXISTS trade_features (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            trade_id            INTEGER,
+            symbol              TEXT,
+            extracted_at        TEXT,
+            features_json       TEXT,
+            outcome             INTEGER,
+            win_probability     REAL,
+            model_version       INTEGER,
+            FOREIGN KEY(trade_id) REFERENCES paper_trades(id)
+        );
+    """,
+
+    "ml_models": """
+        CREATE TABLE IF NOT EXISTS ml_models (
+            id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+            version                 INTEGER UNIQUE,
+            trained_at              TEXT,
+            training_trades         INTEGER,
+            cv_accuracy             REAL,
+            test_accuracy           REAL,
+            feature_importance_json TEXT,
+            model_file_path         TEXT,
+            is_active               INTEGER DEFAULT 0,
+            shadow_mode             INTEGER DEFAULT 1,
+            notes                   TEXT
+        );
+    """,
+
     "kronos_forecasts": """
         CREATE TABLE IF NOT EXISTS kronos_forecasts (
             id                  INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -386,6 +444,105 @@ TABLES: dict[str, str] = {
             confirms_signal     INTEGER DEFAULT 0,
             message             TEXT,
             created_at          TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+    """,
+
+    "agent_memory": """
+        CREATE TABLE IF NOT EXISTS agent_memory (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            run_id              TEXT,
+            symbol              TEXT,
+            agent_name          TEXT NOT NULL,
+            decision_type       TEXT NOT NULL,
+            recommendation      TEXT NOT NULL,
+            confidence          REAL DEFAULT 0,
+            score_delta         REAL DEFAULT 0,
+            hard_veto           INTEGER DEFAULT 0,
+            reasons_json        TEXT,
+            evidence_json       TEXT,
+            related_trade_id    INTEGER,
+            outcome             TEXT,
+            created_at          TEXT NOT NULL
+        );
+    """,
+
+    "agent_debates": """
+        CREATE TABLE IF NOT EXISTS agent_debates (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            run_id              TEXT NOT NULL,
+            symbol              TEXT NOT NULL,
+            input_plan_json     TEXT,
+            votes_json          TEXT,
+            final_action        TEXT NOT NULL,
+            approved            INTEGER NOT NULL DEFAULT 0,
+            final_confidence    REAL DEFAULT 0,
+            final_reason        TEXT,
+            created_at          TEXT NOT NULL
+        );
+    """,
+
+    "trade_reviews": """
+        CREATE TABLE IF NOT EXISTS trade_reviews (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            trade_id            INTEGER NOT NULL UNIQUE,
+            symbol              TEXT NOT NULL,
+            outcome             TEXT,
+            pnl                 REAL,
+            pnl_pct             REAL,
+            review_json         TEXT,
+            created_at          TEXT NOT NULL
+        );
+    """,
+
+    "fundamental_documents": """
+        CREATE TABLE IF NOT EXISTS fundamental_documents (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol          TEXT NOT NULL,
+            source          TEXT NOT NULL,
+            document_type   TEXT,
+            title           TEXT,
+            url             TEXT,
+            filing_date     TEXT,
+            period_end      TEXT,
+            raw_text        TEXT,
+            parsed_at       TEXT,
+            UNIQUE(symbol, source, url)
+        );
+    """,
+
+    "fundamental_facts": """
+        CREATE TABLE IF NOT EXISTS fundamental_facts (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol          TEXT NOT NULL,
+            period_end      TEXT,
+            fiscal_period   TEXT,
+            metric          TEXT NOT NULL,
+            value           REAL,
+            unit            TEXT,
+            source_document_id INTEGER,
+            created_at      TEXT NOT NULL,
+            UNIQUE(symbol, period_end, fiscal_period, metric)
+        );
+    """,
+
+    "fundamental_agent_reports": """
+        CREATE TABLE IF NOT EXISTS fundamental_agent_reports (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol          TEXT NOT NULL,
+            recommendation  TEXT NOT NULL,
+            confidence      REAL DEFAULT 0,
+            report_json     TEXT,
+            created_at      TEXT NOT NULL
+        );
+    """,
+
+    "sec_company_map": """
+        CREATE TABLE IF NOT EXISTS sec_company_map (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker          TEXT NOT NULL UNIQUE,
+            cik             TEXT NOT NULL,
+            title           TEXT,
+            last_updated    TEXT NOT NULL
         );
     """,
 }
@@ -527,7 +684,7 @@ def _create_checked_table(cursor: sqlite3.Cursor, table_name: str) -> None:
 
 
 def init_db() -> None:
-    """Create the trading.db database and all 9 tables."""
+    """Create the trading.db database and all tables."""
 
     # Ensure the database directory exists
     os.makedirs(DB_DIR, exist_ok=True)
@@ -663,6 +820,20 @@ def seed_paper_account() -> None:
     conn.close()
 
 
+def seed_setups() -> None:
+    """Seed the mathematically defined setup library."""
+    try:
+        from brain.setup_library import seed_initial_setups
+
+        result = seed_initial_setups()
+        print(
+            "  [OK] Setups seeded: "
+            f"{result['inserted']} inserted, {result['skipped']} existing."
+        )
+    except Exception as exc:
+        print(f"  [WARN] Could not seed setup library: {exc}")
+
+
 def print_table_summary() -> None:
     """Print row counts for every official schema table."""
 
@@ -693,6 +864,7 @@ if __name__ == "__main__":
     init_db()
     seed_watchlist()
     seed_paper_account()
+    seed_setups()
     print_table_summary()
 
     print("=" * 60)

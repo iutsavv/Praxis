@@ -29,28 +29,41 @@ export default function News() {
   const [market, setMarket] = useState<MarketSentiment | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (refresh = false) => {
     setLoading(true);
-    const [latest, official, universe, marketMood] = await Promise.all([
+    setError('');
+    if (refresh) await marketDataApi.refreshNews();
+
+    const [latestResult, announcementsResult, universeResult, marketResult] = await Promise.allSettled([
       marketDataApi.latestNews({ limit: 100 }),
       marketDataApi.announcements(50),
       marketDataApi.universeStocks({ limit: 300 }),
       marketDataApi.marketSentiment(),
     ]);
+    const latest = latestResult.status === 'fulfilled' ? latestResult.value : [];
+    const official = announcementsResult.status === 'fulfilled' ? announcementsResult.value : [];
+    const universe = universeResult.status === 'fulfilled' ? universeResult.value : { items: [] };
     setNews(latest);
     setAnnouncements(official);
     setStocks(universe.items);
-    setMarket(marketMood);
+    setMarket(marketResult.status === 'fulfilled' ? marketResult.value : null);
+    if (latestResult.status === 'rejected') {
+      setError(latestResult.reason instanceof Error ? latestResult.reason.message : 'Unable to load the news feed.');
+    }
     const symbols = universe.items.slice(0, 80).map((stock) => stock.symbol);
-    const pairs = await Promise.all(symbols.map(async (symbol) => [symbol, await marketDataApi.stockSentiment(symbol)] as const));
-    setStockSentiment(Object.fromEntries(pairs));
+    const results = await Promise.allSettled(symbols.map(async (symbol) => [symbol, await marketDataApi.stockSentiment(symbol)] as const));
+    setStockSentiment(Object.fromEntries(results.flatMap((result) => result.status === 'fulfilled' ? [result.value] : [])));
     setLastUpdated(new Date());
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    load().catch(() => setLoading(false));
+    load().catch((reason) => {
+      setError(reason instanceof Error ? reason.message : 'Unable to load the news feed.');
+      setLoading(false);
+    });
     const interval = window.setInterval(() => load().catch(() => setLoading(false)), 15 * 60_000);
     return () => window.clearInterval(interval);
   }, [load]);
@@ -106,11 +119,15 @@ export default function News() {
             <button className={tab === 'announcements' ? 'active' : ''} onClick={() => setTab('announcements')}>Announcements</button>
             <button className={tab === 'impact' ? 'active' : ''} onClick={() => setTab('impact')}>High Impact</button>
           </div>
-          <p className="muted">Last updated {lastUpdated ? timeAgo(lastUpdated.toISOString()) : '-'}</p>
+          <div className="news-actions">
+            <p className="muted">Last updated {lastUpdated ? timeAgo(lastUpdated.toISOString()) : '-'}</p>
+            <button disabled={loading} onClick={() => load(true)}>{loading ? 'Refreshing...' : 'Refresh news'}</button>
+          </div>
         </div>
         {loading ? <div className="empty">Loading news...</div> : null}
+        {!loading && error ? <div className="empty">{error}</div> : null}
         {!loading && feed.length === 0 ? (
-          <div className="empty">{tab === 'announcements' ? 'No announcements today.' : 'No news fetched yet. News fetcher runs every 15 minutes during market hours.'}</div>
+          <div className="empty">{tab === 'announcements' ? 'No announcements today.' : 'No news available yet. Use Refresh news to fetch the latest RSS headlines.'}</div>
         ) : null}
         <div className="news-feed">
           {feed.map((item: any) => {

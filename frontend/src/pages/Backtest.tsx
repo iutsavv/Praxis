@@ -115,10 +115,10 @@ export default function Backtest() {
         <button onClick={runBacktest} disabled={loading || !dateFrom || !dateTo}>{loading ? 'Replaying candles...' : 'Run Backtest'}</button>
       </div>
       {error ? <div className="banner"><span>{error}</span></div> : null}
-      {loading ? <div className="backtest-loading">Backtesting without lookahead bias. This may take 10–30 seconds…</div> : null}
+      {loading ? <div className="backtest-loading">Backtesting without lookahead bias. This may take 10-30 seconds...</div> : null}
 
       {result ? <>
-        <div className="section-heading"><div><h2>Results</h2><p className="muted">Run {result.run_id.slice(0, 8)} · strategy v{result.strategy_version}</p></div></div>
+        <div className="section-heading"><div><h2>Results</h2><p className="muted">Run {result.run_id.slice(0, 8)} / strategy v{result.strategy_version}</p></div></div>
         <div className="grid">
           <Metric label="Total Trades" value={String(result.total_trades)} />
           <Metric label="Win Rate" value={`${result.win_rate.toFixed(1)}%`} />
@@ -145,7 +145,7 @@ export default function Backtest() {
       <div className="section-heading"><div><h2>Backtest History</h2><p className="muted">Previous immutable simulation runs.</p></div></div>
       {history.length ? <div className="table backtest-history">
         <div className="row table-header"><span>Date</span><span>Period</span><span>Strategy</span><span>Trades</span><span>Win rate</span><span>PnL</span></div>
-        {history.map((run) => <div className="row" key={run.run_id}><span>{new Date(run.created_at).toLocaleString()}</span><span>{run.date_from} → {run.date_to}</span><strong>v{run.strategy_version}</strong><span>{run.total_trades}</span><span>{run.win_rate.toFixed(1)}%</span><span className={run.total_pnl >= 0 ? 'positive' : 'negative'}>{run.total_pnl.toFixed(0)}</span></div>)}
+        {history.map((run) => <div className="row" key={run.run_id}><span>{new Date(run.created_at).toLocaleString()}</span><span>{run.date_from} to {run.date_to}</span><strong>v{run.strategy_version}</strong><span>{run.total_trades}</span><span>{run.win_rate.toFixed(1)}%</span><span className={run.total_pnl >= 0 ? 'positive' : 'negative'}>{run.total_pnl.toFixed(0)}</span></div>)}
       </div> : <div className="empty compact">No backtests have been saved yet.</div>}
     </section>
   );

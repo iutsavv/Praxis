@@ -10,11 +10,12 @@ import {
 import PipelineControl from './pages/PipelineControl';
 import Backtest from './pages/Backtest';
 import News from './pages/News';
+import Charts from './pages/Charts';
 import { useWebSocket } from './hooks/useWebSocket';
 import { StoreProvider, useStore } from './store/store';
 import type { LearningInsight, LearningRunResponse, MarketSentiment, PingResponse, ScanSummary, StockSentiment, TimeframeConfluence, UniverseSummary, StrategyHistoryRow } from './types';
 
-type Page = 'overview' | 'scanner' | 'news' | 'openTrades' | 'tradeHistory' | 'strategy' | 'backtest' | 'pipeline';
+type Page = 'overview' | 'scanner' | 'charts' | 'news' | 'openTrades' | 'tradeHistory' | 'strategy' | 'backtest' | 'pipeline';
 
 function minutesAgo(value: string | null) {
   if (!value) return 'Never updated';
@@ -294,11 +295,11 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
       {/* Stage summary cards */}
       <div className="grid" style={{ marginBottom: '1.5rem' }}>
         <div className="card">
-          <h3>Stage 1 — Broad Scan</h3>
+          <h3>Stage 1 - Broad Scan</h3>
           {stage1 && stage1.scan_time ? (
             <>
               <p style={{ fontSize: '1.4rem', fontWeight: 700 }}>
-                {stage1.total_scanned.toLocaleString()} stocks scanned →{' '}
+                {stage1.total_scanned.toLocaleString()} stocks scanned /{' '}
                 <span className="positive">{stage1.total_flagged} flagged</span>
               </p>
               {reasonChips.length > 0 && (
@@ -315,7 +316,7 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
                 <p className="muted" style={{ fontSize: '0.85rem' }}>
                   {Object.entries(stage1?.reason_summary || {})
                     .map(([reason, count]) => `${reason}: ${count}`)
-                    .join(' · ')}
+                    .join(' / ')}
                 </p>
               )}
             </>
@@ -324,10 +325,10 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
           )}
         </div>
         <div className="card">
-          <h3>Stage 2 — Deep Analysis</h3>
+          <h3>Stage 2 - Deep Analysis</h3>
           {stage2 && stage2.scan_time ? (
             <p style={{ fontSize: '1.4rem', fontWeight: 700 }}>
-              {stage2.total_analyzed} deep analyzed →{' '}
+              {stage2.total_analyzed} deep analyzed /{' '}
               <span className="positive">{stage2.candidates_above_threshold} candidates</span>{' '}
               <span className="muted" style={{ fontSize: '0.85rem' }}>above threshold</span>
             </p>
@@ -341,7 +342,7 @@ function ScannerPage({ wsConnected }: { wsConnected: boolean }) {
       {stage1 && stage1.flagged_stocks && stage1.flagged_stocks.length > 0 && (
         <>
           <div className="section-heading" style={{ marginTop: '0.5rem' }}>
-            <h3 style={{ margin: 0 }}>Stage 1 — Flagged Stocks ({stage1.flagged_stocks.length})</h3>
+            <h3 style={{ margin: 0 }}>Stage 1 - Flagged Stocks ({stage1.flagged_stocks.length})</h3>
             <button onClick={() => setShowStage1Table(!showStage1Table)}>
               {showStage1Table ? 'Hide details' : 'Show details'}
             </button>
@@ -636,12 +637,13 @@ function Dashboard({ ping }: { ping: PingResponse }) {
   const pages: { id: Page; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'scanner', label: 'Scanner' },
+    { id: 'charts', label: 'Charts' },
     { id: 'news', label: 'News' },
     { id: 'openTrades', label: 'Open Trades' },
     { id: 'tradeHistory', label: 'Trade History' },
     { id: 'strategy', label: 'Strategy' },
     { id: 'backtest', label: 'Backtest' },
-    { id: 'pipeline', label: '▶ Pipeline' },
+    { id: 'pipeline', label: 'Pipeline' },
   ];
 
   useEffect(() => {
@@ -651,15 +653,19 @@ function Dashboard({ ping }: { ping: PingResponse }) {
   }, []);
 
   return (
-    <main>
-      <header>
-        <div>
-          <h1>AI Trading Agent</h1>
-          <p>{ping.database} database, {ping.total_candles.toLocaleString()} candles</p>
+    <main className="app-shell">
+      <header className="app-header">
+        <div className="brand-block">
+          <div className="brand-mark" aria-hidden="true">A</div>
+          <div>
+            <p className="eyebrow">Intelligent market workspace</p>
+            <h1>Atlas Trading</h1>
+            <p>{ping.database} database / {ping.total_candles.toLocaleString()} candles</p>
+          </div>
         </div>
         <div className="status-group">
           <span className={`status ${ping.orchestrator_alive ? 'online' : 'warning'}`}>
-            {ping.orchestrator_alive ? 'Orchestrator: Live ✓' : 'Orchestrator: Stopped ⚠️'}
+            {ping.orchestrator_alive ? 'Orchestrator: Live' : 'Orchestrator: Stopped'}
           </span>
           <span className={`status ${ws.connected ? 'online' : 'offline'}`}>
             {ws.connected ? 'Backend: Live' : 'Backend: Disconnected'}
@@ -667,7 +673,7 @@ function Dashboard({ ping }: { ping: PingResponse }) {
         </div>
       </header>
 
-      <nav>
+      <nav className="primary-nav" aria-label="Main navigation">
         {pages.map((item) => (
           <button className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)} key={item.id}>
             {item.label}{item.id === 'news' && hasUrgentNews ? <span className="nav-dot" /> : null}
@@ -675,15 +681,18 @@ function Dashboard({ ping }: { ping: PingResponse }) {
         ))}
       </nav>
 
-      <ErrorBanner message={state.globalError} onRetry={() => window.location.reload()} />
-      {page === 'overview' && <OverviewPage />}
-      {page === 'scanner' && <ScannerPage wsConnected={ws.connected} />}
-      {page === 'news' && <News />}
-      {page === 'openTrades' && <OpenTradesPage wsConnected={ws.connected} />}
-      {page === 'tradeHistory' && <TradeHistoryPage />}
-      {page === 'strategy' && <StrategyPage />}
-      {page === 'backtest' && <Backtest />}
-      {page === 'pipeline' && <PipelineControl />}
+      <div className="page-content">
+        <ErrorBanner message={state.globalError} onRetry={() => window.location.reload()} />
+        {page === 'overview' && <OverviewPage />}
+        {page === 'scanner' && <ScannerPage wsConnected={ws.connected} />}
+        {page === 'charts' && <Charts />}
+        {page === 'news' && <News />}
+        {page === 'openTrades' && <OpenTradesPage wsConnected={ws.connected} />}
+        {page === 'tradeHistory' && <TradeHistoryPage />}
+        {page === 'strategy' && <StrategyPage />}
+        {page === 'backtest' && <Backtest />}
+        {page === 'pipeline' && <PipelineControl />}
+      </div>
     </main>
   );
 }

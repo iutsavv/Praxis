@@ -26,7 +26,6 @@ from analysis.signal_engine import (
     load_config,
 )
 from analysis.kronos_forecaster import apply_kronos_adjustment, kronos_enabled
-from analysis.multi_timeframe import should_trade_confluence
 
 DB_PATH = PROJECT_ROOT / "database" / "trading.db"
 
@@ -244,10 +243,11 @@ def run_stage2_scan(symbols: list[str], scan_time: str = "") -> list[dict[str, A
             
             # Build result
             confluence = signal_result.timeframe_confluence
-            confluence_ok = (
-                should_trade_confluence(symbol)
-                and confluence.get("trade_direction") == signal_result.direction
-            )
+            confluence_direction = confluence.get("trade_direction", "SKIP")
+            confluence_ok = confluence_direction == signal_result.direction
+            confluence_unknown = confluence_direction == "SKIP"
+            confluence_conflicts = confluence_direction not in {"SKIP", signal_result.direction}
+            strong_score_override = adjusted_score >= weights.min_score_to_trade + 10
             result = {
                 'symbol': symbol,
                 'score': adjusted_score,
@@ -266,7 +266,11 @@ def run_stage2_scan(symbols: list[str], scan_time: str = "") -> list[dict[str, A
                 'final_selected': 1 if (
                     signal_result.direction != 'HOLD' and
                     adjusted_score >= weights.min_score_to_trade and
-                    confluence_ok
+                    (
+                        confluence_ok
+                        or confluence_unknown
+                        or (confluence_conflicts and strong_score_override)
+                    )
                 ) else 0,
             }
             

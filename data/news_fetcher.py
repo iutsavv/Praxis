@@ -284,8 +284,20 @@ def fetch_rss_feed(url: str, source_name: str) -> list[dict[str, Any]]:
         raise RuntimeError("feedparser is not installed. Run pip install -r requirements.txt")
 
     try:
-        parsed = feedparser.parse(url)
-    except Exception:
+        # Several publishers reject feedparser's default HTTP client or take
+        # too long to respond. Fetch explicitly with a user agent and timeout.
+        if requests is not None:
+            response = requests.get(
+                url,
+                headers={"User-Agent": "Mozilla/5.0 (compatible; AITradingAgent/1.0)"},
+                timeout=15,
+            )
+            response.raise_for_status()
+            parsed = feedparser.parse(response.content)
+        else:
+            parsed = feedparser.parse(url)
+    except Exception as exc:
+        logger.warning("RSS fetch failed for %s: %s", source_name, exc)
         return []
 
     articles: list[dict[str, Any]] = []

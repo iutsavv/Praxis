@@ -164,10 +164,10 @@ export default function PipelineControl() {
 
   const monitorSummary = useMemo(() => {
     if (!monitorResult) return null;
-    if (monitorResult.trades_closed === 0) return '✅ Open positions checked, 0 closed';
+    if (monitorResult.trades_closed === 0) return 'Open positions checked, 0 closed';
     const first = monitorResult.details[0];
     const pnl = typeof first?.pnl === 'number' ? `, ${formatCurrency(first.pnl)}` : '';
-    return `✅ Open positions checked, ${monitorResult.trades_closed} closed (${first?.exit_reason ?? first?.status}${pnl})`;
+    return `Open positions checked, ${monitorResult.trades_closed} closed (${first?.exit_reason ?? first?.status}${pnl})`;
   }, [monitorResult]);
 
   const startFullProgress = () => {
@@ -184,7 +184,7 @@ export default function PipelineControl() {
   return (
     <section className="pipeline-page">
       <div className="developer-strip">
-        <span className="developer-icon">⚙</span>
+        <span className="developer-icon">PX</span>
         <div>
           <span className="label">Developer / Testing Tools</span>
           <h2>Manual Pipeline Control</h2>
@@ -237,7 +237,7 @@ export default function PipelineControl() {
             </button>
             {indicatorResult ? (
               <ResultText>
-                ✅ {indicatorResult.symbols_processed} symbols processed,{' '}
+                {indicatorResult.symbols_processed} symbols processed,{' '}
                 {indicatorResult.indicators_computed.toLocaleString('en-IN')} indicators computed
               </ResultText>
             ) : (
@@ -263,7 +263,7 @@ export default function PipelineControl() {
             {!indicatorsReady ? <ResultText tone="muted">Run indicators before scanning.</ResultText> : null}
             {scanResult ? (
               <ResultText>
-                ✅ {scanResult.stocks_scanned} stocks scanned, {scanResult.signals_above_threshold} above threshold
+                {scanResult.stocks_scanned} stocks scanned, {scanResult.signals_above_threshold} above threshold
               </ResultText>
             ) : null}
             {topPicks.length > 0 ? (
@@ -369,7 +369,7 @@ export default function PipelineControl() {
         <div className="progress-line">
           {fullCycleSteps.map((step) => (
             <div className={`progress-step ${fullProgress[step]}`} key={step}>
-              <span>{fullProgress[step] === 'done' ? '✓' : fullProgress[step] === 'running' ? '•' : ''}</span>
+              <span>{fullProgress[step] === 'done' ? 'OK' : fullProgress[step] === 'running' ? '...' : ''}</span>
               {step}
             </div>
           ))}
@@ -425,7 +425,7 @@ function ExecuteResult({ result }: { result: ExecuteTradeResponse | null }) {
   return (
     <div className="execute-blocks">
       <div className={`visual-block ${approved ? 'approved' : 'rejected'}`}>
-        <strong>{approved ? '✓ Validation approved' : '× Validation rejected'}</strong>
+        <strong>{approved ? 'Validation approved' : 'Validation rejected'}</strong>
         <span>{result.validation.reason ?? result.validation.failed_check ?? 'Signal passed all checks.'}</span>
       </div>
 

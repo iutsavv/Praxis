@@ -32,6 +32,7 @@ PRICE_CHANGE_THRESHOLD = 0.5  # Flag if abs(change) > 0.5%
 VOLUME_RATIO_THRESHOLD = 1.5  # Flag if volume > 1.5x average
 PRICE_CHECK_INTERVAL_MINUTES = 15  # Compare with price from 15 min ago
 PLACEHOLDER_AVG_VOLUME = 50000
+MAX_STAGE2_CANDIDATES = 80
 
 # NSE headers for API calls
 NSE_HEADERS = {
@@ -412,6 +413,20 @@ def write_stage1_results(flagged_stocks: list[dict[str, Any]], scan_time: str) -
     return inserted
 
 
+def rank_flagged_stocks(flagged_stocks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep Stage 2 focused on the most useful candidates first."""
+    return sorted(
+        flagged_stocks,
+        key=lambda stock: (
+            "open_trade" in stock.get("reason", ""),
+            "fo_stock" in stock.get("reason", ""),
+            float(stock.get("volume_ratio", 0.0) or 0.0),
+            abs(float(stock.get("price_change", 0.0) or 0.0)),
+        ),
+        reverse=True,
+    )
+
+
 def run_stage1_scan() -> tuple[list[str], str]:
     """Main Stage 1 scanner function.
 
@@ -505,9 +520,13 @@ def run_stage1_scan() -> tuple[list[str], str]:
 
     processing_duration = time.time() - processing_start
 
-    # Write results to database
+    ranked_flagged = rank_flagged_stocks(flagged_stocks)
+    selected_for_stage2 = ranked_flagged[:MAX_STAGE2_CANDIDATES]
+
+    # Write all flagged stocks for visibility, but only send the ranked shortlist
+    # to deep analysis so execution is not starved by a huge Stage 2 queue.
     write_start = time.time()
-    inserted = write_stage1_results(flagged_stocks, scan_time)
+    inserted = write_stage1_results(ranked_flagged, scan_time)
     write_duration = time.time() - write_start
 
     total_duration = time.time() - scan_started
@@ -516,12 +535,14 @@ def run_stage1_scan() -> tuple[list[str], str]:
     print(f"  STAGE 1 COMPLETE")
     print(f"  Scanned: {total_stocks:,} stocks in {total_duration:.1f}s")
     print(f"  Flagged: {len(flagged_stocks)} stocks for Stage 2")
+    if len(flagged_stocks) > len(selected_for_stage2):
+        print(f"  Shortlisted: {len(selected_for_stage2)} highest-priority candidates")
     print(f"  DB writes: {inserted} records")
     print(f"  Breakdown: fetch={price_fetch_duration:.1f}s, "
           f"process={processing_duration:.1f}s, write={write_duration:.1f}s")
     print("=" * 64 + "\n")
 
-    return [stock['symbol'] for stock in flagged_stocks], scan_time
+    return [stock['symbol'] for stock in selected_for_stage2], scan_time
 
 
 # ---------------------------------------------------------------------------

@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, Query, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
 
@@ -173,6 +173,43 @@ def latest_price(conn: sqlite3.Connection, symbol: str) -> float | None:
 
 def get_latest_signal(conn: sqlite3.Connection, symbol: str) -> dict[str, Any] | None:
     ensure_signal_scores_schema(conn)
+    stage2_row = conn.execute(
+        """
+        SELECT id, symbol, scan_time, stage2_score, stage2_direction,
+               stage2_setup, stage2_pattern
+        FROM scan_results
+        WHERE UPPER(symbol) = UPPER(?)
+          AND stage = 2
+          AND stage2_score IS NOT NULL
+          AND stage2_direction IS NOT NULL
+          AND stage2_direction != 'HOLD'
+        ORDER BY scan_time DESC, id DESC
+        LIMIT 1
+        """,
+        (symbol,),
+    ).fetchone()
+    if stage2_row is not None:
+        stage2_signal = dict(stage2_row)
+        score = float(stage2_signal["stage2_score"])
+        return {
+            "id": stage2_signal["id"],
+            "symbol": stage2_signal["symbol"],
+            "scan_cycle": stage2_signal["scan_time"],
+            "confidence_score": score,
+            "weighted_score": score,
+            "direction": stage2_signal["stage2_direction"],
+            "market_condition": "SIDEWAYS",
+            "contrib_rsi": None,
+            "contrib_macd": None,
+            "contrib_volume": None,
+            "contrib_vwap": None,
+            "explanation": stage2_signal.get("stage2_setup") or stage2_signal.get("stage2_pattern"),
+            "notes": "stage2_candidate",
+            "timeframe_confluence": {},
+            "announcement_boost": 0.0,
+            "created_at": stage2_signal["scan_time"],
+        }
+
     row = conn.execute(
         """
         SELECT id, symbol, scan_cycle, confidence_score, direction,
@@ -328,6 +365,11 @@ class ExecuteTradeRequest(BaseModel):
     symbol: str
 
 
+class FundamentalsRefreshRequest(BaseModel):
+    symbol: str
+    source: str = "sec"
+
+
 class BacktestRequest(BaseModel):
     date_from: str
     date_to: str
@@ -477,7 +519,7 @@ def run_two_stage_scan_stage() -> dict[str, Any]:
 
 
 def execute_trade_stage(symbol: str) -> dict[str, Any]:
-    from agents import paper_trader, risk_manager, trade_validator
+    from agents import debate_engine, paper_trader, risk_manager, trade_validator
 
     symbol = symbol.strip().upper()
     if not symbol:
@@ -496,9 +538,39 @@ def execute_trade_stage(symbol: str) -> dict[str, Any]:
             }
         entry_price = latest_price(conn, symbol)
 
-    validation = trade_validator.validate_signal(signal)
+    if entry_price is not None:
+        signal["entry_price"] = float(entry_price)
+        if signal.get("direction") == "BUY":
+            signal.setdefault("target_price", float(entry_price) * 1.015)
+            signal.setdefault("stop_loss_price", float(entry_price) * 0.9925)
+        elif signal.get("direction") == "SELL":
+            signal.setdefault("target_price", float(entry_price) * 0.985)
+            signal.setdefault("stop_loss_price", float(entry_price) * 1.0075)
+
+    debated_signal = debate_engine.debate_plan(signal, persist=True)
+    if not debated_signal.get("debate_approved"):
+        return {
+            "debate": {
+                "approved": False,
+                "reason": debated_signal.get("debate_reason"),
+                "votes": debated_signal.get("debate_votes", []),
+            },
+            "validation": {
+                "approved": False,
+                "reason": "Rejected by agent debate",
+            },
+            "position": None,
+            "trade": None,
+        }
+
+    validation = trade_validator.validate_signal(debated_signal)
     if not validation.get("approved"):
         return {
+            "debate": {
+                "approved": True,
+                "reason": debated_signal.get("debate_reason"),
+                "votes": debated_signal.get("debate_votes", []),
+            },
             "validation": validation,
             "position": None,
             "trade": None,
@@ -506,6 +578,11 @@ def execute_trade_stage(symbol: str) -> dict[str, Any]:
 
     if entry_price is None:
         return {
+            "debate": {
+                "approved": True,
+                "reason": debated_signal.get("debate_reason"),
+                "votes": debated_signal.get("debate_votes", []),
+            },
             "validation": {
                 "approved": False,
                 "reason": f"No latest candle price found for {symbol}",
@@ -516,11 +593,16 @@ def execute_trade_stage(symbol: str) -> dict[str, Any]:
 
     position = risk_manager.calculate_position(
         symbol,
-        str(signal["direction"]),
+        str(debated_signal["direction"]),
         float(entry_price),
     )
     if int(position.get("quantity", 0)) <= 0 or float(position.get("capital_required", 0)) <= 0:
         return {
+            "debate": {
+                "approved": True,
+                "reason": debated_signal.get("debate_reason"),
+                "votes": debated_signal.get("debate_votes", []),
+            },
             "validation": validation,
             "position": position,
             "trade": {
@@ -529,8 +611,15 @@ def execute_trade_stage(symbol: str) -> dict[str, Any]:
             },
         }
 
-    trade = paper_trader.open_trade(signal)
+    trade = paper_trader.open_trade(debated_signal, position)
     return {
+        "debate": {
+            "approved": True,
+            "reason": debated_signal.get("debate_reason"),
+            "confidence": debated_signal.get("debate_confidence"),
+            "run_id": debated_signal.get("debate_run_id"),
+            "votes": debated_signal.get("debate_votes", []),
+        },
         "validation": validation,
         "position": position,
         "trade": trade,
@@ -569,6 +658,38 @@ async def ping() -> dict[str, Any]:
         "market_open": is_market_open(),
         **get_orchestrator_health(),
     }
+
+
+@app.get("/api/charts/symbols")
+async def chart_symbols() -> list[dict[str, Any]]:
+    from analysis import chart_generator
+
+    return await asyncio.to_thread(chart_generator.get_active_chart_symbols)
+
+
+@app.get("/api/charts/{symbol}/context")
+async def chart_context(symbol: str, interval: str = "15m") -> dict[str, Any]:
+    from analysis import chart_generator
+
+    return await asyncio.to_thread(chart_generator.get_chart_context, symbol, interval)
+
+
+@app.post("/api/charts/generate-all")
+async def generate_charts() -> dict[str, Any]:
+    from analysis import chart_generator
+
+    return await asyncio.to_thread(chart_generator.generate_all_charts)
+
+
+@app.get("/api/charts/{symbol}")
+async def get_chart(symbol: str, interval: str = "15m") -> Response:
+    from analysis import chart_generator
+
+    try:
+        chart_bytes = await asyncio.to_thread(chart_generator.generate_chart, symbol, interval)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return Response(content=chart_bytes, media_type="image/png")
 
 
 @app.get("/api/health")
@@ -610,7 +731,14 @@ async def run_scan():
 @app.post("/api/pipeline/run-two-stage-scan")
 async def run_two_stage_scan():
     try:
-        return await asyncio.to_thread(run_two_stage_scan_stage)
+        result = await asyncio.to_thread(run_two_stage_scan_stage)
+        try:
+            from analysis import chart_generator
+
+            result["charts"] = await asyncio.to_thread(chart_generator.generate_all_charts)
+        except Exception as exc:
+            result["charts"] = {"count_generated": 0, "failed": [{"symbol": "ALL", "error": str(exc)}]}
+        return result
     except Exception as exc:
         return pipeline_error("two_stage_scan", exc)
 
@@ -674,6 +802,13 @@ async def run_full_cycle():
     except Exception as exc:
         return pipeline_error("monitoring", exc)
 
+    try:
+        from analysis import chart_generator
+
+        summary["charts"] = await asyncio.to_thread(chart_generator.generate_all_charts)
+    except Exception as exc:
+        summary["charts"] = {"count_generated": 0, "failed": [{"symbol": "ALL", "error": str(exc)}]}
+
     summary["finished_at"] = iso_now()
     return summary
 
@@ -713,6 +848,169 @@ async def pipeline_status():
 async def signals() -> list[dict[str, Any]]:
     with get_db() as conn:
         return get_signal_scores(conn)
+
+
+def parse_json_object(value: Any) -> dict[str, Any]:
+    if value in (None, ""):
+        return {}
+    if isinstance(value, dict):
+        return value
+    try:
+        parsed = json.loads(str(value))
+        return parsed if isinstance(parsed, dict) else {}
+    except json.JSONDecodeError:
+        return {}
+
+
+@app.get("/api/agents/memory")
+async def agent_memory(
+    symbol: str | None = None,
+    limit: int = Query(50, ge=1, le=200),
+) -> list[dict[str, Any]]:
+    from agents.agent_memory import recent_agent_memory
+
+    rows = await asyncio.to_thread(recent_agent_memory, symbol, limit)
+    for row in rows:
+        row["hard_veto"] = bool(row.get("hard_veto"))
+        row["reasons"] = parse_json_list(row.pop("reasons_json", None))
+        row["evidence"] = parse_json_object(row.pop("evidence_json", None))
+    return rows
+
+
+@app.get("/api/agents/debates")
+async def agent_debates(
+    symbol: str | None = None,
+    limit: int = Query(25, ge=1, le=100),
+) -> list[dict[str, Any]]:
+    from agents.agent_memory import recent_debates
+
+    rows = await asyncio.to_thread(recent_debates, symbol, limit)
+    for row in rows:
+        row["approved"] = bool(row.get("approved"))
+        row["input_plan"] = parse_json_object(row.pop("input_plan_json", None))
+        row["votes"] = parse_json_list(row.pop("votes_json", None))
+    return rows
+
+
+@app.post("/api/agents/debate/{symbol}")
+async def run_agent_debate(symbol: str) -> dict[str, Any]:
+    from agents.debate_engine import debate_plan
+
+    symbol = symbol.strip().upper()
+    with get_db() as conn:
+        signal = get_latest_signal(conn, symbol)
+        entry_price = latest_price(conn, symbol)
+    if signal is None:
+        raise HTTPException(status_code=404, detail=f"No signal found for {symbol}")
+    if entry_price is not None:
+        signal["entry_price"] = float(entry_price)
+        if signal.get("direction") == "BUY":
+            signal.setdefault("target_price", float(entry_price) * 1.015)
+            signal.setdefault("stop_loss_price", float(entry_price) * 0.9925)
+        elif signal.get("direction") == "SELL":
+            signal.setdefault("target_price", float(entry_price) * 0.985)
+            signal.setdefault("stop_loss_price", float(entry_price) * 1.0075)
+    return await asyncio.to_thread(debate_plan, signal, True)
+
+
+@app.get("/api/agents/trade-reviews")
+async def trade_reviews(limit: int = Query(25, ge=1, le=100)) -> list[dict[str, Any]]:
+    with get_db() as conn:
+        if not table_exists(conn, "trade_reviews"):
+            return []
+        rows = conn.execute(
+            """
+            SELECT *
+            FROM trade_reviews
+            ORDER BY created_at DESC, id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    result = rows_to_dicts(rows)
+    for row in result:
+        row["review"] = parse_json_object(row.pop("review_json", None))
+    return result
+
+
+@app.post("/api/agents/trade-reviews/{trade_id}")
+async def review_trade_now(trade_id: int) -> dict[str, Any]:
+    from agents.trade_review_agent import review_trade
+
+    result = await asyncio.to_thread(review_trade, trade_id, True)
+    if not result.get("success"):
+        raise HTTPException(status_code=404, detail=result.get("reason", "Trade not found"))
+    return result
+
+
+@app.post("/api/fundamentals/refresh")
+async def refresh_fundamentals(request: FundamentalsRefreshRequest) -> dict[str, Any]:
+    source = request.source.strip().lower()
+    if source != "sec":
+        raise HTTPException(
+            status_code=400,
+            detail="Only source='sec' is implemented. NSE/BSE result PDF parsing is the next fetcher.",
+        )
+    try:
+        from data.sec_filings_fetcher import refresh_sec_fundamentals
+
+        return await asyncio.to_thread(refresh_sec_fundamentals, request.symbol)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Unable to refresh fundamentals: {exc}") from exc
+
+
+@app.get("/api/fundamentals/{symbol}")
+async def fundamentals(symbol: str) -> dict[str, Any]:
+    symbol = symbol.strip().upper()
+    with get_db() as conn:
+        docs = []
+        facts = []
+        reports = []
+        if table_exists(conn, "fundamental_documents"):
+            docs = rows_to_dicts(
+                conn.execute(
+                    """
+                    SELECT id, symbol, source, document_type, title, url,
+                           filing_date, period_end, parsed_at
+                    FROM fundamental_documents
+                    WHERE UPPER(symbol) = UPPER(?)
+                    ORDER BY COALESCE(filing_date, parsed_at) DESC, id DESC
+                    LIMIT 20
+                    """,
+                    (symbol,),
+                ).fetchall()
+            )
+        if table_exists(conn, "fundamental_facts"):
+            facts = rows_to_dicts(
+                conn.execute(
+                    """
+                    SELECT metric, value, unit, period_end, fiscal_period, created_at
+                    FROM fundamental_facts
+                    WHERE UPPER(symbol) = UPPER(?)
+                    ORDER BY period_end DESC, metric ASC
+                    LIMIT 80
+                    """,
+                    (symbol,),
+                ).fetchall()
+            )
+        if table_exists(conn, "fundamental_agent_reports"):
+            reports = rows_to_dicts(
+                conn.execute(
+                    """
+                    SELECT id, recommendation, confidence, report_json, created_at
+                    FROM fundamental_agent_reports
+                    WHERE UPPER(symbol) = UPPER(?)
+                    ORDER BY created_at DESC, id DESC
+                    LIMIT 10
+                    """,
+                    (symbol,),
+                ).fetchall()
+            )
+    for report in reports:
+        report["report"] = parse_json_object(report.pop("report_json", None))
+    return {"symbol": symbol, "documents": docs, "facts": facts, "reports": reports}
 
 
 @app.get("/api/universe/summary")
@@ -933,6 +1231,17 @@ async def news_latest(
         for item in items:
             item["stocks_mentioned"] = parse_json_list(item.get("stocks_mentioned"))
         return items
+
+
+@app.post("/api/news/refresh")
+async def refresh_news() -> dict[str, Any]:
+    """Fetch the latest RSS articles on demand for the News page."""
+    try:
+        from data.news_fetcher import run_news_fetch
+
+        return await asyncio.to_thread(run_news_fetch)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Unable to refresh news: {exc}") from exc
 
 
 @app.get("/api/news/announcements")

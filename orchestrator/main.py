@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Callable, TypeVar
 
 import pytz
+import pandas as pd
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 
@@ -38,6 +39,8 @@ from agents.learning_agent import run_learning_cycle
 from agents.performance_tracker import update_stats
 from agents.risk_manager import calculate_position
 from agents.trade_validator import validate_signal
+from agents.debate_engine import debate_plans
+from brain import strategy_builder
 from analysis.indicator_engine import run_indicator_engine, process_symbol_for_intervals
 from analysis.signal_engine import run_scan
 from analysis.sentiment_engine import process_unprocessed_news
@@ -74,6 +77,8 @@ FAILURE_STAGES = (
     "indicator_engine",
     "stage1_scanner",
     "stage2_scanner",
+    "strategy_builder",
+    "agent_debate",
     "trade_execution",
     "trade_monitoring",
 )
@@ -390,6 +395,8 @@ class Orchestrator:
                 entry_price = self._latest_price(symbol)
                 if entry_price is None:
                     raise RuntimeError(f"No latest candle price for {symbol}")
+                plan_entry = pick.get("entry_price")
+                entry_price = float(plan_entry) if plan_entry else entry_price
                 position = calculate_position(symbol, str(pick["direction"]), entry_price)
                 if int(position.get("quantity", 0)) <= 0 or float(position.get("capital_required", 0)) <= 0:
                     self.logger.warning("%s has an invalid position; skipping", symbol)
@@ -419,7 +426,7 @@ class Orchestrator:
                         pick["direction"], symbol, position["quantity"], position["entry_price"],
                     )
                     continue
-                result = open_trade(pick)
+                result = open_trade(pick, position)
                 if result.get("success"):
                     opened += 1
                     # Add to open_trades list for next iteration
@@ -539,26 +546,34 @@ class Orchestrator:
             if stage2_ok:
                 self.logger.info("Stage 2 complete: %d candidates above threshold", len(top_picks))
             
-            # Convert Stage 2 results to format expected by _execute_picks
-            picks = []
-            for candidate in top_picks:
-                picks.append({
-                    "symbol": candidate["symbol"],
-                    "weighted_score": candidate["score"],
-                    "direction": candidate["direction"],
-                    "market_condition": candidate.get("market_condition", "SIDEWAYS"),
-                })
-            
-            scanned, signals = len(flagged) if flagged else 0, len(top_picks)
-            
-            # Extract market condition from picks if available
-            if picks and len(picks) > 0:
-                market_condition = picks[0].get("market_condition", "SIDEWAYS")
+            # Stage 4: Build complete strategy plans for all Stage 2 candidates
+            trade_plans, strategy_ok = self._stage("strategy_builder", strategy_builder.build_all_trade_plans, [])
+            if strategy_ok:
+                self.logger.info("Stage 4 complete: %d tradeable plans built", len(trade_plans))
+
+            debated_plans, debate_ok = self._stage(
+                "agent_debate", lambda: debate_plans(trade_plans, persist=True), []
+            )
+            if debate_ok:
+                self.logger.info(
+                    "Agent debate complete: %d/%d plans approved",
+                    len(debated_plans),
+                    len(trade_plans),
+                )
+
+            scanned, signals = len(flagged) if flagged else 0, len(debated_plans)
+
+            # Extract market condition from plans if available
+            if debated_plans:
+                market_condition = debated_plans[0].get("market_condition", "SIDEWAYS")
+            elif trade_plans:
+                market_condition = trade_plans[0].get("market_condition", "SIDEWAYS")
             else:
                 market_condition = "SIDEWAYS"
 
+            # Stage 5: Execute top validated plans
             execution_started = time.perf_counter()
-            opened = self._execute_picks(picks, market_condition)
+            opened = self._execute_picks(debated_plans, market_condition)
             self.logger.info("Stage trade_execution duration: %.0f ms", (time.perf_counter() - execution_started) * 1000)
 
             if self.dry_run:

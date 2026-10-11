@@ -559,8 +559,6 @@ def score_stock(
     confluence_level = timeframe_confluence.get("confluence_level")
     if confluence_level == "HIGH":
         weighted_score = min(round(weighted_score * 1.20, 2), 100.0)
-    elif confluence_level == "LOW":
-        weighted_score = round(weighted_score * 0.70, 2)
 
     announcement_boost = get_signal_boost_for_stock(symbol)
     if announcement_boost:

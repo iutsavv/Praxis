@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import os
+import logging
 import sqlite3
 from datetime import datetime, time, timezone, timedelta
 from pathlib import Path
@@ -34,6 +35,7 @@ DB_PATH = PROJECT_ROOT / "database" / "trading.db"
 INTERVAL = "15m"
 IST = timezone(timedelta(hours=5, minutes=30))
 EOD_EXIT_TIME = time(15, 15)
+log = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -195,6 +197,72 @@ def _update_balance(conn: sqlite3.Connection, new_balance: float) -> None:
     )
 
 
+def _setup_match_from_signal(signal: dict[str, Any]) -> dict[str, Any]:
+    setup_match = signal.get("setup_match") or signal.get("setup")
+    if isinstance(setup_match, dict):
+        return setup_match
+
+    setup_info: dict[str, Any] = {}
+    for key in ("setup_code", "setup_name", "setup_type", "win_rate"):
+        if key in signal:
+            setup_info[key] = signal[key]
+    if not setup_info:
+        return {}
+    return {
+        "setup_info": setup_info,
+        "match_quality": signal.get("setup_match_quality") or signal.get("confidence_score") or signal.get("weighted_score"),
+    }
+
+
+def _store_ml_features(trade_id: int, symbol: str, signal: dict[str, Any]) -> None:
+    try:
+        from brain.ml_model import extract_features, predict, store_trade_features
+
+        setup_match = _setup_match_from_signal(signal)
+        features = extract_features(symbol, signal, setup_match)
+        prediction = predict(symbol, features, log_prediction=False)
+        store_trade_features(
+            trade_id,
+            symbol,
+            features,
+            prediction.get("win_probability"),
+            prediction.get("model_version"),
+        )
+    except Exception as exc:
+        log.warning("Unable to store ML features for trade %s: %s", trade_id, exc)
+
+
+def _update_ml_feature_outcome(trade_id: int, outcome: str | None) -> None:
+    if outcome is None:
+        return
+    try:
+        from brain.ml_model import update_trade_feature_outcome
+
+        update_trade_feature_outcome(trade_id, outcome)
+    except Exception as exc:
+        log.warning("Unable to update ML outcome for trade %s: %s", trade_id, exc)
+
+
+def _link_agent_memory(trade_id: int, signal: dict[str, Any]) -> None:
+    try:
+        from agents.agent_memory import link_debate_to_trade
+
+        link_debate_to_trade(signal.get("debate_run_id"), trade_id)
+    except Exception as exc:
+        log.warning("Unable to link agent memory for trade %s: %s", trade_id, exc)
+
+
+def _review_closed_trade(trade_id: int, outcome: str | None) -> None:
+    try:
+        from agents.agent_memory import mark_trade_outcome
+        from agents.trade_review_agent import review_trade
+
+        mark_trade_outcome(trade_id, outcome)
+        review_trade(trade_id)
+    except Exception as exc:
+        log.warning("Unable to review closed trade %s: %s", trade_id, exc)
+
+
 
 
 
@@ -251,13 +319,15 @@ def _has_duplicate_position(conn: sqlite3.Connection, symbol: str) -> bool:
 # Public API
 # ---------------------------------------------------------------------------
 
-def open_trade(signal: dict[str, Any]) -> dict[str, Any]:
+def open_trade(signal: dict[str, Any], position: dict[str, Any] | None = None) -> dict[str, Any]:
     """Open one approved paper trade.
 
     Parameters
     ----------
     signal:
         Dict with symbol, direction, weighted_score, explanation, market_condition.
+    position:
+        Optional precomputed position from risk_manager.calculate_position().
     """
 
     trade_validator.DB_PATH = DB_PATH
@@ -278,12 +348,15 @@ def open_trade(signal: dict[str, Any]) -> dict[str, Any]:
 
         symbol = str(signal["symbol"]).upper()
         direction = str(signal["direction"]).upper()
-        entry_price = _latest_close_price(conn, symbol)
-        if entry_price is None:
+        entry_price = float(position["entry_price"]) if position else (_latest_close_price(conn, symbol) or 0.0)
+        if entry_price <= 0:
             conn.rollback()
             return {"success": False, "reason": "No candle data"}
 
-        position = risk_manager.calculate_position(symbol, direction, entry_price)
+        if position is None:
+            position = risk_manager.calculate_position(symbol, direction, entry_price)
+        target_price = float(signal.get("target_price") or position["target_price"])
+        stop_loss_price = float(signal.get("stop_loss") or signal.get("stop_loss_price") or position["stop_loss_price"])
         capital_required = float(position["capital_required"])
 
         if _has_duplicate_position(conn, symbol):
@@ -343,8 +416,8 @@ def open_trade(signal: dict[str, Any]) -> dict[str, Any]:
                 signal.get("macd_score"),
                 signal.get("volume_score"),
                 signal.get("vwap_score"),
-                float(position["target_price"]),
-                float(position["stop_loss_price"]),
+                target_price,
+                stop_loss_price,
                 capital_required,
             ),
         )
@@ -367,6 +440,8 @@ def open_trade(signal: dict[str, Any]) -> dict[str, Any]:
                 (_account_id(conn),),
             )
         conn.commit()
+        _link_agent_memory(trade_id, signal)
+        _store_ml_features(trade_id, symbol, signal)
         return {"success": True, "trade_id": trade_id}
     except Exception:
         conn.rollback()
@@ -501,6 +576,8 @@ def close_trade(trade_id: int, exit_reason: str, exit_price: float | None = None
             )
         
         conn.commit()
+        _update_ml_feature_outcome(trade_id, outcome)
+        _review_closed_trade(trade_id, outcome)
         
         return {
             "success": True,
@@ -641,6 +718,8 @@ def monitor_open_trades() -> list[dict[str, Any]]:
                 ),
             )
             conn.commit()
+            _update_ml_feature_outcome(int(trade["id"]), outcome)
+            _review_closed_trade(int(trade["id"]), outcome)
 
             closed.append(
                 {

@@ -1,0 +1,1132 @@
+AI TRADING AGENT - FULL PROJECT DETAILS
+Generated: 2026-10-08
+Workspace: E:\Ai trading agent
+
+IMPORTANT NOTE
+This project is a paper-trading and analysis platform. It does not place real broker orders. It fetches market data, scores NSE stocks, opens simulated trades in SQLite, tracks simulated PnL, and shows everything in a React dashboard. It is for education, testing, and strategy research only, not investment advice.
+
+
+1. PROJECT SUMMARY
+
+Project name:
+Atlas Trading / AI Paper Trading Agent for NSE Stocks
+
+Main purpose:
+The project watches Indian NSE stocks, collects candle/news/announcement data, calculates indicators, scans the market in two stages, builds trade plans, asks multiple agent modules to evaluate the plan, validates risk rules, opens paper trades, monitors exits, learns from closed trades, and exposes everything through a FastAPI backend and React website dashboard.
+
+Main user-facing website:
+The frontend is a React + TypeScript + Vite dashboard in frontend/src. It is not just a landing page. It already has real working pages:
+- Overview
+- Scanner
+- Charts
+- News
+- Open Trades
+- Trade History
+- Strategy
+- Backtest
+- Pipeline
+
+Main backend:
+backend/main.py starts a FastAPI app. The frontend calls this API at http://localhost:8000 by default.
+
+Main scheduler:
+orchestrator/main.py runs the trading pipeline repeatedly during Indian market hours.
+
+Main database:
+database/trading.db is a SQLite database. database/init_db.py creates the schema and seed data.
+
+
+2. TECHNOLOGY STACK
+
+Backend:
+- Python
+- FastAPI
+- Uvicorn
+- SQLite
+- APScheduler
+- pandas
+- yfinance
+- requests
+- feedparser
+- NLTK/VADER style sentiment logic
+- Optional Kronos/PyTorch forecasting support
+
+Frontend:
+- React 19
+- TypeScript
+- Vite
+- Axios
+- Recharts
+- CSS in frontend/src/styles.css
+
+Storage:
+- SQLite database at database/trading.db
+- Runtime status JSON at orchestrator/status.json
+- Logs in logs/
+
+
+3. HOW TO RUN THE PROJECT
+
+Recommended first setup:
+1. Create and activate Python virtual environment.
+2. Install requirements from requirements.txt.
+3. Initialize database with database/init_db.py.
+4. Install frontend dependencies inside frontend/.
+
+Commands:
+python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+.\venv\Scripts\python.exe database\init_db.py
+cd frontend
+npm install
+cd ..
+
+Safe smoke test:
+.\venv\Scripts\python.exe orchestrator\main.py --run-once --dry-run
+
+Start backend:
+.\venv\Scripts\python.exe -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+
+Start frontend:
+cd frontend
+npm run dev
+
+Start scheduler:
+.\venv\Scripts\python.exe orchestrator\main.py --dry-run
+
+URLs:
+- Website dashboard: http://localhost:5173
+- API docs: http://localhost:8000/docs
+- API ping: http://localhost:8000/api/ping
+
+Operating modes:
+- orchestrator/main.py --run-once --dry-run: one diagnostic cycle, no trade open/close.
+- orchestrator/main.py --dry-run: continuous cycle, no trade open/close.
+- orchestrator/main.py --run-once: one full paper-trading cycle.
+- orchestrator/main.py: continuous paper trading scheduler.
+
+
+4. HIGH LEVEL ARCHITECTURE
+
+External data sources:
+- Yahoo Finance through yfinance for candles.
+- NSE/BSE endpoints for announcements and broad market data.
+- RSS/free news feeds for market news.
+- Optional SEC data fetcher exists for fundamentals, mainly useful for US-style tickers or SEC-supported companies.
+
+Storage layer:
+- SQLite stores stocks, candles, indicators, scan results, signals, paper trades, account balance, strategy versions, learning insights, news, announcements, setup definitions, ML features, agent memory, debates, trade reviews, fundamentals, and forecasts.
+
+Backend layer:
+- FastAPI exposes REST endpoints and a WebSocket.
+- React dashboard consumes these endpoints.
+- Backend can also manually trigger stages like indicators, scans, full cycle, learning, backtest, news refresh, chart generation, and trade execution.
+
+Scheduler layer:
+- orchestrator/main.py runs the main market loop and scheduled background jobs.
+- It guards against overlapping cycles and repeated stage failures.
+
+Frontend layer:
+- React dashboard shows account metrics, scan pipeline, candidates, charts, news sentiment, trades, strategy learning, backtests, and pipeline controls.
+
+Simplified flow:
+Data fetchers -> candles table -> indicator engine -> two-stage scanner -> strategy builder -> agent debate -> validator -> risk manager -> paper trader -> dashboard/API.
+
+
+5. MAIN RUNTIME FLOW WHEN PROJECT IS RUNNING
+
+The orchestrator market cycle does this:
+1. Checks whether the market is open, unless run-once or startup cycle bypasses the guard.
+2. Fetches 5m and 15m candles through data/fetcher.py.
+3. Runs analysis/indicator_engine.py to calculate RSI, MACD, EMA, VWAP, and volume ratio.
+4. Runs Stage 1 scanner in analysis/stage1_scanner.py.
+5. Fetches missing recent candles for Stage 1 flagged stocks.
+6. Runs Stage 2 scanner in analysis/stage2_scanner.py.
+7. Builds complete trade plans with brain/strategy_builder.py.
+8. Sends trade plans through agents/debate_engine.py.
+9. Applies validation with agents/trade_validator.py.
+10. Calculates position sizing with agents/risk_manager.py.
+11. Opens simulated trades with agents/paper_trader.py unless dry-run is enabled.
+12. Monitors open trades for target, stop loss, replacement, or end-of-day exit.
+13. Updates account and performance statistics.
+14. Writes status to orchestrator/status.json so the dashboard can show scheduler health.
+
+Scheduled jobs:
+- Market cycle: every 5 minutes, Monday-Friday, 09:00-15:59 trigger range with market guard 09:15-15:25.
+- Hourly candles: every 30 minutes during market hours.
+- Daily candles: 09:00 on weekdays.
+- Announcement fetch: every 30 minutes during market hours plus premarket 09:10.
+- Support/resistance update: every 30 minutes.
+- News fetch: every 15 minutes.
+- Sentiment processing: every 5 minutes.
+- End-of-day trade monitoring: 15:30.
+- Weekly learning cycle: Saturday 10:00.
+- Universe update: Sunday 09:00.
+
+Safety controls:
+- Only one market cycle can run at a time.
+- If a cycle exceeds 240 seconds, the next scheduled cycle is skipped.
+- If a stage fails 3 consecutive times, that stage is disabled for the current session.
+- Dry-run mode prevents opening and closing paper trades.
+
+
+6. TWO-STAGE SCANNER
+
+Stage 1 file:
+analysis/stage1_scanner.py
+
+Purpose:
+Quickly scans the broad NSE universe and shortlists symbols for deeper analysis.
+
+What it checks:
+- Price movement greater than 0.5%.
+- Volume ratio greater than 1.5x.
+- Always includes F&O stocks.
+- Always includes symbols with open paper trades.
+
+How it gets prices:
+- First tries NSE bhav copy CSV.
+- Then tries NSE F&O securities API.
+- Falls back to latest local candles from SQLite.
+
+What it writes:
+- scan_results rows with stage = 1.
+- stage1_flagged = 1.
+- stage1_price_change.
+- stage1_volume_ratio.
+- stage1_reason.
+
+Stage 1 output:
+- A ranked shortlist of up to 80 symbols for Stage 2.
+- The full flagged list is still stored for visibility.
+
+Stage 2 file:
+analysis/stage2_scanner.py
+
+Purpose:
+Runs detailed scoring only on Stage 1 shortlisted stocks.
+
+What it calls:
+- analysis.signal_engine.load_config()
+- analysis.signal_engine.get_strategy_weights()
+- analysis.signal_engine.detect_market_condition()
+- analysis.signal_engine.score_stock()
+- analysis.pattern_detector.run_all_patterns()
+- analysis.kronos_forecaster.apply_kronos_adjustment()
+
+What it checks:
+- Recent or available 15m candle data.
+- Technical score.
+- Direction BUY/SELL/HOLD.
+- Multi-timeframe confluence.
+- Pattern detection.
+- Optional Kronos forecast adjustment.
+
+What it writes:
+- Updates scan_results rows to stage = 2.
+- stage2_score.
+- stage2_direction.
+- stage2_pattern.
+- stage2_setup.
+- final_selected = 1 when the candidate passes threshold and confluence rules.
+
+Stage 2 output:
+- Top candidates sorted by score.
+
+
+7. SIGNAL SCORING ENGINE
+
+File:
+analysis/signal_engine.py
+
+Purpose:
+Scores each stock using indicators and strategy weights.
+
+Data source:
+- indicators table.
+- candles table.
+- strategy_rules table.
+- analysis/signal_config.json.
+- announcement boost from data/announcement_fetcher.py.
+- timeframe confluence from analysis/multi_timeframe.py.
+
+Indicators used:
+- RSI.
+- MACD and MACD signal/histogram.
+- Volume ratio.
+- VWAP.
+- EMA 20 and EMA 50 indirectly through market condition and indicators.
+
+Direction logic:
+- MACD gives a BUY/SELL/NEUTRAL hint.
+- RSI is used as fallback when MACD is neutral.
+- BUY and SELL directions are scored.
+- If final score is below hold_threshold, result becomes HOLD.
+
+Score logic:
+- Each core signal can score up to 25.
+- Strategy weights from strategy_rules are applied.
+- Weighted raw score is scaled to 0-100.
+- Oversold/overbought and volume confirmation can boost weak signals.
+- HIGH timeframe confluence can boost score by 20%.
+- Corporate announcement signal boost can add or subtract score.
+
+Result fields:
+- symbol.
+- direction.
+- rsi_score.
+- macd_score.
+- volume_score.
+- vwap_score.
+- weighted_score.
+- timeframe_confluence.
+- announcement_boost.
+- market_condition.
+- explanation.
+- notes.
+
+
+8. STRATEGY BUILDER AND SETUPS
+
+Files:
+- brain/setup_library.py
+- brain/setup_matcher.py
+- brain/strategy_builder.py
+
+Purpose:
+These files turn raw scan candidates into fuller trade plans.
+
+setup_library.py:
+- Creates and seeds the setup library.
+- Stores setup definitions in the setups table.
+- Tracks setup performance stats.
+- Defines setup conditions, entry methods, target methods, stoploss methods, preferred market conditions, time windows, and historical performance fields.
+
+setup_matcher.py:
+- Reads latest candles, indicators, price structure, patterns, news, and market condition.
+- Checks whether a symbol matches active setup definitions.
+- Calculates entry price, target price, stoploss price.
+- Scores setup quality.
+- Can match all Stage 2 candidates.
+
+strategy_builder.py:
+- Takes Stage 2 candidates.
+- Reads indicators, patterns, levels, news, setup match, and confluence.
+- Builds a human-readable reasoning string.
+- Builds trade plan dictionaries for debate/execution.
+
+The trade plan includes:
+- symbol.
+- direction.
+- weighted score.
+- entry price.
+- target price.
+- stop loss.
+- market condition.
+- setup match.
+- reasoning.
+- news and level context.
+
+
+9. AGENT SYSTEM
+
+Main files:
+- agents/debate_engine.py
+- agents/agent_memory.py
+- agents/market_regime_agent.py
+- agents/news_impact_agent.py
+- agents/sector_rotation_agent.py
+- agents/execution_quality_agent.py
+- agents/fundamentals_analyst.py
+- agents/trade_review_agent.py
+
+debate_engine.py:
+- Takes a trade plan.
+- Calls multiple specialized agents.
+- Collects votes.
+- Moderates the result.
+- Produces debate_approved, debate_confidence, debate_reason, and debate_votes.
+- Persists debate details through agent_memory.py.
+
+market_regime_agent.py:
+- Evaluates broad market condition using index momentum and market breadth.
+- Can adjust score or veto plans when regime is unfavorable.
+
+news_impact_agent.py:
+- Loads recent news/announcements for the symbol.
+- Evaluates whether news supports or conflicts with the trade.
+
+sector_rotation_agent.py:
+- Looks at sector momentum for the stock's sector.
+- Adjusts recommendation based on sector strength/weakness.
+
+execution_quality_agent.py:
+- Checks whether current price/entry quality is acceptable.
+- Helps avoid poor execution.
+
+fundamentals_analyst.py:
+- Reads stored fundamental facts and disclosures.
+- Produces a fundamental recommendation and confidence.
+
+trade_review_agent.py:
+- Reviews closed trades.
+- Stores post-trade analysis in trade_reviews.
+- Links outcome back to agent memory.
+
+agent_memory.py:
+- Creates agent_memory and agent_debates schema.
+- Stores individual agent decisions.
+- Stores debate summaries.
+- Links debates to trades.
+- Marks outcomes after trades close.
+
+
+10. TRADE VALIDATION, RISK, AND PAPER TRADING
+
+Trade validator:
+agents/trade_validator.py
+
+It checks:
+- Direction must be BUY or SELL.
+- Score must meet active strategy threshold.
+- No duplicate open position.
+- Available balance.
+- Maximum open trade limit.
+- Market hours.
+- Sideways market permission.
+- Logs approval/rejection into trade_logs.
+
+Risk manager:
+agents/risk_manager.py
+
+It calculates:
+- Entry price.
+- Stop loss.
+- Target.
+- Risk per share.
+- Maximum loss amount from risk_per_trade_pct.
+- Quantity based on risk.
+- Maximum capital per trade.
+- Final position quantity.
+- Capital required.
+
+Default behavior described in README:
+- Risk per trade: 1% of account balance.
+- Position capital cap: 20% of current balance.
+- Stop loss: about 0.75% away from entry.
+- Target: about 1.5% away from entry.
+
+Paper trader:
+agents/paper_trader.py
+
+open_trade():
+- Validates signal again.
+- Ensures paper_trades schema.
+- Gets latest candle price.
+- Calculates or accepts risk position.
+- Prevents duplicate position.
+- Checks balance.
+- Inserts paper trade as PENDING, deducts capital, then marks it OPEN.
+- Stores ML features.
+- Links agent debate memory.
+
+monitor_open_trades():
+- Reads every OPEN trade.
+- Gets latest candle.
+- Closes if target is hit.
+- Closes if stop loss is hit.
+- Closes at end-of-day time.
+- Handles missing candle data.
+- Updates balance, PnL, outcome, and status.
+- Updates ML feature outcome and trade review.
+
+close_trade():
+- Manually closes an OPEN trade by ID.
+- Used for trade replacement and other exit paths.
+
+Trade replacement logic in orchestrator:
+- Dynamic max trades: TRENDING = 8, SIDEWAYS = 6, VOLATILE = 4.
+- If account is full, a new strong signal can replace a weak losing open trade.
+- Replacement requires score advantage >= 20, existing trade losing more than 0.3%, and new signal score >= 65.
+- Replacement exit reason is REPLACED.
+
+
+11. DATA FETCHING
+
+Main files:
+- data/fetcher.py
+- data/universe_fetcher.py
+- data/announcement_fetcher.py
+- data/news_fetcher.py
+- data/sec_filings_fetcher.py
+
+data/fetcher.py:
+- Fetches OHLCV candles.
+- Uses yfinance/Yahoo style data.
+- Stores candles in the candles table.
+- Supports intervals like 5m, 15m, 1h, and 1d.
+- Has bulk fetch support used by Stage 2 data refresh.
+
+data/universe_fetcher.py:
+- Updates stock_universe.
+- Tracks symbols, sector, industry, F&O status, market-cap category, active flag, average volume, and listing data.
+
+data/announcement_fetcher.py:
+- Fetches NSE/BSE announcements.
+- Classifies announcement type.
+- Assigns sentiment/impact/signal boost.
+- Stores announcements in announcements table.
+- Provides get_signal_boost_for_stock() used during signal scoring.
+
+data/news_fetcher.py:
+- Fetches free RSS market news.
+- Stores articles in news table.
+- Tracks headline, summary, source, URL, published time, stocks mentioned, sentiment, and urgency.
+
+data/sec_filings_fetcher.py:
+- Fetches SEC company ticker map, submissions, company facts, filings, and fundamental metrics.
+- Stores fundamental documents/facts and ticker-to-CIK map.
+- Useful for fundamentals workflow where SEC data is relevant.
+
+
+12. ANALYSIS MODULES
+
+analysis/indicator_engine.py:
+- Calculates indicators and writes to indicators table.
+- Indicators include RSI, MACD, MACD signal, MACD histogram, EMA20, EMA50, VWAP, and volume ratio.
+
+analysis/multi_timeframe.py:
+- Checks multiple timeframes such as 5m, 15m, 1h, and 1d.
+- Returns confluence score, level, direction, and reasoning.
+- Used by signal scoring and frontend confluence display.
+
+analysis/pattern_detector.py:
+- Detects candlestick or price patterns.
+- Writes/returns patterns such as bullish/bearish setups with strength.
+- Stage 2 picks the strongest detected pattern.
+
+analysis/support_resistance.py:
+- Finds swing highs and lows.
+- Clusters levels.
+- Calculates strength.
+- Marks broken levels.
+- Stores active support/resistance in price_levels.
+- Provides nearest levels and signal modifiers.
+
+analysis/sentiment_engine.py:
+- Builds a finance keyword dictionary.
+- Uses sentiment scoring.
+- Extracts stock entities from news.
+- Processes unprocessed news.
+- Provides get_stock_news_sentiment(symbol).
+
+analysis/backtester.py:
+- Runs historical backtests.
+- Stores backtest_runs and backtest_trades.
+- Exposed by backend /api/backtest/run and related endpoints.
+
+analysis/kronos_forecaster.py:
+- Optional forecast integration.
+- Can adjust Stage 2 score when enabled.
+- Stores/uses kronos_forecasts.
+- Stage 2 continues without Kronos when disabled or unavailable.
+
+analysis/chart_generator.py:
+- Generates chart images or chart context for symbols.
+- Backend exposes chart endpoints for frontend Charts page.
+
+
+13. DATABASE TABLES
+
+Core tables created by database/init_db.py:
+
+stocks:
+- Seed watchlist of liquid NSE symbols.
+- Used by older/basic scans and signal engine.
+
+stock_universe:
+- Full NSE universe.
+- Contains symbol, name, sector, industry, F&O flag, cap classification, active flag, average volume, listing date, and timestamps.
+- Stage 1 uses this heavily.
+
+candles:
+- OHLCV data by symbol, interval, and timestamp.
+- Used by indicators, scanner, paper trader, charts, backtests.
+
+indicators:
+- RSI, MACD, MACD signal, MACD histogram, EMA20, EMA50, VWAP, volume ratio.
+- Used by signal scoring, confluence, frontend, and trade entry records.
+
+scan_results:
+- Stores both Stage 1 and Stage 2 scan records.
+- Stage 1 fields: flagged, price change, volume ratio, reason.
+- Stage 2 fields: score, direction, pattern, setup, final_selected.
+
+signal_scores:
+- Stores traditional signal scan results.
+- Contains confidence score, direction, market condition, indicator contributions, explanation, confluence, and announcement boost.
+
+paper_account:
+- Stores simulated account balance and performance totals.
+- Includes balance, initial balance, total PnL, daily PnL, win rate, max drawdown, peak balance, and open positions count.
+
+paper_trades:
+- Stores simulated trades.
+- Contains symbol, direction, quantity, entry/exit price, target, stop loss, capital, PnL, outcome, status, and indicator values at entry.
+
+trade_logs:
+- Stores validator decisions and rejection reasons.
+
+strategy_rules:
+- Stores strategy versions.
+- Controls indicator weights, min score, max trades, risk percentage, entry window, and sideways-market behavior.
+
+learning_insights:
+- Stores weekly learning results and strategy performance summaries.
+
+price_levels:
+- Stores support/resistance levels.
+
+patterns:
+- Stores detected patterns.
+
+announcements:
+- Stores NSE/BSE announcements and signal impact.
+
+news:
+- Stores news articles, sentiment, urgency, and mentioned stocks.
+
+api_usage:
+- Tracks API usage counts.
+
+setups:
+- Stores setup library definitions and performance.
+
+trade_features:
+- Stores ML feature snapshots for trades.
+
+ml_models:
+- Stores ML model versions and metadata.
+
+kronos_forecasts:
+- Stores optional Kronos forecast outputs.
+
+agent_memory:
+- Stores agent-level decisions.
+
+agent_debates:
+- Stores final debate outcomes for trade plans.
+
+trade_reviews:
+- Stores post-trade reviews.
+
+fundamental_documents:
+- Stores fetched fundamental documents.
+
+fundamental_facts:
+- Stores parsed fundamental metrics.
+
+fundamental_agent_reports:
+- Stores fundamental analyst reports.
+
+sec_company_map:
+- Maps tickers to SEC CIKs.
+
+
+14. BACKEND API MAP
+
+Base:
+- GET /api/ping: checks API and database status.
+- GET /api/health: backend and orchestrator health.
+
+Charts:
+- GET /api/charts/symbols: symbols available for charts.
+- GET /api/charts/{symbol}/context: chart data/context.
+- GET /api/charts/{symbol}: chart image/response.
+- POST /api/charts/generate-all: generate charts.
+
+Account and trades:
+- GET /api/account and /api/account/summary: account balance/performance.
+- GET /api/trades/open: open paper trades.
+- GET /api/trades/history: closed trade history.
+
+Pipeline:
+- GET /api/pipeline/status: orchestrator status and latest database timestamps.
+- POST /api/pipeline/run-indicators: run indicator generation manually.
+- POST /api/pipeline/run-scan: run old signal scan manually.
+- POST /api/pipeline/run-two-stage-scan: run Stage 1 and Stage 2 manually.
+- POST /api/pipeline/execute-trade: manually execute a trade for a symbol.
+- POST /api/pipeline/monitor-trades: manually monitor open trades.
+- POST /api/pipeline/run-full-cycle: run full manual backend pipeline.
+
+Signals and scans:
+- GET /api/signals: latest signal scores.
+- GET /api/signals/confluence/{symbol}: multi-timeframe confluence.
+- GET /api/scan/latest: latest scan overview.
+- GET /api/scan/stage1/flagged: latest Stage 1 flagged rows.
+- GET /api/scan/stage2/results: latest Stage 2 rows.
+- GET /api/scan/stage1/latest: Stage 1 summary and top flagged stocks.
+- GET /api/scan/stage2/latest: Stage 2 summary, selected candidates, and top analyzed rows.
+- GET /api/scan/history: last 24 hours of scan counts.
+- GET /api/top-picks: current top non-HOLD signals.
+
+Agent and fundamentals:
+- GET /api/agents/memory: recent agent memory.
+- GET /api/agents/debates: recent agent debates.
+- POST /api/agents/debate/{symbol}: run debate for a symbol.
+- GET /api/agents/trade-reviews: trade reviews.
+- POST /api/agents/trade-reviews/{trade_id}: review a trade now.
+- POST /api/fundamentals/refresh: refresh fundamentals for a symbol.
+- GET /api/fundamentals/{symbol}: latest fundamentals and report.
+
+Universe:
+- GET /api/universe/summary: total stocks, F&O count, sector distribution, etc.
+- GET /api/universe/stocks: paginated/filterable universe list.
+
+News:
+- GET /api/news/latest: latest news with filters.
+- POST /api/news/refresh: fetch latest RSS news now.
+- GET /api/news/announcements: latest corporate announcements.
+- GET /api/news/stock/{symbol}: news and announcements for one stock.
+- GET /api/news/market-sentiment: market-level sentiment summary.
+- GET /api/news/sentiment/{symbol}: symbol-level sentiment summary.
+
+Strategy and learning:
+- GET /api/strategy: active strategy rule.
+- GET /api/strategy/history: strategy versions and learning insights.
+- GET /api/learning/latest: latest learning insight.
+- POST /api/learning/run: run learning cycle manually.
+
+Backtest:
+- POST /api/backtest/run: run historical backtest.
+- GET /api/backtest/history: previous backtest runs.
+- GET /api/backtest/{run_id}/trades: trades from a backtest run.
+
+WebSocket:
+- WS /ws/live: sends signal_update and trade_update snapshots every 30 seconds.
+
+
+15. FRONTEND WEBSITE DETAILS
+
+Entry files:
+- frontend/src/main.tsx
+- frontend/src/App.tsx
+- frontend/src/api/client.ts
+- frontend/src/store/store.tsx
+- frontend/src/hooks/useDataHooks.ts
+- frontend/src/hooks/useWebSocket.ts
+- frontend/src/pages/*
+- frontend/src/styles.css
+
+API client:
+frontend/src/api/client.ts
+- Uses Axios.
+- Base URL is VITE_API_BASE_URL or http://localhost:8000.
+- Converts network/404/500 errors into user-facing errors.
+
+Startup behavior:
+- App calls GET /api/ping.
+- If backend is not reachable, it shows a connection error page.
+- If backend is reachable, it renders the dashboard.
+
+Dashboard header:
+- Shows Atlas Trading branding.
+- Shows database/candle count from /api/ping.
+- Shows orchestrator live/stopped.
+- Shows backend WebSocket connected/disconnected.
+
+Overview page:
+Calls:
+- /api/account/summary
+- /api/news/market-sentiment
+- /api/universe/summary
+- /api/scan/latest
+
+Shows:
+- Equity.
+- Realized PnL.
+- Unrealized PnL.
+- Open trades.
+- Win rate.
+- Max drawdown.
+- Market sentiment.
+- Sector sentiment.
+- Scan coverage.
+- Number of monitored stocks.
+- Stage 1 and Stage 2 counts.
+
+Scanner page:
+Calls:
+- /api/scan/stage1/latest
+- /api/scan/stage2/latest
+- /api/scan/latest
+- /api/universe/summary
+- /api/universe/stocks
+- /api/news/sentiment/{symbol}
+- /api/signals/confluence/{symbol}
+- POST /api/pipeline/run-two-stage-scan
+
+Shows:
+- Universe count.
+- Stage 1 flagged count.
+- Stage 2 candidate count.
+- Stage 1 reason chips: price up, price down, volume spike, F&O universe, open trades.
+- Optional Stage 1 flagged table.
+- Stage 2 candidate/analyzed table.
+- Direction, score, confluence dots, news score, announcement badge, sector, price move, and volume ratio.
+- Filters by sector, news sentiment, stage/candidate/F&O.
+
+Charts page:
+File:
+- frontend/src/pages/Charts.tsx
+
+Backend calls:
+- Chart endpoints under /api/charts.
+
+Purpose:
+- Shows generated chart views and symbol context.
+
+News page:
+File:
+- frontend/src/pages/News.tsx
+
+Backend calls:
+- /api/news/latest
+- /api/news/refresh
+- /api/news/market-sentiment
+- /api/news/announcements
+- /api/news/stock/{symbol}
+
+Purpose:
+- Shows latest market news, sentiment, announcements, and stock-specific news.
+
+Open Trades page:
+Calls:
+- /api/trades/open
+- WebSocket /ws/live.
+
+Shows:
+- Open positions.
+- Direction.
+- Entry price.
+- Current price.
+- Unrealized PnL.
+
+Trade History page:
+Calls:
+- /api/trades/history.
+
+Shows:
+- Closed trades.
+- Direction.
+- Outcome WIN/LOSS/BREAKEVEN.
+- PnL.
+- Filter by outcome.
+
+Strategy page:
+Calls:
+- /api/strategy
+- /api/strategy/history
+- /api/learning/latest
+- POST /api/learning/run
+
+Shows:
+- Active strategy weights.
+- Minimum score.
+- Max open trades.
+- Learning history.
+- Latest insight.
+- Strategy version changes.
+- Manual learning-cycle button.
+
+Backtest page:
+File:
+- frontend/src/pages/Backtest.tsx
+
+Backend calls:
+- /api/backtest/run
+- /api/backtest/history
+- /api/backtest/{run_id}/trades
+
+Purpose:
+- Lets user run historical tests and view resulting trades.
+
+Pipeline page:
+File:
+- frontend/src/pages/PipelineControl.tsx
+
+Backend calls:
+- /api/pipeline/status
+- /api/pipeline/run-indicators
+- /api/pipeline/run-scan
+- /api/pipeline/run-full-cycle
+- /api/pipeline/execute-trade
+- /api/pipeline/monitor-trades
+
+Purpose:
+- Manual control panel for backend pipeline stages.
+
+
+16. WHAT EACH MAJOR FEATURE IS CALLING
+
+Website loads:
+React App -> /api/ping -> Dashboard.
+
+Live updates:
+React useWebSocket -> /ws/live -> backend websocket_snapshots() -> get_signal_scores() and get_open_trades().
+
+Overview metrics:
+OverviewPage -> useAccount() -> /api/account/summary -> paper_account and paper_trades.
+OverviewPage -> marketDataApi.marketSentiment() -> /api/news/market-sentiment -> news and announcements.
+OverviewPage -> marketDataApi.universeSummary() -> /api/universe/summary -> stock_universe.
+OverviewPage -> marketDataApi.scanLatest() -> /api/scan/latest -> scan_results.
+
+Manual two-stage scan:
+ScannerPage button -> POST /api/pipeline/run-two-stage-scan -> backend.run_two_stage_scan_stage()
+-> analysis.stage1_scanner.run_stage1_scan()
+-> data.fetcher fetch/store missing candles
+-> analysis.indicator_engine.process_symbol_for_intervals()
+-> analysis.stage2_scanner.run_stage2_scan()
+-> scan_results table.
+
+Scheduled market cycle:
+orchestrator.start() -> APScheduler -> Orchestrator.run_cycle()
+-> data.fetcher.run_fetcher_for_intervals()
+-> analysis.indicator_engine.run_indicator_engine()
+-> analysis.stage1_scanner.run_stage1_scan()
+-> fetch missing flagged candles
+-> analysis.stage2_scanner.run_stage2_scan()
+-> brain.strategy_builder.build_all_trade_plans()
+-> agents.debate_engine.debate_plans()
+-> Orchestrator._execute_picks()
+-> agents.trade_validator.validate_signal()
+-> agents.risk_manager.calculate_position()
+-> agents.paper_trader.open_trade()
+-> agents.paper_trader.monitor_open_trades().
+
+Manual execute trade:
+Pipeline page or API -> POST /api/pipeline/execute-trade with symbol
+-> backend.execute_trade_stage()
+-> get_latest_signal()
+-> agents.debate_engine.debate_plan()
+-> agents.trade_validator.validate_signal()
+-> agents.risk_manager.calculate_position()
+-> agents.paper_trader.open_trade().
+
+Trade close:
+Orchestrator or Pipeline -> monitor_open_trades()
+-> latest candle from candles
+-> target/stop/EOD/no-data logic
+-> update paper_trades
+-> update paper_account
+-> agents.trade_review_agent.review_trade()
+-> agents.agent_memory.mark_trade_outcome()
+-> brain.ml_model.update_trade_feature_outcome().
+
+Learning:
+Strategy page -> POST /api/learning/run
+-> agents.learning_agent.run_learning_cycle()
+-> reads closed trades and performance
+-> writes learning_insights and possibly strategy_rules versions.
+
+News:
+News page or scheduler -> data.news_fetcher.run_news_fetch()
+-> news table
+-> analysis.sentiment_engine.process_unprocessed_news()
+-> /api/news/market-sentiment and /api/news/sentiment/{symbol}.
+
+Announcements:
+Scheduler -> data.announcement_fetcher.run_announcement_fetch()
+-> announcements table
+-> analysis.signal_engine.score_stock() calls get_signal_boost_for_stock()
+-> announcement boost affects final score.
+
+Backtest:
+Backtest page -> POST /api/backtest/run
+-> analysis.backtester.run()
+-> backtest_runs and backtest_trades.
+
+Charts:
+Charts page -> /api/charts endpoints
+-> analysis.chart_generator.
+
+
+17. CONFIGURATION
+
+analysis/signal_config.json:
+- RSI buy/sell thresholds.
+- MACD crossover and histogram scoring.
+- Volume ratio thresholds.
+- VWAP scoring bands.
+- Hold threshold.
+- Market condition settings.
+
+strategy_rules table:
+- Indicator weights.
+- Minimum score to trade.
+- Max open trades.
+- Risk per trade percentage.
+- Best entry window.
+- Whether to trade sideways markets.
+
+Frontend API base:
+- VITE_API_BASE_URL controls backend URL.
+- Defaults to http://localhost:8000.
+
+Orchestrator constants:
+- FAILURE_LIMIT = 3.
+- CYCLE_INTERVAL_MINUTES = 5.
+- CYCLE_DURATION_GUARD_SECONDS = 240.
+- Timezone: Asia/Kolkata.
+
+
+18. LOGS AND OBSERVABILITY
+
+Important runtime files:
+- logs/orchestrator.log: scheduler logs.
+- orchestrator/status.json: dashboard-readable scheduler status.
+- database/trading.db: SQLite database.
+- frontend dev server logs in terminal.
+- backend Uvicorn logs in terminal.
+
+The dashboard determines orchestrator health by reading backend /api/pipeline/status and /api/ping, which include status.json information.
+
+
+19. TESTS AND VERIFICATION COMMANDS
+
+Python tests:
+.\venv\Scripts\python.exe -m pytest tests
+
+Legacy test runner:
+.\venv\Scripts\python.exe tests\test_all.py
+
+Two-stage pipeline test:
+.\venv\Scripts\python.exe test_two_stage_pipeline.py
+
+Frontend production build:
+cd frontend
+npm run build
+
+Safe runtime verification:
+.\venv\Scripts\python.exe orchestrator\main.py --run-once --dry-run
+
+Note:
+Some tests and commands require live internet and market data. Results can differ when markets are closed, data providers throttle, or upstream sources change.
+
+
+20. GITHUB README / WEBSITE CONTENT IDEAS
+
+Short description:
+Atlas Trading is a full-stack AI-assisted paper-trading dashboard for NSE stocks. It combines live market data, technical indicators, two-stage scanning, news and announcement sentiment, agent debate, risk management, simulated execution, backtesting, and learning feedback into one FastAPI + React application.
+
+Good GitHub feature list:
+- Full-stack React + FastAPI trading dashboard.
+- SQLite-backed market database.
+- NSE universe scanner.
+- Two-stage scan pipeline for speed and deeper analysis.
+- RSI, MACD, EMA, VWAP, volume-ratio scoring.
+- Multi-timeframe confluence.
+- Support/resistance and pattern modules.
+- News and announcement sentiment.
+- Agent debate system.
+- Risk-based paper trade sizing.
+- Paper trade execution and monitoring.
+- Trade replacement logic.
+- Strategy learning from closed trades.
+- Backtesting workflow.
+- WebSocket live updates.
+- Manual pipeline controls.
+- Optional Kronos forecast integration.
+
+Suggested GitHub warning:
+This is an educational paper-trading system. It does not guarantee profitable signals. Do not use it for real-money trading without independent testing, risk controls, and professional advice.
+
+
+21. CURRENT DEVELOPMENT STATUS OBSERVED FROM SOURCE
+
+Implemented:
+- Backend FastAPI app.
+- React dashboard.
+- SQLite schema.
+- Candle/indicator flow.
+- Two-stage scanner.
+- Manual and scheduled pipeline.
+- Paper trading.
+- Risk manager.
+- Trade validator.
+- Agent debate and memory.
+- News and announcement flow.
+- Strategy learning endpoints.
+- Backtest endpoints.
+- Chart endpoints.
+- WebSocket live updates.
+
+Partially optional or dependent on data:
+- Kronos forecasting is optional and disabled unless dependencies/config are enabled.
+- SEC fundamentals are implemented but only useful for supported tickers/data.
+- Live market behavior depends on market hours and external data provider availability.
+- Some features require the stock universe and candle history to be populated.
+
+Things to verify before pushing to GitHub:
+- Run backend and frontend locally.
+- Run frontend npm build.
+- Run pytest or selected tests.
+- Run orchestrator --run-once --dry-run.
+- Make sure database/log/runtime files are not committed unless intentionally included.
+- Check .gitignore includes venv, logs, node_modules, SQLite WAL/SHM, and generated build artifacts as desired.
+- Decide whether to commit database/trading.db or keep it local only.
+
+
+22. PROJECT FOLDERS
+
+agents/
+Decision-making, validation, risk, paper trading, performance tracking, debate, memory, fundamentals, and review agents.
+
+analysis/
+Indicators, signals, scanners, support/resistance, sentiment, charts, backtests, pattern detection, multi-timeframe confluence, and optional forecasting.
+
+backend/
+FastAPI app, REST endpoints, WebSocket endpoint, and backend pipeline runners.
+
+brain/
+Setup library, setup matcher, strategy builder, and ML-related logic.
+
+data/
+Market data, stock universe, news, announcements, and fundamentals fetchers.
+
+database/
+SQLite initialization, migrations, and repair/inspection utilities.
+
+docs/
+Technical notes for two-stage scanning, Kronos, and trade replacement.
+
+frontend/
+React website/dashboard.
+
+orchestrator/
+Scheduler and status file.
+
+tests/
+Backend, connection, performance, and trade replacement tests.
+
+logs/
+Runtime logs.
+
+
+23. FINAL SIMPLE EXPLANATION
+
+When the project is running, it works like this:
+1. It downloads stock candles and saves them.
+2. It calculates technical indicators.
+3. It quickly scans the whole NSE universe.
+4. It deeply analyzes only the most important symbols.
+5. It builds trade plans.
+6. It asks multiple internal agents whether the plan is good.
+7. It validates rules and sizes risk.
+8. It opens simulated trades.
+9. It monitors targets, stop losses, and end-of-day exits.
+10. It records PnL and performance.
+11. It learns from closed trades.
+12. It shows everything on the website dashboard.
+
+This is the complete working concept behind the project and the basis for a GitHub README or website presentation.

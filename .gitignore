@@ -19,6 +19,7 @@ database/*.db-wal
 *.sqlite
 *.sqlite3
 orchestrator/status.json
+models/*.pkl
 
 # Logs
 logs/

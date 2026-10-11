@@ -77,6 +77,7 @@ export const marketDataApi = {
   latestNews: async (params?: { symbol?: string; sentiment?: string; urgency?: string; since?: string; limit?: number }) => (
     await api.get<NewsArticle[]>('/api/news/latest', { params })
   ).data,
+  refreshNews: async () => (await api.post<{ total_articles: number; new_articles: number }>('/api/news/refresh')).data,
   stockNews: async (symbol: string) => (await api.get<Array<NewsArticle | Announcement>>(`/api/news/stock/${symbol}`)).data,
   announcements: async (limit = 20) => (await api.get<Announcement[]>('/api/news/announcements', { params: { limit } })).data,
   marketSentiment: async () => (await api.get<MarketSentiment>('/api/news/market-sentiment')).data,

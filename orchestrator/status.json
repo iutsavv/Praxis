@@ -1,18 +1,26 @@
 {
-  "last_run": "2026-07-10T00:01:35+05:30",
+  "last_run": "2026-09-06T11:54:27+05:30",
   "next_run": null,
   "cycle_number": 1,
   "status": "running",
-  "last_cycle_duration_seconds": 294.27,
+  "last_cycle_duration_seconds": 0,
   "cycle_interval_minutes": 5,
   "consecutive_failures": {
     "fetcher": 0,
+    "hourly_candles": 0,
+    "daily_candles": 0,
+    "announcements": 0,
+    "news": 0,
+    "sentiment_processing": 0,
+    "support_resistance": 0,
     "indicator_engine": 0,
-    "signal_engine": 0,
+    "stage1_scanner": 0,
+    "stage2_scanner": 0,
+    "strategy_builder": 0,
     "trade_execution": 0,
     "trade_monitoring": 0
   },
   "trades_opened_today": 0,
-  "trades_closed_today": 4,
-  "current_balance": 999803.66
+  "trades_closed_today": 0,
+  "current_balance": 800498.47
 }
